@@ -1,6 +1,10 @@
-- id: chinese-lint
-  name: Chinese lint
-  description: Check Chinese wording in changed text files.
-  entry: scripts/chinese_lint.py
-  language: script
-  types: [text]
+[
+  {
+    "id": "chinese-lint",
+    "name": "Chinese lint",
+    "description": "Check Chinese wording in changed text files.",
+    "entry": "scripts/chinese_lint.py",
+    "language": "script",
+    "types": ["text"]
+  }
+]

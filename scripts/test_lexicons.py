@@ -5,6 +5,7 @@ import copy
 import gzip
 import importlib.util
 import json
+import os
 import pathlib
 import subprocess
 import sys
@@ -37,6 +38,18 @@ checks = {
     "Unihan variants": has_source(FIXTURES["unihan"], "unihan"),
     "McBopomofo candidate": has_source(FIXTURES["mcbopomofo"], "mcbopomofo"),
 }
+ascii_environment = os.environ.copy()
+ascii_environment.update({
+    "LC_ALL": "C",
+    "PYTHONCOERCECLOCALE": "0",
+    "PYTHONUTF8": "0",
+})
+ascii_lookup = subprocess.run(
+    [sys.executable, str(TARGET), "kernel", "--source", "technical"],
+    check=False, capture_output=True, env=ascii_environment)
+checks["lookup uses UTF-8 outside a UTF-8 locale"] = (
+    ascii_lookup.returncode == 0
+    and "核心".encode() in ascii_lookup.stdout)
 terms = json.loads((ROOT / "references/technical-terms.json").read_text())
 checks["preserved terms do not have translations"] = not (
     set(terms["preserve"]) & {item["en"] for item in terms["terms"]})

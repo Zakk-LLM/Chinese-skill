@@ -108,7 +108,9 @@ Never sign as an AI. Remove model attribution from every file, commit, PR, revie
 comment. Human trailers with a real address remain allowed.
 
 Run `scripts/chinese_lint.py <paths>` before completing a wording audit. Use `-` for
-standard input. Treat findings as candidates; grammar warnings, logic, meaning, and
+standard input and `--stdin-filename` when the input format affects the rules. Use
+`--comment-audit` for source comment reviews. Warnings are advisory unless
+`--fail-level warning` is selected. Treat findings as candidates; logic, meaning, and
 comment value still require manual review. Use `--fix` only for deterministic typography;
 it does not authorize automatic wording or grammar changes. Command variants and profile
 rules are documented in the task-specific references and `README.md`.

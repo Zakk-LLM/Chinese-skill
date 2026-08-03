@@ -67,7 +67,7 @@ import pathlib
 import re
 import sys
 
-text = pathlib.Path(sys.argv[1]).read_text()
+text = pathlib.Path(sys.argv[1]).read_text(encoding="utf-8")
 parts = text.split("---", 2)
 if len(parts) != 3:
     raise SystemExit("SKILL.md has no valid frontmatter block")
@@ -94,12 +94,12 @@ instruction_file() {
 }
 
 owned() {
-  local destination=$1
+  local destination=$1 marker_text
   [ -L "$destination" ] && [ "$(readlink "$destination")" = "$SOURCE" ] && return 0
-  [ -f "$destination/$MARKER" ] && {
-    grep -qxF "installer=$NAME" "$destination/$MARKER" ||
-      grep -q '^source=' "$destination/$MARKER"
-  }
+  [ -f "$destination/$MARKER" ] || return 1
+  marker_text=$(cat "$destination/$MARKER")
+  [ "$marker_text" = "installer=$NAME
+format=copy-v2" ] || [ "$marker_text" = "source=$SOURCE" ]
 }
 
 replace_destination() {
@@ -153,7 +153,7 @@ begin = "<!-- chinese-skill:begin -->"
 end = "<!-- chinese-skill:end -->"
 target = path.resolve(strict=False) if path.is_symlink() else path
 pattern = re.compile(rf"{re.escape(begin)}.*?{re.escape(end)}", re.S)
-text = target.read_text() if target.exists() else ""
+text = target.read_text(encoding="utf-8") if target.exists() else ""
 match = pattern.search(text)
 if action == "add":
     block = (
@@ -179,11 +179,39 @@ if not target.exists() and action == "remove":
     raise SystemExit
 target.parent.mkdir(parents=True, exist_ok=True)
 mode = target.stat().st_mode & 0o777 if target.exists() else 0o644
-with tempfile.NamedTemporaryFile("w", dir=target.parent, delete=False) as handle:
+with tempfile.NamedTemporaryFile(
+        "w", dir=target.parent, delete=False, encoding="utf-8") as handle:
     handle.write(text)
     temporary = handle.name
 os.chmod(temporary, mode)
 os.replace(temporary, target)
+PY
+}
+
+reminder_current() {
+  local file=$1 skill=$2
+  python3 - "$file" "$skill" <<'PY'
+import pathlib
+import sys
+
+raw_path, skill = sys.argv[1:]
+path = pathlib.Path(raw_path)
+target = path.resolve(strict=False) if path.is_symlink() else path
+if not target.is_file():
+    raise SystemExit(1)
+begin = "<!-- chinese-skill:begin -->"
+end = "<!-- chinese-skill:end -->"
+block = (
+    f"{begin}\n"
+    f"For every Chinese passage, read `{skill}` before writing or reviewing. "
+    "Read it again after context compaction or restoration, a long tool operation, "
+    "task switching, and before comments, commits, pull requests, or reviews. "
+    "Apply repository instructions first. Ask when an unknown required format "
+    f"materially affects the result.\n{end}"
+)
+text = target.read_text(encoding="utf-8")
+valid = text.count(block) == 1 and text.count(begin) == 1 and text.count(end) == 1
+raise SystemExit(0 if valid else 1)
 PY
 }
 
@@ -245,7 +273,7 @@ for agent in "${targets[@]}"; do
       state="not installed"
       status=1
     fi
-    if [ -f "$instructions" ] && grep -qF '<!-- chinese-skill:begin -->' "$instructions"; then
+    if reminder_current "$instructions" "$destination/SKILL.md"; then
       reminder="reminder present"
     else
       reminder="reminder absent"

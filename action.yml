@@ -17,6 +17,10 @@ inputs:
     description: Chinese locale accepted by chinese_lint.py.
     required: false
     default: auto
+  fail_level:
+    description: Lowest finding severity that makes the action fail.
+    required: false
+    default: error
 runs:
   using: composite
   steps:
@@ -27,9 +31,11 @@ runs:
         CHINESE_LINT_KIND: ${{ inputs.kind }}
         CHINESE_LINT_STYLE: ${{ inputs.style }}
         CHINESE_LINT_LOCALE: ${{ inputs.locale }}
+        CHINESE_LINT_FAIL_LEVEL: ${{ inputs.fail_level }}
       run: >-
         python3 "$GITHUB_ACTION_PATH/scripts/chinese_lint.py"
         --kind "$CHINESE_LINT_KIND"
         --style "$CHINESE_LINT_STYLE"
         --locale "$CHINESE_LINT_LOCALE"
+        --fail-level "$CHINESE_LINT_FAIL_LEVEL"
         "$CHINESE_LINT_PATH"

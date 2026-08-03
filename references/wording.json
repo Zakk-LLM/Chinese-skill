@@ -13,7 +13,7 @@
     {
       "id": "colloquial",
       "message": "replace colloquial wording with a concrete state or action",
-      "terms": ["就行", "搞定", "拉下來", "拉下来", "裝上", "装上", "白跑", "一堆", "一大堆", "啥", "咋", "玩意", "省事", "靠譜", "靠谱", "壓根", "压根", "老是", "看一眼", "東西", "东西", "沒啥", "没啥", "亂七八糟", "乱七八糟", "讀不到", "读不到", "取不到", "對不上", "对不上", "發不出", "发不出", "擋住", "挡住", "沒成", "没成", "清掉", "一個都沒刪", "一个都没删", "沒有第二條路進來", "没有第二条路进来", "照樣", "照样", "折騰", "折腾", "搞不定", "湊合", "凑合", "隨手", "随手", "順手", "顺手", "沒轍", "没辙", "卡住了"]
+      "terms": ["就行", "搞定", "拉下來", "拉下来", "白跑", "一堆", "一大堆", "啥", "咋", "玩意", "省事", "靠譜", "靠谱", "壓根", "压根", "老是", "看一眼", "東西", "东西", "沒啥", "没啥", "亂七八糟", "乱七八糟", "讀不到", "读不到", "取不到", "對不上", "对不上", "發不出", "发不出", "擋住", "挡住", "沒成", "没成", "清掉", "一個都沒刪", "一个都没删", "沒有第二條路進來", "没有第二条路进来", "照樣", "照样", "折騰", "折腾", "搞不定", "湊合", "凑合", "隨手", "随手", "順手", "顺手", "沒轍", "没辙", "卡住了", "沒搞下來", "没搞下来", "麻煩大家", "麻烦大家", "再整一下"]
     },
     {
       "id": "anthropomorphic-software",
@@ -41,8 +41,18 @@
   "regex_rules": [
     {
       "id": "colloquial-run",
-      "pattern": "跑(?!步|道|車|车|馬|马)",
+      "pattern": "(?:(?<=[在先再未沒没])跑(?!步|道|車|车|馬|马)|(?<!奔|長|长|短|賽|赛|逃|助)跑(?=(?:了|過|过|一下|一次|不動|不动|不起來|不起来|著|着|完|起來|起来)?(?:[，。；：！？,.!?\\s]|$)))",
       "message": "use 執行/执行 for an action or 運行/运行为 an ongoing state"
+    },
+    {
+      "id": "colloquial-install",
+      "pattern": "(?<!安)(?:裝上|装上)(?!游)",
+      "message": "replace colloquial installation wording with the exact install action"
+    },
+    {
+      "id": "colloquial-failure",
+      "pattern": "(?:同步|服務|服务|程式|程序|進程|进程|任務|任务|連線|连接)[^，。！？\\n]{0,6}(?:掛了|挂了)",
+      "message": "state the failed component and operation"
     },
     {
       "id": "conversational-conditional",
@@ -76,7 +86,7 @@
     },
     {
       "id": "vague-improvement",
-      "pattern": "(?:大大|極大|极大|顯著|显著|有效)(?:地)?(?:提升|提高|改善|優化|优化)(?![^，。；：\\n]{0,20}(?:\\d+(?:\\.\\d+)?%|[一二三四五六七八九十]+倍))",
+      "pattern": "(?:(?:大大|極大|极大|顯著|显著|有效)(?:地)?(?:提升|提高|改善|優化|优化)|(?:提升|提高|改善|優化|优化)(?:了)?(?:穩定性|稳定性|可靠性|可用性))(?![^，。；：\\n]{0,20}(?:\\d+(?:\\.\\d+)?%|[一二三四五六七八九十]+倍))",
       "message": "state the measured change instead of a vague improvement claim"
     },
     {
@@ -219,23 +229,23 @@
   },
   "repeated_sentence_characters": 8,
   "locale_name_exceptions": ["正體中文", "繁體中文", "簡體中文", "正體", "繁體", "簡體"],
-  "locale_word_exceptions": ["阿里雲", "阿里巴巴", "阿里山", "小米", "公里", "英里", "里程", "里程碑", "鄰里", "里長", "千里", "萬里", "故里", "鄉里"],
+  "locale_word_exceptions": ["阿里雲", "阿里巴巴", "阿里山", "小米", "公里", "英里", "里程", "里程碑", "鄰里", "里民", "里長", "千里", "萬里", "故里", "鄉里", "皇后", "太后", "后冠", "后妃", "后土", "后羿", "后稷", "后里"],
   "generic_link_labels": ["這裡", "这里", "此處", "此处", "點此", "点此"],
-  "comparison_markers": ["zh-CN", "zh-TW", "簡體", "简体", "繁體", "繁体", "正體", "正体", "對照", "对照", "術語", "术语"],
+  "comparison_markers": ["zh-CN", "zh-TW", "簡體", "简体", "繁體", "繁体", "正體", "正体", "對照", "对照"],
   "locale_markers": {
-    "zh-TW": "為與後裡於這檔軟網碼執運檢過體應說讀寫來開發現錯誤務萬個門頁書號據線數陣列儲從將還讓",
-    "zh-CN": "为与后里于这档软网码执运检过体应说读写来开发现错误务万个门页书号据线数阵列储从将还让"
+    "zh-TW": "為與後裡於這檔軟網碼執運檢過體應說讀寫來開發現錯誤務萬個門頁書號據線數陣列儲從將還讓戶錄國",
+    "zh-CN": "为与后里于这档软网码执运检过体应说读写来开发现错误务万个门页书号据线数阵列储从将还让户录国"
   },
   "regional_exceptions": {
     "zh-TW": ["權限", "文件", "程序", "指針", "介質", "字節", "項目", "腳本"],
     "zh-CN": ["软件", "程序", "文件", "权限"]
   },
   "attribution_patterns": [
-    "^\\s*(?:[#/*;%-]+\\s*)?Co-authored-by:.*(?:anthropic|claude|codex|chatgpt|gpt-|copilot|cursor|devin|gemini|openai|opencode)",
-    "^\\s*(?:[#/*;%-]+\\s*)?Claude-Session:",
-    "^\\s*(?:[#/*;%-]+\\s*)?(?:Generated|Created|Written)(?:-|\\s)+(?:with|by):?\\s+.*(?:Anthropic|Claude|Codex|ChatGPT|Copilot|Cursor|Gemini|OpenAI|OpenCode)",
-    "^\\s*(?:[#/*;%-]+\\s*)?AI-(?:Generated|Assisted)-By:",
-    "^\\s*(?:[#/*;%-]+\\s*)?Signed-off-by:\\s*(?:Claude|Codex|ChatGPT|Copilot|Gemini|OpenCode)(?:\\s*<|$)"
+    "^[ \\t]*(?:[#/*;%-]+[ \\t]*)?Co-authored-by:[ \\t]*(?:(?:(?:Anthropic[ \\t]+)?Claude(?:[ \\t]+Code)?|(?:OpenAI[ \\t]+)?Codex|ChatGPT|GPT-[^<]*|Copilot|Cursor|Devin|Gemini|OpenCode)[ \\t]*(?:<|$)|[^\\n]*<[^>]*@(?:anthropic|openai)\\.com>)",
+    "^[ \\t]*(?:[#/*;%-]+[ \\t]*)?Claude-Session:",
+    "^[ \\t]*(?:[#/*;%-]+[ \\t]*)?(?:Generated|Created|Written)(?:-|[ \\t])+(?:with|by):?[ \\t]+.*(?:Anthropic|Claude|Codex|ChatGPT|Copilot|Cursor|Gemini|OpenAI|OpenCode)",
+    "^[ \\t]*(?:[#/*;%-]+[ \\t]*)?AI-(?:Generated|Assisted)-By:",
+    "^[ \\t]*(?:[#/*;%-]+[ \\t]*)?Signed-off-by:[ \\t]*(?:Claude|Codex|ChatGPT|Copilot|Gemini|OpenCode)(?:[ \\t]*<|$)"
   ],
   "invalid_signoff_patterns": [
     "^\\s*Signed-off-by:.*<[^>]+@users\\.noreply\\.github\\.com>"
@@ -246,6 +256,7 @@
   ],
   "workflow_narration_patterns": [
     "(?:本次|此次|這次|这次)\\s*(?:PR|提交|修改|更新).{0,12}(?:主要)?(?:包含|包括|完成)",
+    "(?:本次|此次|這次|这次)\\s*(?:PR|提交|修改|更新).{0,12}(?:主要)?(?:針對|针对).{0,12}(?:調整|调整|修改|更新)",
     "(?:目前|現在|现在)?(?:所有|全部).{0,12}(?:已)?(?:完成|正常|通過|通过)",
     "(?:已|已经|已經)(?:全面|全部)?(?:完成|完善|補齊|补齐|覆蓋|覆盖)(?:所有|全部)?(?:修改|更新|功能|內容|内容|情況|情况)?",
     "(?:全面|完整)(?:支援|支持|覆蓋|覆盖)(?:所有|全部)?",

@@ -15,6 +15,7 @@
       "path": "README.md",
       "url": "https://github.com/gentoo-zh/overlay/blob/master/README.md",
       "checked": "2026-08-03",
+      "required_strings": ["# gentoo-zh", "eselect repository enable gentoo-zh", "## 贡献", "README.zh-TW.md"],
       "use_for": ["current Simplified Chinese repository purpose", "installation entry point", "contribution and commit conventions"],
       "avoid": ["copying repository-specific policy into unrelated projects", "treating current prose as historical corpus"]
     },
@@ -24,6 +25,7 @@
       "path": "README.zh-TW.md",
       "url": "https://github.com/gentoo-zh/overlay/blob/master/README.zh-TW.md",
       "checked": "2026-08-03",
+      "required_strings": ["# gentoo-zh", "正體中文", "eselect repository enable gentoo-zh", "## 貢獻"],
       "use_for": ["current Traditional Chinese repository terminology", "locale-specific links", "parallel section structure"],
       "avoid": ["using Taiwan-only terms in another locale without context", "treating current prose as historical corpus"]
     },
@@ -33,6 +35,7 @@
       "path": "README.zh-HK.md",
       "url": "https://github.com/gentoo-zh/overlay/blob/master/README.zh-HK.md",
       "checked": "2026-08-03",
+      "required_strings": ["# gentoo-zh", "廣東話", "eselect repository enable gentoo-zh", "## 貢獻"],
       "use_for": ["current Cantonese locale contract", "locale-specific links", "parallel section structure"],
       "avoid": ["using Cantonese as cross-regional standard Chinese", "copying repository-specific policy into unrelated projects"]
     }

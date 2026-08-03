@@ -4,6 +4,7 @@
 import argparse
 import json
 import pathlib
+import sys
 
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
@@ -14,7 +15,7 @@ CORPORA = {
 
 
 def load_corpus(name):
-    return json.loads(CORPORA[name].read_text())
+    return json.loads(CORPORA[name].read_text(encoding="utf-8"))
 
 
 def all_patterns(name, data):
@@ -81,6 +82,9 @@ def list_result(name, data):
 
 
 def main():
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(encoding="utf-8")
     parser = argparse.ArgumentParser(
         description="Retrieve a selected README or UI writing corpus entry.")
     parser.add_argument("corpus", choices=sorted(CORPORA))

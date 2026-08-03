@@ -255,7 +255,7 @@ def snapshot_failures(config, manifest, destination, ignored_directories=()):
 
 def verify_snapshots(config):
     manifest_path = DESTINATION / "manifest.json"
-    manifest = json.loads(manifest_path.read_text())
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     failures = snapshot_failures(config, manifest, DESTINATION, {"optional"})
     if failures:
         raise SystemExit("\n".join(failures))
@@ -311,7 +311,8 @@ def synchronize_optional(source, refresh):
     staged = stage_snapshots(destination)
     try:
         previous_path = staged / "manifest.json"
-        previous = json.loads(previous_path.read_text()) if previous_path.exists() else {}
+        previous = (json.loads(previous_path.read_text(encoding="utf-8"))
+                    if previous_path.exists() else {})
         files = [sync_file(source["id"], item, refresh, staged)
                  for item in source_files(source)]
         entry = {
@@ -376,7 +377,7 @@ def verify_optional(config):
         if not manifest_path.is_file():
             failures.append(f"missing optional manifest: {path.name}")
             continue
-        manifest = json.loads(manifest_path.read_text())
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
         manifest_ids = [item["id"] for item in manifest.get("sources", [])]
         if manifest_ids != [path.name]:
             failures.append(f"optional manifest does not match directory: {path.name}")
@@ -408,7 +409,7 @@ def main():
                         help="verify an installed optional snapshot")
     args = parser.parse_args()
 
-    config = json.loads(CONFIG.read_text())
+    config = json.loads(CONFIG.read_text(encoding="utf-8"))
     sources = config["sources"]
     if (args.list or args.verify or args.verify_optional) and (args.source or args.refresh):
         parser.error("listing and verification cannot be combined with synchronization options")
@@ -442,7 +443,8 @@ def main():
     targets = selected or required_ids
     partial = bool(selected and not required_ids.issubset(selected))
     previous_path = DESTINATION / "manifest.json"
-    previous = json.loads(previous_path.read_text()) if previous_path.exists() else {}
+    previous = (json.loads(previous_path.read_text(encoding="utf-8"))
+                if previous_path.exists() else {})
     if partial:
         if not previous:
             parser.error("--source requires an existing complete snapshot manifest")

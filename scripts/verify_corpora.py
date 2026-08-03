@@ -69,7 +69,7 @@ def main():
     limited = False
     dates = {}
     for config_path in CONFIGS:
-        data = json.loads(config_path.read_text())
+        data = json.loads(config_path.read_text(encoding="utf-8"))
         for source_id, repository, entry in pinned_entries(data):
             label = f"{source_id}:{entry.get('locale', 'default')}"
             try:
@@ -101,8 +101,13 @@ def main():
             try:
                 content = fetch(raw_url(contract["repository"], "master",
                                         contract["path"]))
-                passed = bool(content)
+                text = content.decode("utf-8")
+                missing = [value for value in contract["required_strings"]
+                           if value not in text]
+                passed = bool(content) and not missing
                 print(f"{'PASS' if passed else 'FAIL'} {label}")
+                if missing:
+                    print(f"FAIL {label}: missing required strings: {missing!r}")
                 failed |= not passed
             except urllib.error.HTTPError as error:
                 body = error.read()
@@ -112,7 +117,7 @@ def main():
                 else:
                     print(f"FAIL {label}: HTTP {error.code}")
                     failed = True
-            except OSError as error:
+            except (OSError, UnicodeDecodeError) as error:
                 print(f"FAIL {label}: {error}")
                 failed = True
     if failed:

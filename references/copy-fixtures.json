@@ -1,6 +1,11 @@
 {
   "bad_comment": "中文說明",
   "bad_prose": "簡單來說，先跑一次。",
+  "masked_colloquial": "其實已經搞定。",
+  "filler_continuation": "其實這是續行說明。",
+  "colloquial_alert": "同步服務掛了，麻煩大家再整一下。",
+  "simplified_login": "用户登录成功。",
+  "simplified_country": "国家安全。",
   "mixed_locale": "這個文件通过檢查。",
   "expanded_mixed": "开发軟體",
   "several_wrong": "软件\n网络",

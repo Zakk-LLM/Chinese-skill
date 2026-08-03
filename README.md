@@ -61,11 +61,11 @@ python3 scripts/chinese_lint.py --kind pr-body --title 'scope: summary' body.txt
 | `readme` | 專案入口文件 |
 | `ui` | 控制項、狀態、錯誤及確認文字 |
 
-`--format json` 輸出穩定的規則識別碼、嚴重程度、路徑、行號、訊息與樣本，供編輯器及 CI 使用。`--fix` 只修正全形英數、標點、空格及 README 標題句號，不改寫語法或用詞。
+`--format json` 輸出穩定的規則識別碼、嚴重程度、路徑、行號、訊息與樣本，供編輯器及 CI 使用。`--fail-level warning` 讓警告也產生失敗狀態。以標準輸入檢查資料檔時，使用 `--stdin-filename` 指定檔名。`--fix` 只修正全形英數、標點、空格及 README 標題句號，不改寫語法或用詞。
 
 `--locale` 支援 `zh-CN`、`zh-TW`、`zh-HK`、`zh-SG` 與 `zh-MY`。香港使用繁體，新加坡與馬來西亞使用簡體；所在地區的正式技術用語可以保留。所有模式都會拒絕 AI 署名，但允許使用真實電子郵件地址的人類作者署名。
 
-檢查器會提示高可信度的「的／得／地」錯誤與篇內術語混用。這類提示不會自動修正；因果關係、術語選擇及註釋價值仍需人工審查。
+檢查器會提示高可信度的「的／得／地」錯誤與篇內術語混用。`--comment-audit` 另行提示只重述相鄰程式碼的註釋。這類提示不會自動修正；因果關係、術語選擇及註釋價值仍需人工審查。
 
 ## 專案整合
 
@@ -74,13 +74,13 @@ pre-commit 使用者可引用本儲存庫的 `chinese-lint` hook。GitHub Action
 ```yaml
 repos:
   - repo: https://github.com/Zakk-LLM/Chinese-skill
-    rev: main
+    rev: v1.0.0
     hooks:
       - id: chinese-lint
 ```
 
 ```yaml
-- uses: Zakk-LLM/Chinese-skill@main
+- uses: Zakk-LLM/Chinese-skill@v1.0.0
   with:
     path: docs
     style: technical
@@ -142,6 +142,7 @@ python3 scripts/test_chinese_lint.py
 python3 scripts/test_install.py
 python3 scripts/test_lexicons.py
 python3 scripts/test_corpora.py
+python3 scripts/test_integrations.py
 python3 scripts/sync_lexicons.py --verify
 python3 scripts/validate_repository.py --release
 ```

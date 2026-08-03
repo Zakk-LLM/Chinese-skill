@@ -7,6 +7,7 @@ import gzip
 import json
 import pathlib
 import re
+import sys
 import zipfile
 
 
@@ -21,7 +22,7 @@ def matches(query, values, contains):
 
 
 def technical_results(query, contains):
-    data = json.loads(TECHNICAL.read_text())
+    data = json.loads(TECHNICAL.read_text(encoding="utf-8"))
     preserved = set(data["preserve"])
     for term in data["preserve"]:
         if matches(query, [term], contains):
@@ -53,7 +54,7 @@ def naer_results(query, contains):
 
 def zhconversion_results(query, contains):
     path = LEXICONS / "mediawiki-zhconversion-REL1_43.php.gz"
-    with gzip.open(path, "rt") as handle:
+    with gzip.open(path, "rt", encoding="utf-8") as handle:
         text = handle.read()
     for table, locale in (("ZH_TO_TW", "zh-TW"), ("ZH_TO_CN", "zh-CN"),
                           ("ZH_TO_HK", "zh-HK")):
@@ -66,7 +67,7 @@ def zhconversion_results(query, contains):
 
 def jieba_results(query, contains):
     path = LEXICONS / "jieba-dict-0.42.1.txt.gz"
-    with gzip.open(path, "rt") as handle:
+    with gzip.open(path, "rt", encoding="utf-8") as handle:
         for line in handle:
             fields = line.split()
             if len(fields) < 2 or not matches(query, [fields[0]], contains):
@@ -93,7 +94,7 @@ THUOCL_FILES = {
 
 def thuocl_results(query, contains):
     for category, filename in THUOCL_FILES.items():
-        with gzip.open(LEXICONS / filename, "rt") as handle:
+        with gzip.open(LEXICONS / filename, "rt", encoding="utf-8") as handle:
             for line in handle:
                 fields = line.split()
                 if not fields or not matches(query, [fields[0]], contains):
@@ -107,7 +108,7 @@ def thuocl_results(query, contains):
 
 def rime_essay_results(query, contains):
     path = LEXICONS / "rime-essay-2026-07-13.txt.gz"
-    with gzip.open(path, "rt") as handle:
+    with gzip.open(path, "rt", encoding="utf-8") as handle:
         for line in handle:
             fields = line.split()
             if not fields or not matches(query, [fields[0]], contains):
@@ -121,7 +122,7 @@ def rime_essay_results(query, contains):
 
 def cedict_results(query, contains):
     pattern = re.compile(r"^(\S+) (\S+) \[([^]]+)] /(.*)/$")
-    with gzip.open(LEXICONS / "cc-cedict.txt.gz", "rt") as handle:
+    with gzip.open(LEXICONS / "cc-cedict.txt.gz", "rt", encoding="utf-8") as handle:
         for line in handle:
             match = pattern.match(line.rstrip())
             if not match or not matches(query, match.group(1, 2), contains):
@@ -147,7 +148,7 @@ def moegirl_results(query, contains):
     path = LEXICONS / "optional" / "moegirl" / "moegirl-titles-20260713.txt.gz"
     if not path.exists():
         return
-    with gzip.open(path, "rt") as handle:
+    with gzip.open(path, "rt", encoding="utf-8") as handle:
         for line in handle:
             title = line.rstrip("\n")
             if matches(query, [title], contains):
@@ -159,7 +160,7 @@ def zhwiki_results(query, contains):
     path = LEXICONS / "optional" / "zhwiki" / "zhwiki-20260416.dict.yaml.gz"
     if not path.exists():
         return
-    with gzip.open(path, "rt") as handle:
+    with gzip.open(path, "rt", encoding="utf-8") as handle:
         for line in handle:
             if line.startswith("#") or "\t" not in line:
                 continue
@@ -177,7 +178,7 @@ def mcbopomofo_results(query, contains):
         ("mcbopomofo-associated-3.0.txt.gz", "associated phrase"),
     ]
     for filename, label in files:
-        with gzip.open(LEXICONS / filename, "rt") as handle:
+        with gzip.open(LEXICONS / filename, "rt", encoding="utf-8") as handle:
             for line in handle:
                 if line.startswith("#") or not matches(query, [line], True):
                     continue
@@ -219,7 +220,7 @@ SEARCHERS = {
 
 
 def reference_results():
-    for item in json.loads(CONFIG.read_text())["reference_only"]:
+    for item in json.loads(CONFIG.read_text(encoding="utf-8"))["reference_only"]:
         detail = f"{item['role']}; {item['url']}"
         if item.get("license"):
             detail += f"; license={item['license']}"
@@ -251,6 +252,9 @@ def positive_integer(value):
 
 
 def main():
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(encoding="utf-8")
     parser = argparse.ArgumentParser(
         description="Search terminology, conversion data, dictionaries, and corpora.")
     parser.add_argument("query", nargs="?",

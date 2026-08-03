@@ -13,11 +13,11 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 
 
 def load_json(relative):
-    return json.loads((ROOT / relative).read_text())
+    return json.loads((ROOT / relative).read_text(encoding="utf-8"))
 
 
 def validate_frontmatter(errors):
-    text = (ROOT / "SKILL.md").read_text()
+    text = (ROOT / "SKILL.md").read_text(encoding="utf-8")
     parts = text.split("---", 2)
     if len(parts) != 3 or parts[0].strip():
         errors.append("SKILL.md must start with YAML frontmatter")
@@ -39,7 +39,7 @@ def validate_agent_metadata(errors):
     if not path.is_file():
         errors.append("agents/openai.yaml is missing")
         return
-    text = path.read_text()
+    text = path.read_text(encoding="utf-8")
     required = {
         "display_name": "Chinese Writing Control",
         "short_description": "Write and revise concise professional Chinese",
@@ -199,7 +199,7 @@ def validate_readme_corpus(errors):
     if not contracts or len(contract_ids) != len(set(contract_ids)):
         errors.append("README live contract ids must be present and unique")
     for contract in contracts:
-        required = {"id", "repository", "path", "url", "checked",
+        required = {"id", "repository", "path", "url", "checked", "required_strings",
                     "use_for", "avoid"}
         if set(contract) != required:
             errors.append(f"incomplete README live contract: {contract.get('id')}")
@@ -212,6 +212,11 @@ def validate_readme_corpus(errors):
             errors.append(f"invalid README live contract check date: {contract['id']}")
         if not contract["use_for"] or not contract["avoid"]:
             errors.append(f"README live contract has empty observations: {contract['id']}")
+        required_strings = contract["required_strings"]
+        if (not required_strings or len(required_strings) != len(set(required_strings))
+                or not all(isinstance(value, str) and value
+                           for value in required_strings)):
+            errors.append(f"README live contract has invalid required strings: {contract['id']}")
 
     sources = data.get("sources", [])
     identifiers = [item.get("id") for item in sources]
@@ -397,7 +402,7 @@ def validate_repository(errors, release):
     if not (ROOT / "LICENSE").is_file():
         errors.append("root LICENSE is missing")
     elif "contributors\n\nPermission is hereby granted" not in (
-            ROOT / "LICENSE").read_text():
+            ROOT / "LICENSE").read_text(encoding="utf-8"):
         errors.append("LICENSE does not preserve the standard MIT grant")
     required_executables = [ROOT / "install.sh", *(ROOT / "scripts").glob("*.py")]
     for path in required_executables:
@@ -407,27 +412,48 @@ def validate_repository(errors, release):
     if not hook.is_file():
         errors.append("pre-commit hook manifest is missing")
     else:
-        hook_text = hook.read_text()
-        for value in ("id: chinese-lint", "entry: scripts/chinese_lint.py",
-                      "language: script", "types: [text]"):
-            if value not in hook_text:
-                errors.append(f"incomplete pre-commit hook: {value}")
+        try:
+            hooks = json.loads(hook.read_text(encoding="utf-8"))
+        except json.JSONDecodeError as error:
+            errors.append(f"invalid pre-commit hook manifest: {error}")
+        else:
+            expected = {
+                "id": "chinese-lint",
+                "name": "Chinese lint",
+                "description": "Check Chinese wording in changed text files.",
+                "entry": "scripts/chinese_lint.py",
+                "language": "script",
+                "types": ["text"],
+            }
+            if hooks != [expected]:
+                errors.append("pre-commit hook manifest does not match the supported hook")
     action = ROOT / "action.yml"
     if not action.is_file():
         errors.append("reusable action manifest is missing")
     else:
-        action_text = action.read_text()
+        action_text = action.read_text(encoding="utf-8")
         for value in ("using: composite", "GITHUB_ACTION_PATH/scripts/chinese_lint.py",
-                      '"$CHINESE_LINT_PATH"'):
+                      '"$CHINESE_LINT_PATH"', '"$CHINESE_LINT_FAIL_LEVEL"'):
             if value not in action_text:
                 errors.append(f"incomplete reusable action: {value}")
-    workflow = (ROOT / ".github" / "workflows" / "tests.yml").read_text()
+    workflow = (ROOT / ".github" / "workflows" / "tests.yml").read_text(
+        encoding="utf-8")
     for command in ("shellcheck install.sh", "scripts/test_chinese_lint.py",
                     "scripts/test_install.py", "scripts/test_lexicons.py",
-                    "scripts/test_corpora.py", "scripts/validate_repository.py",
+                    "scripts/test_corpora.py", "scripts/test_integrations.py",
+                    "scripts/validate_repository.py",
                     "sync_lexicons.py --verify", "README.zh-CN.md", "uses: ./"):
         if command not in workflow:
             errors.append(f"CI does not run required check: {command}")
+    corpus_workflow = ROOT / ".github" / "workflows" / "verify-corpora.yml"
+    if not corpus_workflow.is_file():
+        errors.append("scheduled corpus verification workflow is missing")
+    else:
+        corpus_workflow_text = corpus_workflow.read_text(encoding="utf-8")
+        for value in ("workflow_dispatch:", "schedule:",
+                      "scripts/verify_corpora.py", "GITHUB_TOKEN"):
+            if value not in corpus_workflow_text:
+                errors.append(f"corpus workflow is incomplete: {value}")
     if "--exclude 'test_*'" in workflow:
         errors.append("CI excludes test files from the Chinese wording check")
     readmes = {
@@ -439,10 +465,11 @@ def validate_repository(errors, release):
         if not path.is_file():
             errors.append(f"localized README is missing: {filename}")
             continue
-        text = path.read_text()
+        text = path.read_text(encoding="utf-8")
         for required in ("Python 3.11", "scripts/corpus_lookup.py",
                          "scripts/verify_corpora.py", "scripts/test_corpora.py",
-                         "--fix", "pre-commit", "Zakk-LLM/Chinese-skill@main",
+                         "scripts/test_integrations.py",
+                         "--fix", "pre-commit", "Zakk-LLM/Chinese-skill@v1.0.0",
                          locale_target):
             if required not in text:
                 errors.append(f"incomplete localized README {filename}: {required}")
@@ -455,7 +482,7 @@ def validate_repository(errors, release):
             errors.append(f"generated Python artifact: {path.relative_to(ROOT)}")
         if path.is_file():
             try:
-                text = path.read_text()
+                text = path.read_text(encoding="utf-8")
             except (OSError, UnicodeDecodeError):
                 continue
             if re.search(r"/home/[^/\s]+/(?:code/)?Chinese-skill", text):

@@ -2,6 +2,7 @@
 """Regression tests for selective corpus retrieval."""
 
 import json
+import os
 import pathlib
 import runpy
 import subprocess
@@ -22,6 +23,18 @@ def invoke(*arguments):
 
 
 checks = {}
+ascii_environment = os.environ.copy()
+ascii_environment.update({
+    "LC_ALL": "C",
+    "PYTHONCOERCECLOCALE": "0",
+    "PYTHONUTF8": "0",
+})
+ascii_lookup = subprocess.run(
+    [sys.executable, str(TARGET), "ui", "--pattern", "progress",
+     "--locale", "zh-TW"],
+    check=False, capture_output=True, env=ascii_environment)
+checks["corpus lookup uses UTF-8 outside a UTF-8 locale"] = (
+    ascii_lookup.returncode == 0 and "正在".encode() in ascii_lookup.stdout)
 
 verifier = runpy.run_path(str(VERIFIER), run_name="corpus_verifier_test")
 checks["Git blob calculation"] = (
@@ -86,6 +99,7 @@ checks["live contract details"] = (
     contract.returncode == 0
     and contract_data["type"] == "live_contract"
     and contract_data["source"]["checked"]
+    and contract_data["source"]["required_strings"]
 )
 
 unknown = invoke("ui", "--pattern", "unknown")

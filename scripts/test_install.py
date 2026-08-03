@@ -50,6 +50,12 @@ with tempfile.TemporaryDirectory(prefix="chinese-skill-install-") as raw_root:
     first_instruction_text = [path.read_text() for path in instruction_files]
     status = invoke(["--status"], environment)
     assert "link, current" in status.stdout
+    complete_reminder = instruction_files[1].read_text()
+    instruction_files[1].write_text(
+        complete_reminder.replace("<!-- chinese-skill:end -->", ""))
+    incomplete = invoke(["codex", "--status"], environment, expected=1)
+    assert "reminder absent" in incomplete.stdout
+    instruction_files[1].write_text(complete_reminder)
     invoke(["--copy"], environment)
     status = invoke(["--status"], environment)
     assert "copy, current" in status.stdout
@@ -86,6 +92,9 @@ with tempfile.TemporaryDirectory(prefix="chinese-skill-install-") as raw_root:
     sentinel.write_text("keep\n")
     invoke(["claude"], environment, expected=1)
     assert sentinel.read_text() == "keep\n"
+    (unowned / ".chinese-skill-install").write_text("source=/tmp/unrelated\n")
+    invoke(["claude", "--uninstall"], environment, expected=1)
+    assert sentinel.read_text() == "keep\n"
 
     invoke(["--copy", "--link"], environment, expected=2)
     invoke(["--status", "--uninstall"], environment, expected=2)
@@ -96,5 +105,18 @@ with tempfile.TemporaryDirectory(prefix="chinese-skill-empty-") as raw_root:
     environment["CODEX_HOME"] = str(root / "codex")
     invoke(["codex", "--uninstall"], environment)
     assert not (root / "codex").exists()
+
+with tempfile.TemporaryDirectory(prefix="chinese-skill-ascii-") as raw_root:
+    root = pathlib.Path(raw_root)
+    environment = os.environ.copy()
+    environment.update({
+        "CODEX_HOME": str(root / "codex"),
+        "LC_ALL": "C",
+        "PYTHONCOERCECLOCALE": "0",
+        "PYTHONUTF8": "0",
+    })
+    invoke(["codex", "--copy"], environment)
+    assert (root / "codex/skills/chinese-skill/SKILL.md").is_file()
+    invoke(["codex", "--uninstall"], environment)
 
 print("installer tests passed")
