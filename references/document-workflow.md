@@ -85,6 +85,10 @@ ability to verify the result. After repeated revisions, compare section and para
 counts with the earlier draft. Growth requires a new fact, decision, constraint, or
 required example.
 
+Return the document in the requested format. Keep an unresolved fact as a placeholder
+only when that format permits placeholders; otherwise ask for the smallest missing fact.
+Do not append drafting notes, a source diary, or a second summary unless requested.
+
 Source provenance is stored in `writing-sources.json`. Retrieve one pattern when evidence
 is needed instead of loading the full source index:
 

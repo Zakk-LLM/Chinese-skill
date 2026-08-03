@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "skill_name": "chinese-skill",
+  "evaluation_type": "skill-triggering",
+  "description": "Declarative cases for evaluating whether an agent should load chinese-skill before handling a request.",
+  "categories": {
+    "direct": "The request explicitly names the skill or directly requests Chinese writing control.",
+    "indirect": "The request requires Chinese writing control without naming the skill.",
+    "incomplete": "The request is missing source material or facts but still requires the skill before clarification.",
+    "non-trigger": "The requested work does not create, revise, or review Chinese text."
+  },
+  "cases": [
+    {
+      "id": "direct-zh-tw-rewrite",
+      "category": "direct",
+      "prompt_locale": "zh-TW",
+      "prompt": "請使用 chinese-skill 將這則通知改為簡潔的繁體中文：同步失敗，請檢查憑證。",
+      "should_trigger": true,
+      "expected_behavior": "Load the skill because the request names it and asks for a Traditional Chinese rewrite."
+    },
+    {
+      "id": "direct-zh-tw-pr",
+      "category": "direct",
+      "prompt_locale": "zh-TW",
+      "prompt": "請依中文寫作規範縮短這段 PR 說明：舊格式無法表示空值，因此新增 nullable 欄位。",
+      "should_trigger": true,
+      "expected_behavior": "Load the skill because the request directly asks for governed Chinese PR writing."
+    },
+    {
+      "id": "direct-en-comment-review",
+      "category": "direct",
+      "prompt_locale": "en",
+      "prompt": "Use chinese-skill to review the Chinese comments in src/cache.py.",
+      "should_trigger": true,
+      "expected_behavior": "Load the skill because it is named for a Chinese source comment review."
+    },
+    {
+      "id": "indirect-zh-cn-alert",
+      "category": "indirect",
+      "prompt_locale": "zh-CN",
+      "prompt": "将这段错误消息改为专业简体中文：连接失败，请检查凭证。",
+      "should_trigger": true,
+      "expected_behavior": "Load the skill because the request requires professional Simplified Chinese alert copy."
+    },
+    {
+      "id": "indirect-zh-tw-comments",
+      "category": "indirect",
+      "prompt_locale": "zh-TW",
+      "prompt": "刪除程式碼中解釋賦值操作的中文註釋，只保留相容性限制。",
+      "should_trigger": true,
+      "expected_behavior": "Load the skill because the request audits and revises Chinese source comments."
+    },
+    {
+      "id": "indirect-en-ui-copy",
+      "category": "indirect",
+      "prompt_locale": "en",
+      "prompt": "Write concise Traditional Chinese labels for a permanent account deletion dialog.",
+      "should_trigger": true,
+      "expected_behavior": "Load the skill because the requested output is professional Chinese UI copy."
+    },
+    {
+      "id": "incomplete-zh-tw-polish",
+      "category": "incomplete",
+      "prompt_locale": "zh-TW",
+      "prompt": "請潤飾這段中文。",
+      "should_trigger": true,
+      "expected_behavior": "Load the skill, then request the missing source passage without inventing content."
+    },
+    {
+      "id": "incomplete-zh-tw-pr",
+      "category": "incomplete",
+      "prompt_locale": "zh-TW",
+      "prompt": "請將這份 PR 說明改得更專業。",
+      "should_trigger": true,
+      "expected_behavior": "Load the skill, then request the missing PR text and any facts required by its format."
+    },
+    {
+      "id": "incomplete-en-translation",
+      "category": "incomplete",
+      "prompt_locale": "en",
+      "prompt": "Translate the release note into professional Chinese.",
+      "should_trigger": true,
+      "expected_behavior": "Load the skill, then request the missing release note and target Chinese locale."
+    },
+    {
+      "id": "non-trigger-zh-tw-code-only",
+      "category": "non-trigger",
+      "prompt_locale": "zh-TW",
+      "prompt": "以 Python 實作合併排序，只輸出程式碼。",
+      "should_trigger": false,
+      "expected_behavior": "Do not load the skill because the requested output is code without Chinese prose or comments."
+    },
+    {
+      "id": "non-trigger-en-json",
+      "category": "non-trigger",
+      "prompt_locale": "en",
+      "prompt": "Return a minified JSON object with keys id and status.",
+      "should_trigger": false,
+      "expected_behavior": "Do not load the skill because the request produces structured data without Chinese text."
+    },
+    {
+      "id": "non-trigger-en-image",
+      "category": "non-trigger",
+      "prompt_locale": "en",
+      "prompt": "Crop the supplied PNG to 64 by 64 pixels.",
+      "should_trigger": false,
+      "expected_behavior": "Do not load the skill because the request is an image operation with no Chinese writing task."
+    }
+  ]
+}

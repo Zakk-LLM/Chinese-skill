@@ -11,6 +11,11 @@ For gentoo-zh overlay, read the live `README.md` and the target locale file. The
 project-specific entry points and contribution conventions. Do not treat their wording
 as a universal template or include them in the historical cutoff.
 
+If the repository does not establish the audience, supported environment, primary
+installation path, or shortest supported command and the omission would make the README
+unusable, ask for the smallest missing fact. Do not infer compatibility, maintenance
+status, or commands from the historical corpus.
+
 ## Write for tasks
 
 Open with one sentence that names the project, its type, and its primary purpose. Then
@@ -100,3 +105,6 @@ link text, inconsistent list punctuation, deterministic Chinese typography, and 
 that change form within one document. `--fix` changes only deterministic typography and
 heading punctuation. It cannot verify commands, compatibility, audience coverage,
 missing prerequisites, list grammar, or whether a section is useful.
+
+Produce either the requested README or the requested defect list. Do not combine a
+paste-ready README with review commentary unless the user requests both.

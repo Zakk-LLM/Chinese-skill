@@ -288,6 +288,46 @@ with tempfile.TemporaryDirectory() as base:
     check("translated construction", any("direct action instead" in item[1]
                                          for item in mt_findings))
     check("redundant passive", any("passive marker" in item[1] for item in mt_findings))
+    artifact_cases = {
+        "zh-CN": "artifact_location_simplified",
+        "zh-TW": "artifact_location_traditional",
+    }
+    for locale, fixture in artifact_cases.items():
+        artifact_location = root / f"artifact-location-{locale}.txt"
+        artifact_location.write_text(FIXTURES[fixture] + "\n")
+        check(f"{locale} translated artifact-location order", any(
+            item.code == "wording.artifact-location-order"
+            for item in strict_lint_file(
+                artifact_location, "prose", "general", None, 280, locale)))
+    artifact_location_code = root / "artifact-location-code-zh-CN.md"
+    artifact_location_code.write_text(
+        FIXTURES["artifact_location_code_simplified"] + "\n")
+    check("translated artifact location before inline code", any(
+        item.code == "wording.artifact-location-order"
+        for item in strict_lint_file(
+            artifact_location_code, "prose", "general", None, 280, "zh-CN")))
+    for locale, fixture in {
+            "zh-CN": "artifact_location_clean_simplified",
+            "zh-TW": "artifact_location_clean_traditional",
+    }.items():
+        artifact_location = root / f"artifact-location-clean-{locale}.txt"
+        artifact_location.write_text(FIXTURES[fixture] + "\n")
+        check(f"{locale} direct artifact location", not any(
+            item.code == "wording.artifact-location-order"
+            for item in strict_lint_file(
+                artifact_location, "prose", "general", None, 280, locale)))
+    artifact_ellipsis = root / "artifact-location-ellipsis.txt"
+    artifact_ellipsis.write_text(FIXTURES["artifact_location_ellipsis"] + "\n")
+    check("ordinary location ellipsis", not any(
+        item.code == "wording.artifact-location-order"
+        for item in strict_lint_file(
+            artifact_ellipsis, "prose", "general", None, 280)))
+    artifact_parallel = root / "artifact-location-parallel.txt"
+    artifact_parallel.write_text(FIXTURES["artifact_location_parallel"] + "\n")
+    check("parallel artifact locations", not any(
+        item.code == "wording.artifact-location-order"
+        for item in strict_lint_file(
+            artifact_parallel, "prose", "general", None, 280, "zh-TW")))
     aspect = root / "aspect.txt"
     aspect.write_text(FIXTURES["redundant_aspect"] + "\n")
     check("redundant aspect marker", any("aspect marker" in item[1]

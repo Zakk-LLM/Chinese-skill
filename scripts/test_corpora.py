@@ -139,6 +139,33 @@ checks["writing source is pinned"] = (
     == "8c2fbaa554f514b96dc828848b6c3e6c80479fe4"
 )
 
+release_list = invoke("release", "--list")
+release_listed = json.loads(release_list.stdout)
+checks["release pattern index"] = (
+    release_list.returncode == 0
+    and len(release_listed["patterns"]) == 6
+    and all(set(item) == {"id", "group", "origin"}
+            for item in release_listed["patterns"])
+)
+
+upgrade_first = invoke("release", "--pattern", "upgrade-first")
+upgrade_first_data = json.loads(upgrade_first.stdout)
+checks["release pattern evidence"] = (
+    upgrade_first.returncode == 0
+    and upgrade_first_data["pattern"]["origin"] == "corpus"
+    and {item["id"] for item in upgrade_first_data["sources"]}
+    == set(upgrade_first_data["pattern"]["evidence"])
+    and len(upgrade_first.stdout) < 5000
+)
+
+release_source = invoke("release", "--source", "systemd-257-2024")
+release_source_data = json.loads(release_source.stdout)
+checks["release source is pinned"] = (
+    release_source.returncode == 0
+    and release_source_data["source"]["blob"]
+    == "e3b407a66a99b4a91fde3049624b9bc839e8af9a"
+)
+
 failed = False
 for name, passed in checks.items():
     print(f"{'PASS' if passed else 'FAIL'} {name}")

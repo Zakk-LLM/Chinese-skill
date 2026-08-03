@@ -72,6 +72,11 @@ both as review prompts: quotation, syntax, and domain context can still justify 
 
 - Identify the source statement's fact, actor, action, condition, and effect before writing Chinese.
 - Rebuild the sentence in natural Chinese order. Do not preserve English syntax merely because it is grammatical.
+- When naming an artifact and its storage location, put a meaningful quantity before
+  the artifact (`一份文件位於…`) or state the named artifact and path directly
+  (`純文字版本位於…`). Do not retain a translated order such as `純文字一份在…`.
+  Confirm what the artifact denotes before rewriting; a file, list, copy, and format
+  are not interchangeable.
 - Use the term accepted by the repository, platform, or standard. Do not create a Chinese equivalent for an identifier or established technical name.
 - Remove source-language filler, duplicated subjects, nominalized verbs, unnecessary passive voice, and translated metaphors.
 - Do not mix English words into Chinese for emphasis. Retain English only for identifiers, commands, product names, protocol names, or established technical terms.

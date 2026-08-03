@@ -1,0 +1,146 @@
+{
+  "schema": 1,
+  "verified": "2026-08-04",
+  "method": "Records independently phrased structural observations from pinned first-party release notes and companion known-issue pages. No source prose is copied.",
+  "selection": [
+    "The release notes are maintained in the project's official repository and pinned to a reproducible commit and Git blob.",
+    "The sources represent different organizations and project types rather than one foundation or release tool.",
+    "Only reusable document structure is retained; project-specific wording, change lists, and contributor data remain upstream."
+  ],
+  "sources": [
+    {
+      "id": "kubernetes-1-34-2026",
+      "project_type": "container orchestration platform",
+      "repository": "kubernetes/kubernetes",
+      "path": "CHANGELOG/CHANGELOG-1.34.md",
+      "commit": "5db1b8dcda3cf3054a37e5efe04c6cd7fe18bb05",
+      "blob": "40eb7bd8fe379c88aa6f1da538b65a55c45dd2b5",
+      "date": "2026-07-22",
+      "url": "https://github.com/kubernetes/kubernetes/blob/5db1b8dcda3cf3054a37e5efe04c6cd7fe18bb05/CHANGELOG/CHANGELOG-1.34.md",
+      "release": "1.34 series through v1.34.10",
+      "license": "Apache-2.0",
+      "use_for": ["urgent upgrade notes before ordinary changes", "change-kind sections", "download identity and integrity metadata"],
+      "avoid": ["generated table-of-contents bulk", "pull-request inventories", "contributor handles in reader-facing summaries"]
+    },
+    {
+      "id": "curl-8-14-1-2025",
+      "project_type": "network transfer library and command-line tool",
+      "repository": "curl/curl",
+      "path": "RELEASE-NOTES",
+      "commit": "fdb8a789d2b446b77bd7cdd2eff95f6cbc814cf4",
+      "blob": "44078c662190661c04ec9ab819138b906a38322b",
+      "date": "2025-06-04",
+      "url": "https://github.com/curl/curl/blob/fdb8a789d2b446b77bd7cdd2eff95f6cbc814cf4/RELEASE-NOTES",
+      "release": "8.14.1",
+      "license": "curl",
+      "use_for": ["compact release identity", "separation of changes, fixes, known bugs, and planned removals", "routing detailed history to maintained references"],
+      "avoid": ["project statistics without a reader decision", "complete contributor lists", "unfiltered bug-fix inventories"]
+    },
+    {
+      "id": "django-5-2-2025",
+      "project_type": "web application framework",
+      "repository": "django/django",
+      "path": "docs/releases/5.2.txt",
+      "commit": "9e7cc2b628fe8fd3895986af9b7fc9525034c1b0",
+      "blob": "32a0b35951408ecf17cad55bbbd9d46c0e41830b",
+      "date": "2025-04-02",
+      "url": "https://github.com/django/django/blob/9e7cc2b628fe8fd3895986af9b7fc9525034c1b0/docs/releases/5.2.txt",
+      "release": "5.2",
+      "license": "BSD-3-Clause",
+      "use_for": ["support and runtime compatibility before features", "major and minor features by subsystem", "separate incompatible and deprecated behavior"],
+      "avoid": ["framework-specific cross-reference syntax", "examples unrelated to an upgrade decision", "restating complete reference documentation"]
+    },
+    {
+      "id": "rust-1-88-0-2025",
+      "project_type": "programming language and toolchain",
+      "repository": "rust-lang/rust",
+      "path": "RELEASES.md",
+      "commit": "6b00bc3880198600130e1cf62b8f8a93494488cc",
+      "blob": "8a6bb214d2d523e6138414b3ccab9d47206b3633",
+      "date": "2025-06-23",
+      "url": "https://github.com/rust-lang/rust/blob/6b00bc3880198600130e1cf62b8f8a93494488cc/RELEASES.md",
+      "release": "1.88.0",
+      "license": "MIT OR Apache-2.0",
+      "use_for": ["version and date identity", "stable subsystem order", "compatibility notes separated from new capabilities"],
+      "avoid": ["duplicating API indexes", "internal changes in an end-user summary", "links as substitutes for impact"]
+    },
+    {
+      "id": "systemd-257-2024",
+      "project_type": "system and service manager",
+      "repository": "systemd/systemd",
+      "path": "NEWS",
+      "commit": "70bae7648f2c18010187c9cf20093155eaa26029",
+      "blob": "e3b407a66a99b4a91fde3049624b9bc839e8af9a",
+      "date": "2024-12-10",
+      "url": "https://github.com/systemd/systemd/blob/70bae7648f2c18010187c9cf20093155eaa26029/NEWS",
+      "release": "257",
+      "license": "LGPL-2.1-or-later; some repository files use other licenses",
+      "use_for": ["incompatible changes before new features", "future removals distinct from current behavior", "subsystem-oriented sections"],
+      "avoid": ["large undifferentiated feature inventories", "speculative migration advice", "source-specific narrative detail"]
+    },
+    {
+      "id": "dotnet-9-known-issues-2026",
+      "project_type": "managed application platform",
+      "repository": "dotnet/core",
+      "path": "release-notes/9.0/known-issues.md",
+      "commit": "a65df2b51ec1ad8407d28397546e4725375c5519",
+      "blob": "35f116543dfe36a13fb8ad8b0f54d906a53dc3c4",
+      "date": "2026-08-03",
+      "url": "https://github.com/dotnet/core/blob/a65df2b51ec1ad8407d28397546e4725375c5519/release-notes/9.0/known-issues.md",
+      "release": ".NET 9 known issues",
+      "license": "MIT",
+      "use_for": ["known issues separated from release changes", "affected version and environment", "verified workaround and upstream issue routing"],
+      "avoid": ["unverified recovery actions", "stale resolution promises", "long diagnostic transcripts when a stable error identifier exists"]
+    }
+  ],
+  "patterns": [
+    {
+      "id": "release-contract",
+      "origin": "corpus",
+      "evidence": ["curl-8-14-1-2025", "django-5-2-2025", "rust-1-88-0-2025"],
+      "use_when": "Opening a release announcement or release-notes document",
+      "shape": "Identify the project and version, then state the release scope or support status needed to interpret the changes.",
+      "required": ["project", "version", "release scope"]
+    },
+    {
+      "id": "upgrade-first",
+      "origin": "corpus",
+      "evidence": ["kubernetes-1-34-2026", "django-5-2-2025", "systemd-257-2024"],
+      "use_when": "A release changes compatibility, support, configuration, or required operator action",
+      "shape": "Place the affected scope, incompatible behavior, and verified upgrade action before general features.",
+      "required": ["affected scope", "behavioral boundary", "required action"]
+    },
+    {
+      "id": "change-classification",
+      "origin": "corpus",
+      "evidence": ["kubernetes-1-34-2026", "django-5-2-2025", "rust-1-88-0-2025", "systemd-257-2024"],
+      "use_when": "A release has enough independent changes to require sections",
+      "shape": "Group changes by reader decision, change kind, or stable subsystem; do not reproduce commit chronology.",
+      "required": ["classification rule", "parallel section names", "independent entries"]
+    },
+    {
+      "id": "change-entry",
+      "origin": "corpus",
+      "evidence": ["kubernetes-1-34-2026", "curl-8-14-1-2025", "rust-1-88-0-2025"],
+      "use_when": "Summarizing one user-visible feature, correction, or compatibility change",
+      "shape": "Name the affected component and observable behavior in one entry; retain an issue or pull-request link only for traceability.",
+      "required": ["affected component", "observable change"]
+    },
+    {
+      "id": "deprecation-contract",
+      "origin": "corpus",
+      "evidence": ["curl-8-14-1-2025", "django-5-2-2025", "systemd-257-2024"],
+      "use_when": "A feature is deprecated, scheduled for removal, or already incompatible",
+      "shape": "Distinguish current behavior from future removal and state the affected scope, replacement, and removal version or date only when verified.",
+      "required": ["lifecycle state", "affected scope", "verified timing or boundary"]
+    },
+    {
+      "id": "known-issue-route",
+      "origin": "corpus",
+      "evidence": ["curl-8-14-1-2025", "dotnet-9-known-issues-2026"],
+      "use_when": "A release has unresolved limitations or a maintained external issue list",
+      "shape": "Separate unresolved limitations from completed fixes, state the affected scope, and link the maintained issue source instead of copying its complete history.",
+      "required": ["unresolved state", "affected scope", "maintained source"]
+    }
+  ]
+}

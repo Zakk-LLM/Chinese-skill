@@ -395,6 +395,76 @@ def validate_writing_sources(errors):
             errors.append(f"empty writing pattern: {pattern['id']}")
 
 
+def validate_release_corpus(errors):
+    data = load_json("references/release-corpus.json")
+    if data.get("schema") != 1:
+        errors.append("unsupported release corpus schema")
+    if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", data.get("verified", "")):
+        errors.append("release corpus has no valid verification date")
+    selection = data.get("selection", [])
+    if (not data.get("method") or not selection
+            or not all(isinstance(value, str) and value for value in selection)):
+        errors.append("release corpus has no selection method")
+
+    sources = data.get("sources", [])
+    identifiers = [item.get("id") for item in sources]
+    if not sources or len(identifiers) != len(set(identifiers)):
+        errors.append("release corpus source ids must be present and unique")
+    if not 4 <= len(sources) <= 6:
+        errors.append("release corpus must contain four to six sources")
+    project_types = []
+    repositories = []
+    for source in sources:
+        required = {"id", "project_type", "repository", "path", "commit", "blob",
+                    "date", "url", "release", "license", "use_for", "avoid"}
+        if set(source) != required:
+            errors.append(f"incomplete release corpus source: {source.get('id')}")
+            continue
+        project_types.append(source["project_type"])
+        repositories.append(source["repository"])
+        if not re.fullmatch(r"[0-9a-f]{40}", source["commit"]):
+            errors.append(f"release corpus source is not pinned: {source['id']}")
+        if not re.fullmatch(r"[0-9a-f]{40}", source["blob"]):
+            errors.append(f"release corpus source has no valid blob: {source['id']}")
+        if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", source["date"]):
+            errors.append(f"release corpus source has no valid date: {source['id']}")
+        expected_url = (f"https://github.com/{source['repository']}/blob/"
+                        f"{source['commit']}/{source['path']}")
+        if source["url"] != expected_url:
+            errors.append(f"release corpus URL is not reproducible: {source['id']}")
+        if (not source["project_type"] or not source["release"]
+                or not source["license"] or not source["use_for"]
+                or not source["avoid"]
+                or not all(isinstance(value, str) and value
+                           for key in ("use_for", "avoid") for value in source[key])):
+            errors.append(f"release corpus source has empty observations: {source['id']}")
+    if len(project_types) != len(set(project_types)):
+        errors.append("release corpus project types must be distinct")
+    owners = [repository.split("/", 1)[0] for repository in repositories]
+    if len(owners) != len(set(owners)):
+        errors.append("release corpus repository owners must be distinct")
+
+    patterns = data.get("patterns", [])
+    pattern_ids = [item.get("id") for item in patterns]
+    if (not patterns or len(pattern_ids) != len(set(pattern_ids))
+            or not all(isinstance(identifier, str)
+                       and re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", identifier)
+                       for identifier in pattern_ids)):
+        errors.append("release corpus pattern ids must be present and unique")
+    for pattern in patterns:
+        required = {"id", "origin", "evidence", "use_when", "shape", "required"}
+        if set(pattern) != required:
+            errors.append(f"incomplete release corpus pattern: {pattern.get('id')}")
+            continue
+        evidence = pattern["evidence"]
+        if (pattern["origin"] != "corpus" or len(evidence) < 2
+                or len(evidence) != len(set(evidence))
+                or set(evidence) - set(identifiers)):
+            errors.append(f"invalid release corpus evidence: {pattern['id']}")
+        if not pattern["use_when"] or not pattern["shape"] or not pattern["required"]:
+            errors.append(f"empty release corpus pattern: {pattern['id']}")
+
+
 def validate_evals(errors):
     data = load_json("evals/evals.json")
     if data.get("skill_name") != "chinese-skill":
@@ -416,6 +486,65 @@ def validate_evals(errors):
         if (not expectations or len(expectations) != len(set(expectations))
                 or not all(isinstance(value, str) and value for value in expectations)):
             errors.append(f"invalid writing eval expectations: {item['id']}")
+
+    trigger_path = ROOT / "evals" / "trigger-evals.json"
+    if not trigger_path.is_file():
+        errors.append("evals/trigger-evals.json is missing")
+        return
+    trigger_data = json.loads(trigger_path.read_text(encoding="utf-8"))
+    expected_top_level = {"schema_version", "skill_name", "evaluation_type",
+                          "description", "categories", "cases"}
+    if set(trigger_data) != expected_top_level:
+        errors.append("trigger eval top-level fields are incomplete")
+    if (trigger_data.get("schema_version") != 1
+            or trigger_data.get("skill_name") != "chinese-skill"
+            or trigger_data.get("evaluation_type") != "skill-triggering"):
+        errors.append("trigger eval identity is invalid")
+    categories = trigger_data.get("categories", {})
+    expected_categories = {"direct", "indirect", "incomplete", "non-trigger"}
+    if (set(categories) != expected_categories
+            or not all(isinstance(value, str) and value.strip()
+                       for value in categories.values())):
+        errors.append("trigger eval categories are incomplete")
+    cases = trigger_data.get("cases", [])
+    expected_case_fields = {"id", "category", "prompt_locale", "prompt",
+                            "should_trigger", "expected_behavior"}
+    trigger_ids = [item.get("id") for item in cases]
+    prompts = [item.get("prompt") for item in cases]
+    if (not cases or len(trigger_ids) != len(set(trigger_ids))
+            or len(prompts) != len(set(prompts))):
+        errors.append("trigger eval cases must be present and unique")
+    for item in cases:
+        identifier = item.get("id")
+        category = item.get("category")
+        if set(item) != expected_case_fields:
+            errors.append(f"incomplete trigger eval: {identifier}")
+            continue
+        if (not isinstance(identifier, str)
+                or not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", identifier)
+                or not identifier.startswith(f"{category}-")):
+            errors.append(f"invalid trigger eval id: {identifier!r}")
+        if category not in expected_categories:
+            errors.append(f"invalid trigger eval category: {identifier}")
+        if item["prompt_locale"] not in {"en", "zh-CN", "zh-TW"}:
+            errors.append(f"invalid trigger eval locale: {identifier}")
+        if (not isinstance(item["prompt"], str) or not item["prompt"].strip()
+                or len(item["prompt"]) > 160
+                or not isinstance(item["expected_behavior"], str)
+                or not item["expected_behavior"].strip()):
+            errors.append(f"invalid trigger eval text: {identifier}")
+        expected_trigger = category != "non-trigger"
+        if (not isinstance(item["should_trigger"], bool)
+                or item["should_trigger"] != expected_trigger):
+            errors.append(f"invalid trigger eval expectation: {identifier}")
+    counts = {category: sum(item.get("category") == category for item in cases)
+              for category in expected_categories}
+    if any(count < 3 for count in counts.values()):
+        errors.append("trigger eval categories need at least three cases")
+    positive_locales = {item.get("prompt_locale") for item in cases
+                        if item.get("should_trigger") is True}
+    if not {"en", "zh-CN", "zh-TW"} <= positive_locales:
+        errors.append("trigger evals do not cover all supported prompt scripts")
 
 
 def validate_sources(errors):
@@ -531,7 +660,8 @@ def validate_repository(errors, release):
         encoding="utf-8")
     for command in ("shellcheck install.sh", "scripts/test_chinese_lint.py",
                     "scripts/test_install.py", "scripts/test_lexicons.py",
-                    "scripts/test_corpora.py", "scripts/test_integrations.py",
+                    "scripts/test_corpora.py", "scripts/test_evals.py",
+                    "scripts/test_integrations.py",
                     "scripts/validate_repository.py",
                     "sync_lexicons.py --verify", "README.zh-CN.md", "uses: ./"):
         if command not in workflow:
@@ -597,6 +727,7 @@ def main():
     validate_readme_corpus(errors)
     validate_ui_corpus(errors)
     validate_writing_sources(errors)
+    validate_release_corpus(errors)
     validate_evals(errors)
     validate_sources(errors)
     validate_repository(errors, args.release)

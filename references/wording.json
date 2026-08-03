@@ -85,6 +85,11 @@
       "message": "drop the redundant aspect marker"
     },
     {
+      "id": "artifact-location-order",
+      "pattern": "(?:文檔|文档|檔案|档案|文件|純文字|純文本|纯文本|清單|清单|列表|副本|報告|报告)[ \\t]*一(?:份|個|个)[ \\t]*(?:在|位於|位于)[ \\t]+?(?![^，。！？\\n]{0,80}[，,][ \\t]*(?:(?:另(?:一)?|其(?:他|餘|余)(?:一)?)(?:份|個|个)|一(?:份|個|个))[ \\t]*(?:在|位於|位于))(?=(?:[/~]|\\.{1,2}[\\\\/]|[A-Za-z]:[\\\\/]|[^\\s，。；：！？/\\\\]+\\.[A-Za-z0-9]{1,10}(?=[\\s，。；：！？]|$)|[ \\t]{2,}(?=[，。；：！？])))",
+      "message": "confirm what the artifact denotes, then state its name and storage path directly"
+    },
+    {
       "id": "vague-improvement",
       "pattern": "(?:(?:大大|極大|极大|顯著|显著|有效)(?:地)?(?:提升|提高|改善|優化|优化)|(?:提升|提高|改善|優化|优化)(?:了)?(?:穩定性|稳定性|可靠性|可用性))(?![^，。；：\\n]{0,20}(?:\\d+(?:\\.\\d+)?%|[一二三四五六七八九十]+倍))",
       "message": "state the measured change instead of a vague improvement claim"

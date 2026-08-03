@@ -13,6 +13,7 @@ import urllib.request
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 CONFIGS = (
     ROOT / "references" / "readme-corpus.json",
+    ROOT / "references" / "release-corpus.json",
     ROOT / "references" / "ui-corpus.json",
     ROOT / "references" / "writing-sources.json",
 )

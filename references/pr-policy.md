@@ -37,6 +37,28 @@ When revising an existing draft, do not increase its character, block, heading, 
 list-item count unless the revision adds a required fact that was absent. Replacing
 colloquial or imprecise wording is not permission to add an explanation.
 
+## Write releases as publishable documents
+
+Confirm the version, tag, audience, user-visible changes, compatibility boundary,
+breaking changes, migration action, and known limitations from repository evidence.
+Omit a field when it does not apply; ask when an unknown field would make the release
+misleading. Do not infer support, compatibility, security impact, deprecation, test
+coverage, or upgrade safety from the diff or commit history.
+
+Reuse feature names and technical terms already established by the repository README,
+CLI help, interface text, and diff. Do not translate an English category into a new
+Chinese label when the repository already has a Chinese name for it.
+
+Use the title for the version and release identity. In the body, lead with the change that
+affects adoption or required action. Group independent changes by reader task only when
+the release contains enough material to justify headings. Do not reproduce the commit
+log, narrate the release process, or append a passing-test report.
+
+Return the requested release title or body without drafting notes. Before an external
+publication, apply the same final writing check used for other user-visible Chinese. If a
+concrete structure is still needed, run `scripts/corpus_lookup.py release --list`, then
+retrieve one pattern or one pinned source; do not load the complete release corpus.
+
 ## Never sign as an AI
 
 Do not add `Generated with`, `AI-Generated-By`, `Claude-Session`, a `Co-authored-by` naming a

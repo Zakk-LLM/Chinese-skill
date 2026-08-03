@@ -10,6 +10,7 @@ import sys
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 CORPORA = {
     "readme": ROOT / "references" / "readme-corpus.json",
+    "release": ROOT / "references" / "release-corpus.json",
     "ui": ROOT / "references" / "ui-corpus.json",
     "writing": ROOT / "references" / "writing-sources.json",
 }
@@ -39,7 +40,7 @@ def pattern_result(name, data, identifier, locale):
     for source_id in pattern["evidence"]:
         source = by_id[source_id]
         summary = {"id": source_id, "repository": source["repository"]}
-        if name in {"readme", "writing"}:
+        if name in {"readme", "release", "writing"}:
             summary["url"] = source["url"]
         else:
             files = [{"locale": entry["locale"], "url": entry["url"]}

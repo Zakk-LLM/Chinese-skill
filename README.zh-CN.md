@@ -38,7 +38,7 @@ cd Chinese-skill
 
 ## 使用
 
-代理工具应先读取 [SKILL.md](SKILL.md)。以下命令可检查文件、目录或标准输入：
+代理工具应先读取 [SKILL.md](SKILL.md)。普通用户应直接执行工具，必要时先查阅 `--help`；只有维护或调试脚本时才阅读其源代码。以下命令可检查文件、目录或标准输入：
 
 ```bash
 python3 scripts/chinese_lint.py README.md docs/
@@ -74,13 +74,13 @@ pre-commit 用户可引用本仓库的 `chinese-lint` hook。GitHub Actions 可�
 ```yaml
 repos:
   - repo: https://github.com/Zakk-LLM/Chinese-skill
-    rev: v1.1.0
+    rev: v1.2.0
     hooks:
       - id: chinese-lint
 ```
 
 ```yaml
-- uses: Zakk-LLM/Chinese-skill@v1.1.0
+- uses: Zakk-LLM/Chinese-skill@v1.2.0
   with:
     path: docs
     style: technical
@@ -99,9 +99,11 @@ repos:
 
 项目规范与近期示例决定格式、语言及术语。格式选择会改变结果而现有资料不足时，应先向用户确认。
 
+各任务规则分别说明必要输入、交付形式、禁止推断事项及停止条件。技能会根据任务加载相应规则，用户无须手动指定。
+
 ## 语料与词典
 
-[README 语料](references/readme-corpus.json)记录六个中文开源项目在 2019 年底前的 README 结构。[UI 语料](references/ui-corpus.json)记录六个大型开源项目的固定版本中文词库。[写作来源](references/writing-sources.json)记录技术写作指南及相似技能中可移植的工作流程。
+[README 语料](references/readme-corpus.json)记录六个中文开源项目在 2019 年底前的 README 结构。[UI 语料](references/ui-corpus.json)记录六个大型开源项目的固定版本中文词库。[写作来源](references/writing-sources.json)记录技术写作指南及相似技能中可移植的工作流程。[发布语料](references/release-corpus.json)记录大型非 AI 开源项目的发布说明来源与抽象结构。
 
 固定文件均记录 commit 与 Git blob。由来源归纳的规则至少由两个来源支持；内部规则另行标示，不宣称由来源直接得出。来源索引不复制原文，也不将来源中的口语、宣传语或强制流程列为通用规范。
 
@@ -110,9 +112,11 @@ repos:
 ```bash
 python3 scripts/corpus_lookup.py readme --list
 python3 scripts/corpus_lookup.py writing --list
+python3 scripts/corpus_lookup.py release --list
 python3 scripts/corpus_lookup.py readme --pattern identity
 python3 scripts/corpus_lookup.py ui --pattern failure --locale zh-CN
 python3 scripts/corpus_lookup.py writing --pattern reader-test
+python3 scripts/corpus_lookup.py release --pattern release-contract
 python3 scripts/corpus_lookup.py readme --source gogs-2019
 python3 scripts/verify_corpora.py
 ```
@@ -120,6 +124,8 @@ python3 scripts/verify_corpora.py
 `verify_corpora.py` 需要网络连接，用于核对来源路径、commit 日期与 Git blob。GitHub 达到速率限制时，程序会要求设置 `GITHUB_TOKEN` 并以状态码 2 结束，不会误报为内容不一致。
 
 [写作评测](evals/evals.json)保存文章、通知、PR、注释、UI 及操作指南的固定测试用例。修改技能时应使用相同提示比较修改前后输出；主观文风由盲测审核，客观要求按评测条件核对。
+
+[触发评测](evals/trigger-evals.json)保存直接触发、间接触发、信息不足及不应触发的案例。`scripts/test_evals.py` 是本地结构测试，只验证数据结构与类型覆盖，不执行模型评测。
 
 内置词典包括国家教育研究院两岸对照计算机名词、OpenCC、MediaWiki 地区词转换表、CC-CEDICT、Unihan、McBopomofo、jieba、THUOCL 与 Rime essay。萌娘百科及中文维基词库采用可选安装，不随项目发布。
 
@@ -149,6 +155,7 @@ python3 scripts/test_chinese_lint.py
 python3 scripts/test_install.py
 python3 scripts/test_lexicons.py
 python3 scripts/test_corpora.py
+python3 scripts/test_evals.py
 python3 scripts/test_integrations.py
 python3 scripts/sync_lexicons.py --verify
 python3 scripts/validate_repository.py --release

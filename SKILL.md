@@ -1,6 +1,6 @@
 ---
 name: chinese-skill
-description: Enforce concise, professional Chinese across articles, pasted text, chat, README files, documentation, UI copy, alerts, logs, tests, source code, comments, reviews, commits, and pull requests. Use when Claude, Codex, or OpenCode writes, rewrites, polishes, improves, translates, reviews, or audits Chinese; when producing technical or professional articles; when text may contain grammatical errors, literal or machine-like translation, formulaic AI wording, emoji, weak computing, programming, Linux, or Gentoo terminology, colloquial wording, invented terms, mixed languages or locales, missing causality, complex sentences, obvious comments, repetition, or excessive detail; and whenever preparing Chinese PR or review text for gentoo-zh repositories.
+description: Enforce concise, professional Chinese across articles, pasted text, chat, README files, documentation, UI copy, alerts, logs, tests, source code, comments, reviews, commits, pull requests, release notes, and release announcements. Use when Claude, Codex, or OpenCode writes, rewrites, polishes, improves, translates, reviews, or audits Chinese; when producing technical or professional articles; when text may contain grammatical errors, literal or machine-like translation, formulaic AI wording, emoji, weak computing, programming, Linux, or Gentoo terminology, colloquial wording, invented terms, mixed languages or locales, missing causality, complex sentences, obvious comments, repetition, or excessive detail; and whenever preparing Chinese PR or review text for gentoo-zh repositories.
 ---
 
 # Chinese Writing Control
@@ -76,7 +76,9 @@ Keep context use proportional to the task:
 1. Use this file for the core workflow.
 2. Read only the one task policy named below. Read a second policy only when the task
    crosses both domains.
-3. Do not open a corpus JSON file or lexicon manifest by default. Retrieve one pattern or
+3. Use a helper through its documented command-line interface. Run `--help` when the
+   invocation is unclear; read the script source only when maintaining or debugging it.
+4. Do not open a corpus JSON file or lexicon manifest by default. Retrieve one pattern or
    one source with the lookup scripts. Read a complete data file only when maintaining or
    validating that file.
 
@@ -100,8 +102,10 @@ When maintaining corpus metadata, run `scripts/verify_corpora.py` and
 - For terminology, localization, Gentoo, Linux, or disputed wording, read
   [references/lexicon-policy.md](references/lexicon-policy.md), then use
   `scripts/lexicon_lookup.py` for the disputed term. Do not load a complete dictionary.
-- For commits, PRs, reviews, issue replies, or release notes, read
-  [references/pr-policy.md](references/pr-policy.md).
+- For commits, PRs, reviews, issue replies, release notes, or release announcements, read
+  [references/pr-policy.md](references/pr-policy.md). If a release needs a concrete
+  structure, run `scripts/corpus_lookup.py release --list`, then retrieve one pattern with
+  `--pattern`.
 - For gentoo-zh overlay work, read the live repository `AGENTS.md`, then
   [references/overlay-policy.md](references/overlay-policy.md). The live file wins.
 

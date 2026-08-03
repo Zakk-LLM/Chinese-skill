@@ -10,6 +10,11 @@ name. The same sentence does not work for every surface.
 Preserve message keys, placeholders, markup tokens, keyboard accelerators, shortcuts,
 product names, and stable identifiers. Confirm the available action before promising it.
 
+If an unknown surface, interface state, available action, placeholder meaning, character
+budget, or target locale would change valid wording, ask for the smallest missing fact.
+Otherwise return the requested strings in their existing key order or the requested
+order. Do not add alternatives or commentary to paste-ready copy unless requested.
+
 ## Use the shortest complete form
 
 - Use a direct verb for an action. Add the object only when context does not identify it.
