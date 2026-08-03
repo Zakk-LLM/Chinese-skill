@@ -21,6 +21,10 @@
   "regional_slang": "這份懶人包可以協助新手避坑。",
   "shared_traditional": "這段程式碼會檢查輸入格式。",
   "stdin_article": "本文將深入探討設定方式。",
+  "academic_article": "本文分析跨區域中文的術語差異。",
+  "quoted_term": "「使用者介面」是產品文件中的正式術語。",
+  "technical_symbol": "驗證結果：✓",
+  "shared_simplified": "这段代码会检查输入格式。",
   "lookup": {
     "opencc": "軟件",
     "cedict": "软件",
@@ -33,5 +37,8 @@
   },
   "regional_vocabulary": "遠程服務器的打印機無法使用。",
   "regional_server": "服務器",
-  "contained_word": "這批東西向的測試涵蓋三角函數。"
+  "contained_word": "這批東西向的測試涵蓋三角函數。",
+  "fenced_prompt": "說明段落。\n\n``` bash\nls /boot\n\n❯ cat entry.conf\n```\n",
+  "locale_name": "语言可选 简体 / 正體 / English。",
+  "brand_locale": "鏡像節點包含 阿里雲，距離約 20 公里。"
 }

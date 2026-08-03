@@ -25,7 +25,8 @@ Read repository instruction files again at the same checkpoints. Repository-spec
   such as `程式碼`, remains valid when the artifact uses that locale.
 - Keep technical terms in their established English form when translation reduces precision.
 - Use backticks for identifiers and literal values. Do not wrap ordinary Chinese terms in `「」` or `『』`.
-- Do not add Emoji to prose, documentation, alerts, logs, comments, commits, PRs, or reviews.
+- Under the strict style, do not add Emoji to prose, documentation, alerts, logs,
+  comments, commits, PRs, or reviews.
 
 Use the locale-appropriate term meaning execution for a command, script, phase, test, or action. Use the term meaning operation for an ongoing program, service, system, or deployed code version. Do not replace either with a colloquial motion verb.
 
@@ -48,9 +49,9 @@ Use the requested operation precisely:
   constraints, measured effects, and established domain terms.
 
 Default to a conservative rewrite when the user gives no detailed style contract:
-preserve meaning and formatting, use the source locale, remove Emoji and formulaic AI
-wording, split complex sentences, and return only the revised text. Ask before changing
-the audience, position, factual claim, quotation, or technical meaning.
+preserve meaning and formatting, use the source locale, remove clear formulaic wording,
+split confusing sentences, and return only the revised text. Ask before changing the
+audience, position, factual claim, quotation, or technical meaning.
 
 For a cross-regional audience, keep one script throughout the artifact and prefer shared
 standard vocabulary. Do not combine Simplified and Traditional variants to display both.
@@ -60,8 +61,16 @@ because another region uses a different term.
 
 ## Load details only when needed
 
+Use the standard style unless the user or repository requests `strict`, `academic`,
+`technical`, `readme`, or `ui`. Strict style rejects Emoji, Chinese code comments,
+formulaic framing, short quoted terms, and fixed prose limits. The other styles retain
+only the constraints appropriate to their document type.
+
 - For articles, rewrites, translations, long passages, or comment audits, read
   [references/writing-policy.md](references/writing-policy.md).
+- For README writing or revision, read
+  [references/readme-style.md](references/readme-style.md), then consult its compact
+  corpus only for the pattern needed by the task.
 - For terminology, localization, Gentoo, Linux, or disputed wording, read
   [references/lexicon-policy.md](references/lexicon-policy.md), then use
   `scripts/lexicon_lookup.py`.
@@ -75,7 +84,8 @@ format, template, and confirmation rule. Ask before proceeding only when an unre
 choice would change meaning or cause an external action.
 
 Use the shortest form that preserves the decision, evidence, impact, and required action.
-Delete obvious comments; retain only concise English comments for non-obvious invariants,
+Delete obvious comments. Follow the repository's comment language; strict and
+gentoo-overlay styles require concise English comments for non-obvious invariants,
 security boundaries, compatibility constraints, trade-offs, or workarounds.
 
 Never sign as an AI. Remove model attribution from every file, commit, PR, review, and
@@ -96,8 +106,8 @@ Before sending or publishing Chinese text, verify:
 4. No colloquial transition or operation verb, invented term, needless English, or locale mixing remains.
 5. Regional technical terms remain understandable or are defined once for the audience.
 6. No paragraph repeats the title, diff, list, or previous paragraph.
-7. Every retained comment passes the comment gate and is concise English.
+7. Every retained comment passes the comment gate and follows the repository language.
 8. PR and commit text contains rationale, not a work diary or routine test report.
 9. A revised draft did not grow without a new required fact.
-10. No Emoji or decorative symbol remains.
+10. No disallowed Emoji or decorative symbol remains under the selected style.
 11. The response ends when the requested information is complete.

@@ -18,6 +18,7 @@
     },
     {
       "message": "remove formulaic AI wording and state the concrete claim",
+      "styles": ["strict", "academic", "technical", "readme"],
       "terms": ["開啟全新篇章", "开启全新篇章", "帶來全新體驗", "带来全新体验", "帶您深入了解", "带您深入了解", "讓我們一起", "让我们一起", "不僅僅是", "不仅仅是", "值得一提", "相信通過", "相信通过"]
     },
     {
@@ -60,7 +61,8 @@
     },
     {
       "pattern": "[「『][\\u4e00-\\u9fff]{1,8}[」』]",
-      "message": "do not wrap ordinary Chinese terms in full-width brackets; use backticks for identifiers"
+      "message": "do not wrap ordinary Chinese terms in full-width brackets; use backticks for identifiers",
+      "styles": ["strict"]
     },
     {
       "pattern": "[\\u4e00-\\u9fff][,.;:!?](?=\\s|$|[\\u4e00-\\u9fff])",
@@ -68,26 +70,77 @@
     },
     {
       "pattern": "(?:在|於|于)(?:當今|当今)[^，。\\n]{0,24}(?:時代|时代|背景下)",
-      "message": "remove the generic era-setting introduction"
+      "message": "remove the generic era-setting introduction",
+      "styles": ["strict", "academic", "technical", "readme"]
     },
     {
       "pattern": "(?:本文|本篇|這篇文章|这篇文章)(?:將|将|會|会)?(?:深入)?(?:探討|探讨|介紹|介绍|分析|解析|說明|说明|旨在)",
-      "message": "start with the subject and claim instead of narrating the article"
+      "message": "start with the subject and claim instead of narrating the article",
+      "styles": ["strict", "technical", "readme"]
     },
     {
       "pattern": "(?:更加|更為|更为)(?:便捷|高效|智慧|智能|強大|强大|靈活|灵活|卓越)",
-      "message": "replace promotional adjectives with a concrete property or measured result"
+      "message": "replace promotional adjectives with a concrete property or measured result",
+      "styles": ["strict", "academic", "technical", "readme"]
     }
   ],
   "emoji_patterns": [
     "[\\U0001F000-\\U0001FAFF]",
     "[\\u2600-\\u27BF]\\uFE0F?|[0-9#*]\\uFE0F?\\u20E3|\\uFE0F|\\u200D"
   ],
-  "prose_limits": {
-    "sentence_characters": 80,
-    "clause_markers": 5,
-    "repeated_sentence_characters": 8
+  "style_profiles": {
+    "standard": {
+      "emoji": "allow",
+      "comment_language": "repository",
+      "paragraph_characters": null,
+      "paragraph_sentences": null,
+      "sentence_characters": null,
+      "clause_markers": null
+    },
+    "strict": {
+      "emoji": "reject",
+      "comment_language": "english",
+      "paragraph_characters": 280,
+      "paragraph_sentences": 4,
+      "sentence_characters": 80,
+      "clause_markers": 5
+    },
+    "academic": {
+      "emoji": "reject",
+      "comment_language": "repository",
+      "paragraph_characters": 700,
+      "paragraph_sentences": 8,
+      "sentence_characters": 120,
+      "clause_markers": 8
+    },
+    "technical": {
+      "emoji": "reject",
+      "comment_language": "repository",
+      "paragraph_characters": 450,
+      "paragraph_sentences": 6,
+      "sentence_characters": 100,
+      "clause_markers": 6
+    },
+    "readme": {
+      "emoji": "reject",
+      "comment_language": "repository",
+      "paragraph_characters": 320,
+      "paragraph_sentences": 5,
+      "sentence_characters": 100,
+      "clause_markers": 6
+    },
+    "ui": {
+      "emoji": "allow",
+      "comment_language": "repository",
+      "paragraph_characters": 160,
+      "paragraph_sentences": 3,
+      "sentence_characters": 60,
+      "clause_markers": 4
+    }
   },
+  "repeated_sentence_characters": 8,
+  "locale_name_exceptions": ["正體中文", "繁體中文", "簡體中文", "正體", "繁體", "簡體"],
+  "locale_word_exceptions": ["阿里雲", "阿里巴巴", "阿里山", "小米", "公里", "英里", "里程", "里程碑", "鄰里", "里長", "千里", "萬里", "故里", "鄉里"],
   "locale_markers": {
     "zh-TW": "為與後裡於這檔軟網碼執運檢過體應說讀寫來開發現錯誤務萬個門頁書號據線數陣列儲從將還讓",
     "zh-CN": "为与后里于这档软网码执运检过体应说读写来开发现错误务万个门页书号据线数阵列储从将还让"
@@ -127,7 +180,8 @@
     "<!-- Please put the pull request description above -->"
   ],
   "pr_body_limits": {
-    "general": {"characters": 600, "blocks": 4, "list_items": 5},
-    "gentoo-overlay": {"characters": 360, "blocks": 3, "list_items": 4}
+    "standard": {"characters": null, "blocks": null, "list_items": null, "headings": true},
+    "strict": {"characters": 600, "blocks": 4, "list_items": 5, "headings": false},
+    "gentoo-overlay": {"characters": 360, "blocks": 3, "list_items": 4, "headings": false}
   }
 }

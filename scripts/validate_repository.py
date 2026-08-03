@@ -43,7 +43,7 @@ def validate_agent_metadata(errors):
     required = {
         "display_name": "Chinese Writing Control",
         "short_description": "Write and revise concise professional Chinese",
-        "default_prompt": "Use $chinese-skill to write or revise concise, professional Chinese without formulaic AI wording or Emoji.",
+        "default_prompt": "Use $chinese-skill to write or revise clear Chinese with the style and locale required by the repository.",
     }
     for field, expected in required.items():
         match = re.search(rf"^\s{{2}}{field}:\s+[\"'](.+)[\"']\s*$", text, re.M)
@@ -94,25 +94,112 @@ def validate_wording(errors):
             re.compile(pattern)
         except re.error as error:
             errors.append(f"invalid wording regular expression: {error}")
-    if set(data.get("prose_limits", {})) != {
-            "sentence_characters", "clause_markers",
-            "repeated_sentence_characters"}:
-        errors.append("prose limits are incomplete")
-    elif any(not isinstance(value, int) or value < 1
-             for value in data["prose_limits"].values()):
-        errors.append("prose limits must be positive integers")
-    if set(data["pr_body_limits"]) != {"general", "gentoo-overlay"}:
-        errors.append("PR body limits must cover both profiles")
+    styles = data.get("style_profiles", {})
+    expected_styles = {"standard", "strict", "academic", "technical", "readme", "ui"}
+    expected_fields = {"emoji", "comment_language", "paragraph_characters",
+                       "paragraph_sentences", "sentence_characters", "clause_markers"}
+    if set(styles) != expected_styles:
+        errors.append("writing style profiles are incomplete")
+    for style, policy in styles.items():
+        if set(policy) != expected_fields:
+            errors.append(f"incomplete writing style: {style}")
+            continue
+        if policy["emoji"] not in {"allow", "reject"}:
+            errors.append(f"invalid Emoji policy: {style}")
+        if policy["comment_language"] not in {"repository", "english"}:
+            errors.append(f"invalid comment language: {style}")
+        limits = [policy[field] for field in expected_fields
+                  if field not in {"emoji", "comment_language"}]
+        if any(value is not None
+               and (not isinstance(value, int) or value < 1) for value in limits):
+            errors.append(f"invalid prose limit: {style}")
+    repeated = data.get("repeated_sentence_characters")
+    if not isinstance(repeated, int) or repeated < 1:
+        errors.append("invalid repeated sentence length")
+    for rule in [*data["literal_groups"], *data["regex_rules"]]:
+        if set(rule.get("styles", ())) - expected_styles:
+            errors.append("wording rule names an unknown style")
+    for key in ("locale_name_exceptions", "locale_word_exceptions"):
+        values = data.get(key, [])
+        if not values or len(values) != len(set(values)):
+            errors.append(f"wording {key} must be present and unique")
+        elif not all(isinstance(value, str) and value for value in values):
+            errors.append(f"wording {key} contains an invalid value")
+    if set(data["pr_body_limits"]) != {"standard", "strict", "gentoo-overlay"}:
+        errors.append("PR body limits are incomplete")
     for profile, limits in data["pr_body_limits"].items():
-        if set(limits) != {"characters", "blocks", "list_items"}:
+        if set(limits) != {"characters", "blocks", "list_items", "headings"}:
             errors.append(f"incomplete PR body limits: {profile}")
-        elif any(not isinstance(value, int) or value < 1 for value in limits.values()):
+        elif not isinstance(limits["headings"], bool):
+            errors.append(f"invalid PR heading policy: {profile}")
+        elif any(value is not None and (not isinstance(value, int) or value < 1)
+                 for field, value in limits.items() if field != "headings"):
             errors.append(f"invalid PR body limits: {profile}")
     for locale, terms in data["regional_exceptions"].items():
         if locale not in {"zh-CN", "zh-TW"}:
             errors.append(f"unknown regional exception locale: {locale}")
         if len(terms) != len(set(terms)):
             errors.append(f"duplicate regional exception: {locale}")
+
+
+def validate_readme_corpus(errors):
+    data = load_json("references/readme-corpus.json")
+    if data.get("schema") != 1:
+        errors.append("unsupported README corpus schema")
+    cutoff = data.get("cutoff", "")
+    if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", cutoff):
+        errors.append("README corpus has no valid cutoff")
+
+    contracts = data.get("live_contracts", [])
+    contract_ids = [item.get("id") for item in contracts]
+    if not contracts or len(contract_ids) != len(set(contract_ids)):
+        errors.append("README live contract ids must be present and unique")
+    for contract in contracts:
+        required = {"id", "repository", "path", "url", "use_for", "avoid"}
+        if set(contract) != required:
+            errors.append(f"incomplete README live contract: {contract.get('id')}")
+            continue
+        expected_url = (f"https://github.com/{contract['repository']}/blob/master/"
+                        f"{contract['path']}")
+        if contract["url"] != expected_url:
+            errors.append(f"invalid README live contract URL: {contract['id']}")
+        if not contract["use_for"] or not contract["avoid"]:
+            errors.append(f"README live contract has empty observations: {contract['id']}")
+
+    sources = data.get("sources", [])
+    identifiers = [item.get("id") for item in sources]
+    if not sources or len(identifiers) != len(set(identifiers)):
+        errors.append("README corpus source ids must be present and unique")
+    for source in sources:
+        required = {"id", "repository", "path", "commit", "date", "url",
+                    "use_for", "avoid"}
+        if set(source) != required:
+            errors.append(f"incomplete README corpus source: {source.get('id')}")
+            continue
+        if not re.fullmatch(r"[0-9a-f]{40}", source["commit"]):
+            errors.append(f"README corpus source is not pinned: {source['id']}")
+        if (not re.fullmatch(r"\d{4}-\d{2}-\d{2}", source["date"])
+                or source["date"] > cutoff):
+            errors.append(f"README corpus source exceeds cutoff: {source['id']}")
+        expected_url = (f"https://github.com/{source['repository']}/blob/"
+                        f"{source['commit']}/{source['path']}")
+        if source["url"] != expected_url:
+            errors.append(f"README corpus URL is not reproducible: {source['id']}")
+        if (not source["use_for"] or not source["avoid"]
+                or not all(isinstance(value, str) and value
+                           for key in ("use_for", "avoid") for value in source[key])):
+            errors.append(f"README corpus source has empty observations: {source['id']}")
+
+    for group in ("patterns", "professional_patterns"):
+        patterns = data.get(group, [])
+        pattern_ids = [item.get("id") for item in patterns]
+        if not patterns or len(pattern_ids) != len(set(pattern_ids)):
+            errors.append(f"README corpus {group} ids must be present and unique")
+        for pattern in patterns:
+            if set(pattern) != {"id", "shape", "required"}:
+                errors.append(f"incomplete README corpus pattern: {pattern.get('id')}")
+            elif not pattern["shape"] or not pattern["required"]:
+                errors.append(f"empty README corpus pattern: {pattern['id']}")
 
 
 def validate_sources(errors):
@@ -223,6 +310,7 @@ def main():
     validate_agent_metadata(errors)
     validate_terms(errors)
     validate_wording(errors)
+    validate_readme_corpus(errors)
     validate_sources(errors)
     validate_repository(errors, args.release)
     if errors:

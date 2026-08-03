@@ -22,15 +22,16 @@ Closes #N
 Use numbered points only for independent causal changes. Do not add headings for a
 single reason.
 
-Unless repository rules impose a different limit, keep the authored description within
-600 non-space characters, four semantic blocks, and five list items. The gentoo-zh
-overlay limits are 360 characters, three blocks, and four list items. `Closes #N` does
-not consume a block.
+The standard style follows the repository's template and imposes no additional heading,
+block, list, or character limit. Under the strict style, keep the authored description
+within 600 non-space characters, four semantic blocks, and five list items. The
+gentoo-zh overlay limits are 360 characters, three blocks, and four list items.
+`Closes #N` does not consume a block.
 
 Treat every sentence as having a cost. Keep it only when deleting it would hide a
-verified cause, review constraint, non-obvious impact, or required issue link. Do not
-add `摘要`, `修改內容`, `變更內容`, `測試`, `Summary`, `Changes`, or `Testing`
-headings. Do not turn the diff into an inventory.
+verified cause, review constraint, non-obvious impact, or required issue link. Under
+the strict style, do not add summary, change, or testing headings and do not turn the
+diff into an inventory. Repository-required headings always take precedence.
 
 When revising an existing draft, do not increase its character, block, heading, or
 list-item count unless the revision adds a required fact that was absent. Replacing
@@ -81,25 +82,6 @@ When the user asks for a PR title or body that will be pasted or submitted, retu
 exact artifact without an assistant introduction, explanation, review summary, or
 closing recap. If repository policy requires approval before publication, present the
 exact title, body, and file list as separate labeled fields; add nothing to those fields.
-
-## Lessons from binhost PRs #72–#76
-
-Sources: [#72](https://github.com/gentoo-zh/binhost/pull/72),
-[#73](https://github.com/gentoo-zh/binhost/pull/73),
-[#74](https://github.com/gentoo-zh/binhost/pull/74),
-[#75](https://github.com/gentoo-zh/binhost/pull/75), and
-[#76](https://github.com/gentoo-zh/binhost/pull/76).
-
-- A long list of implementation details, test counts, and review history obscures the
-  reason. Keep only facts needed to assess risk and correctness.
-- Retrospective transitions, completeness claims, and review counts often introduce a
-  work diary. Replace them with the current defect, evidence, and consequence.
-- Replace colloquial technical descriptions with the exact deployed state, input,
-  operation, or failure.
-- Do not change a merged PR title to describe commits that entered later. Open a new
-  branch and PR, then verify the commit is an ancestor of the target branch.
-- Corrections should state the wrong assumption, verified environment difference, and
-  required configuration. Avoid a long retrospective.
 
 ## Review comments
 

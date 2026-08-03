@@ -58,9 +58,15 @@ def line_number(text, offset):
     return text.count("\n", 0, offset) + 1
 
 
-def phrase_findings(text):
+def applies_to_style(rule, style):
+    return not rule.get("styles") or style in rule["styles"]
+
+
+def phrase_findings(text, style="standard"):
     matches = []
     for group in RULES["literal_groups"]:
+        if not applies_to_style(group, style):
+            continue
         for term in group["terms"]:
             start = 0
             while True:
@@ -74,6 +80,8 @@ def phrase_findings(text):
                 for at, message, term in matches
                 if not contained_in_longer_word(text, at, at + len(term), words)]
     for rule in RULES["regex_rules"]:
+        if not applies_to_style(rule, style):
+            continue
         for match in re.finditer(rule["pattern"], text):
             findings.append((line_number(text, match.start()), rule["message"], match.group(0)))
     return findings
@@ -84,9 +92,24 @@ SIMPLIFIED_MARKERS = set(RULES["locale_markers"]["zh-CN"])
 SHARED_MARKERS = TRADITIONAL_MARKERS.intersection(SIMPLIFIED_MARKERS)
 TRADITIONAL_MARKERS -= SHARED_MARKERS
 SIMPLIFIED_MARKERS -= SHARED_MARKERS
+LOCALE_SCRIPT = {
+    "zh-CN": "simplified",
+    "zh-SG": "simplified",
+    "zh-MY": "simplified",
+    "zh-TW": "traditional",
+    "zh-HK": "traditional",
+}
+
+
+def mask_locale_names(text):
+    """Naming another locale, a brand, or a shared word is not locale mixing."""
+    for name in (*RULES["locale_name_exceptions"], *RULES["locale_word_exceptions"]):
+        text = text.replace(name, " " * len(name))
+    return text
 
 
 def locale_findings(text, locale):
+    text = mask_locale_names(text)
     traditional = TRADITIONAL_MARKERS
     simplified = SIMPLIFIED_MARKERS
     found_traditional = traditional.intersection(text)
@@ -97,9 +120,10 @@ def locale_findings(text, locale):
                      min(text.index(char) for char in found_simplified)]
         return [(line_number(text, max(positions)),
                  "do not mix Traditional and Simplified Chinese", sample)]
-    opposite = simplified if locale == "zh-TW" else traditional
+    script = LOCALE_SCRIPT.get(locale)
+    opposite = simplified if script == "traditional" else traditional
     out = []
-    if locale in {"zh-TW", "zh-CN"}:
+    if script:
         for number, line in enumerate(text.splitlines(), 1):
             found = opposite.intersection(line)
             if found:
@@ -544,31 +568,36 @@ def files_from(paths, patterns):
                 yield candidate
 
 
-def paragraph_unit_findings(paragraph, line, limit):
+def paragraph_unit_findings(paragraph, line, limit, style="standard"):
     if not CJK.search(paragraph):
         return []
     compact = re.sub(r"\s", "", paragraph)
     out = []
-    if len(compact) > limit:
-        out.append((line, f"paragraph exceeds {limit} non-space characters",
+    style_policy = RULES["style_profiles"][style]
+    paragraph_limit = limit if limit is not None else style_policy["paragraph_characters"]
+    sentence_count_limit = style_policy["paragraph_sentences"]
+    if paragraph_limit and len(compact) > paragraph_limit:
+        out.append((line, f"paragraph exceeds {paragraph_limit} non-space characters",
                     compact[:24]))
-    if len(SENTENCE_END.findall(paragraph)) > 4:
-        out.append((line, "paragraph exceeds four sentences", compact[:24]))
-    sentence_limit = RULES["prose_limits"]["sentence_characters"]
-    clause_limit = RULES["prose_limits"]["clause_markers"]
+    if (sentence_count_limit
+            and len(SENTENCE_END.findall(paragraph)) > sentence_count_limit):
+        out.append((line, f"paragraph exceeds {sentence_count_limit} sentences",
+                    compact[:24]))
+    sentence_limit = style_policy["sentence_characters"]
+    clause_limit = style_policy["clause_markers"]
     for match in SENTENCE.finditer(paragraph):
         sentence = match.group(0).strip()
         if not CJK.search(sentence):
             continue
         sample = re.sub(r"\s", "", sentence)
         sentence_line = line + paragraph.count("\n", 0, match.start())
-        if len(sample) > sentence_limit:
+        if sentence_limit and len(sample) > sentence_limit:
             out.append((sentence_line,
                         f"sentence exceeds {sentence_limit} non-space characters",
                         sample[:24]))
         markers = len(re.findall(r"[，；：,;:]", sentence))
         markers += len(CLAUSE_CONNECTORS.findall(sentence))
-        if markers >= clause_limit:
+        if clause_limit and markers >= clause_limit:
             out.append((sentence_line,
                         "split the sentence into direct claims and conditions",
                         sample[:24]))
@@ -576,7 +605,7 @@ def paragraph_unit_findings(paragraph, line, limit):
 
 
 def repeated_sentence_findings(text):
-    minimum = RULES["prose_limits"]["repeated_sentence_characters"]
+    minimum = RULES["repeated_sentence_characters"]
     seen = set()
     out = []
     for match in SENTENCE.finditer(text):
@@ -593,7 +622,7 @@ def repeated_sentence_findings(text):
     return out
 
 
-def paragraph_findings(text, limit):
+def paragraph_findings(text, limit, style="standard"):
     out = []
     if text.startswith("---\n"):
         end = text.find("\n---\n", 4)
@@ -612,7 +641,8 @@ def paragraph_findings(text, limit):
                     continue
                 for cell in cells:
                     if CJK.search(cell):
-                        out.extend(paragraph_unit_findings(cell, base_line + offset, limit))
+                        out.extend(paragraph_unit_findings(
+                            cell, base_line + offset, limit, style))
             continue
         if re.match(r"(?:[-*+]\s|\d+[.)]\s)", lines[0]):
             item = []
@@ -621,29 +651,30 @@ def paragraph_findings(text, limit):
                 marker = re.match(r"(?:[-*+]\s|\d+[.)]\s)(.*)", value)
                 if marker:
                     if item:
-                        out.extend(paragraph_unit_findings("\n".join(item), item_line,
-                                                           limit))
+                        out.extend(paragraph_unit_findings(
+                            "\n".join(item), item_line, limit, style))
                     item = [marker.group(1)]
                     item_line = base_line + offset
                 else:
                     item.append(value)
             if item:
-                out.extend(paragraph_unit_findings("\n".join(item), item_line, limit))
+                out.extend(paragraph_unit_findings(
+                    "\n".join(item), item_line, limit, style))
             continue
         if lines[0].startswith("#"):
             lines = lines[1:]
             base_line += 1
         paragraph = "\n".join(re.sub(r"^>\s?", "", line) for line in lines).strip()
         if paragraph:
-            out.extend(paragraph_unit_findings(paragraph, base_line, limit))
+            out.extend(paragraph_unit_findings(paragraph, base_line, limit, style))
     return out
 
 
-def data_paragraph_findings(text, limit):
+def data_paragraph_findings(text, limit, style="standard"):
     out = []
     for number, line in enumerate(text.splitlines(), 1):
         if CJK.search(line):
-            out.extend(paragraph_unit_findings(line.strip(), number, limit))
+            out.extend(paragraph_unit_findings(line.strip(), number, limit, style))
     return out
 
 
@@ -690,7 +721,9 @@ def attribution_findings(text):
     return out
 
 
-def emoji_findings(text):
+def emoji_findings(text, style="standard"):
+    if RULES["style_profiles"][style]["emoji"] == "allow":
+        return []
     return pattern_findings(text, "emoji_patterns",
                             "remove Emoji and state the meaning in text")
 
@@ -734,11 +767,14 @@ def mask_markup_code(text):
     return re.sub(r"`+[^`\n]*`+", blank, text)
 
 
-def pr_body_findings(text, profile, title):
-    limits = RULES["pr_body_limits"][profile]
+def pr_body_findings(text, profile, title, style="standard"):
+    policy = "gentoo-overlay" if profile == "gentoo-overlay" else style
+    if policy not in RULES["pr_body_limits"]:
+        policy = "standard"
+    limits = RULES["pr_body_limits"][policy]
     compact = re.sub(r"\s", "", text)
     out = []
-    if len(compact) > limits["characters"]:
+    if limits["characters"] and len(compact) > limits["characters"]:
         out.append((1, f"PR description exceeds {limits['characters']} non-space characters",
                     compact[:32]))
 
@@ -747,63 +783,70 @@ def pr_body_findings(text, profile, title):
         value = match.group(1).strip()
         if value and not re.fullmatch(r"Closes\s+#\d+\.?", value, re.I):
             blocks.append((line_number(text, match.start(1)), value))
-    if len(blocks) > limits["blocks"]:
+    if limits["blocks"] and len(blocks) > limits["blocks"]:
         out.append((blocks[limits["blocks"]][0],
                     f"PR description exceeds {limits['blocks']} semantic blocks",
                     blocks[limits["blocks"]][1][:32]))
 
     list_items = list(re.finditer(r"(?m)^\s*(?:[-*+]|\d+[.)])\s+\S", text))
-    if len(list_items) > limits["list_items"]:
+    if limits["list_items"] and len(list_items) > limits["list_items"]:
         match = list_items[limits["list_items"]]
         out.append((line_number(text, match.start()),
                     f"PR description exceeds {limits['list_items']} list items",
                     match.group(0).strip()))
 
     heading = re.search(r"(?m)^\s*#{1,6}\s+\S", text)
-    if heading:
+    if heading and not limits["headings"]:
         out.append((line_number(text, heading.start()),
                     "omit headings from the PR description; state the rationale directly",
                     heading.group(0).strip()[:48]))
-    out.extend(pattern_findings(
-        text, "pr_inventory_patterns",
-        "replace the change inventory with the non-inferable rationale"))
-    if title and title.strip() and title.strip().casefold() in text.casefold():
-        at = text.casefold().find(title.strip().casefold())
-        out.append((line_number(text, at), "do not repeat the PR title in the body",
-                    title.strip()[:48]))
+    if policy != "standard":
+        out.extend(pattern_findings(
+            text, "pr_inventory_patterns",
+            "replace the change inventory with the non-inferable rationale"))
+        if title and title.strip() and title.strip().casefold() in text.casefold():
+            at = text.casefold().find(title.strip().casefold())
+            out.append((line_number(text, at), "do not repeat the PR title in the body",
+                        title.strip()[:48]))
     return out
 
 
 def lint_file(path, kind, profile, title, paragraph_limit, locale="auto",
-              regional=False):
+              regional=False, style="standard"):
     try:
         text = sys.stdin.read() if str(path) == "-" else path.read_text()
     except (OSError, UnicodeDecodeError) as error:
         return [(0, f"cannot read text: {error}", "")]
+    effective_style = "strict" if profile == "gentoo-overlay" else style
     checked_text = authored_pr_text(text) if kind == "pr-body" else text
     if kind in {"prose", "pr-body", "commit-message"} or (
             kind == "all" and prose_path(path, text)):
         checked_text = mask_markup_code(checked_text)
     findings = attribution_findings(text)
-    findings.extend(emoji_findings(text))
-    findings.extend(phrase_findings(checked_text))
+    findings.extend(emoji_findings(checked_text, effective_style))
+    findings.extend(phrase_findings(checked_text, effective_style))
     findings.extend(locale_findings(checked_text, locale))
     findings.extend(terminology_findings(checked_text, locale))
     if regional:
         findings.extend(regional_findings(checked_text, locale))
     if kind in {"all", "source"}:
-        for line, comment in comments_for(path, text):
-            if CJK.search(comment):
-                findings.append((line, "code comments must be concise English", comment[:32]))
+        comment_language = RULES["style_profiles"][effective_style]["comment_language"]
+        if comment_language == "english":
+            for line, comment in comments_for(path, text):
+                if CJK.search(comment):
+                    findings.append(
+                        (line, "code comments must be concise English", comment[:32]))
     if kind in {"prose", "pr-body", "commit-message"} or (
             kind == "all" and prose_path(path, text)):
         paragraph_checker = (data_paragraph_findings if path.suffix in DATA_SUFFIXES
                              else paragraph_findings)
-        findings.extend(paragraph_checker(checked_text, paragraph_limit))
+        findings.extend(paragraph_checker(
+            checked_text, paragraph_limit, effective_style))
         findings.extend(repeated_sentence_findings(checked_text))
     if kind == "commit-message":
         findings.extend(commit_findings(text, profile))
-    if kind in {"pr-body", "commit-message"}:
+    if (kind in {"pr-body", "commit-message"}
+            and effective_style == "strict"):
         findings.extend(pattern_findings(
             checked_text, "routine_passing_patterns",
             "omit routine passing test reports from commit and PR text"))
@@ -814,7 +857,8 @@ def lint_file(path, kind, profile, title, paragraph_limit, locale="auto",
             checked_text, "author_narration_patterns",
             "remove the author's work narration and state the repository fact"))
     if kind == "pr-body":
-        findings.extend(pr_body_findings(checked_text, profile, title))
+        findings.extend(pr_body_findings(
+            checked_text, profile, title, effective_style))
     if profile == "gentoo-overlay" and kind in {"pr-body", "commit-message"}:
         findings.extend(signoff_findings(text))
         if kind == "pr-body":
@@ -830,7 +874,7 @@ def lint_file(path, kind, profile, title, paragraph_limit, locale="auto",
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Check Chinese wording and reject Chinese code comments.")
+        description="Check Chinese wording with selectable style and repository rules.")
     parser.add_argument("paths", nargs="+",
                         help="files or directories to inspect; use - for standard input")
     parser.add_argument("--kind",
@@ -838,12 +882,15 @@ def main():
                         default="all", help="rules for the inspected text")
     parser.add_argument("--profile", choices=("general", "gentoo-overlay"),
                         default="general", help="repository-specific rules")
+    parser.add_argument("--style", choices=tuple(RULES["style_profiles"]),
+                        default="standard", help="writing style and strictness")
     parser.add_argument("--title", help="PR title used with --kind pr-body")
     parser.add_argument("--exclude", action="append", default=[],
                         help="glob to exclude; may be repeated")
-    parser.add_argument("--paragraph-limit", type=int, default=280,
-                        help="maximum non-space characters in prose paragraphs")
-    parser.add_argument("--locale", choices=("auto", "zh-CN", "zh-TW"),
+    parser.add_argument("--paragraph-limit", type=int,
+                        help="override the style's prose paragraph limit")
+    parser.add_argument("--locale",
+                        choices=("auto", "zh-CN", "zh-TW", "zh-HK", "zh-SG", "zh-MY"),
                         default="auto", help="required Chinese locale or automatic mixing check")
     parser.add_argument("--regional", action="store_true",
                         help="also report regional vocabulary from the bundled "
@@ -857,7 +904,7 @@ def main():
     for path in files_from(args.paths, patterns):
         for line, message, sample in lint_file(
                 path, args.kind, args.profile, args.title, args.paragraph_limit,
-                args.locale, args.regional):
+                args.locale, args.regional, args.style):
             label = "stdin" if str(path) == "-" else str(path)
             where = f"{label}:{line}" if line else label
             detail = f" [{sample}]" if sample else ""

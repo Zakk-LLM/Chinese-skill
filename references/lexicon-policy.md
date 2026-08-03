@@ -19,10 +19,11 @@ character conversion do not prove that a term is correct in context.
 
 ## Locale handling
 
-Determine both script and region. `zh-CN`, `zh-TW`, `zh-HK`, and generic Traditional
-Chinese may use different words even when the characters convert cleanly. Follow the
-user and repository; do not force Taiwan vocabulary merely because the text is
-Traditional Chinese.
+Determine both script and region. `zh-CN`, `zh-TW`, `zh-HK`, `zh-SG`, `zh-MY`, and
+generic Traditional Chinese may use different words even when the characters convert
+cleanly. Follow the user and repository; do not force Taiwan vocabulary merely because
+the text is Traditional Chinese. The linter checks script for all five locales but has
+regional terminology rules only for `zh-CN` and `zh-TW`.
 
 Use OpenCC for conversion diagnostics, not automatic acceptance. Review every
 one-to-many character mapping and every regional phrase change in context.

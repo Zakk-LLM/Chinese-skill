@@ -1,0 +1,146 @@
+{
+  "schema": 1,
+  "cutoff": "2019-12-31",
+  "method": "Records structural observations from pinned project README revisions; it does not copy source prose.",
+  "live_contracts": [
+    {
+      "id": "gentoo-zh-overlay",
+      "repository": "gentoo-zh/overlay",
+      "path": "README.md",
+      "url": "https://github.com/gentoo-zh/overlay/blob/master/README.md",
+      "use_for": ["repository purpose", "installation entry point", "contribution and commit conventions"],
+      "avoid": ["copying repository-specific policy into unrelated projects", "treating current prose as historical corpus"]
+    }
+  ],
+  "sources": [
+    {
+      "id": "gogs-2019",
+      "repository": "gogs/gogs",
+      "path": "README_ZH.md",
+      "commit": "db4bf20df33f008fa16fb1c813cc7ee14673d038",
+      "date": "2019-11-25",
+      "url": "https://github.com/gogs/gogs/blob/db4bf20df33f008fa16fb1c813cc7ee14673d038/README_ZH.md",
+      "use_for": ["direct project definition", "task-based section order", "requirements before installation"],
+      "avoid": ["badges as prose", "promotional feature inventory"]
+    },
+    {
+      "id": "arthas-2019",
+      "repository": "alibaba/arthas",
+      "path": "README_CN.md",
+      "commit": "380e96ee12e3fefec440a258b19e096c248ffb26",
+      "date": "2019-12-19",
+      "url": "https://github.com/alibaba/arthas/blob/380e96ee12e3fefec440a258b19e096c248ffb26/README_CN.md",
+      "use_for": ["problem-led entry point", "quick start before detailed reference", "command followed by observable result"],
+      "avoid": ["rhetorical questions", "anthropomorphic examples", "unexplained abbreviations"]
+    },
+    {
+      "id": "ant-design-2019",
+      "repository": "ant-design/ant-design",
+      "path": "README-zh_CN.md",
+      "commit": "29b4b7004e3cd17e77134eae63126dd7a10729ca",
+      "date": "2019-12-26",
+      "url": "https://github.com/ant-design/ant-design/blob/29b4b7004e3cd17e77134eae63126dd7a10729ca/README-zh_CN.md",
+      "use_for": ["one-sentence identity", "environment before installation", "links grouped by user task"],
+      "avoid": ["decorative Emoji headings", "community promotion", "honorific wording"]
+    },
+    {
+      "id": "cs-notes-2019",
+      "repository": "CyC2018/CS-Notes",
+      "path": "README.md",
+      "commit": "2f984f3bda3945371cfc0ab291e1992941695dd4",
+      "date": "2019-12-08",
+      "url": "https://github.com/CyC2018/CS-Notes/blob/2f984f3bda3945371cfc0ab291e1992941695dd4/README.md",
+      "use_for": ["large reference navigation", "parallel category names", "license and attribution placement"],
+      "avoid": ["Emoji headings", "personal appeals", "repeated navigation"]
+    },
+    {
+      "id": "rsshub-2019",
+      "repository": "DIYgod/RSSHub",
+      "path": "README.md",
+      "commit": "1d29996a779fe18e69d2dd85dec616e9a8264047",
+      "date": "2019-11-28",
+      "url": "https://github.com/DIYgod/RSSHub/blob/1d29996a779fe18e69d2dd85dec616e9a8264047/README.md",
+      "use_for": ["short project entry", "documentation and deployment routing", "contribution entry point"],
+      "avoid": ["Internet slang", "Emoji", "promotional claims"]
+    },
+    {
+      "id": "copywriting-guidelines-2019",
+      "repository": "sparanoid/chinese-copywriting-guidelines",
+      "path": "README.zh-CN.md",
+      "commit": "8fda8984ab63c5f6b3c37cdb2fda15144d32ca92",
+      "date": "2019-12-03",
+      "url": "https://github.com/sparanoid/chinese-copywriting-guidelines/blob/8fda8984ab63c5f6b3c37cdb2fda15144d32ca92/README.zh-CN.md",
+      "use_for": ["rule-example-exception order", "punctuation guidance", "explicit scope for disputed rules"],
+      "avoid": ["source-specific quotation style", "rules outside repository convention"]
+    }
+  ],
+  "patterns": [
+    {
+      "id": "identity",
+      "shape": "Name the project, its type, and its primary purpose in one sentence.",
+      "required": ["project", "type", "purpose"]
+    },
+    {
+      "id": "task-section",
+      "shape": "Use a user task as the heading, then give prerequisites, the command, and its observable result.",
+      "required": ["task", "prerequisite", "action", "result"]
+    },
+    {
+      "id": "constraint",
+      "shape": "State the supported version or environment before the instruction that depends on it.",
+      "required": ["constraint", "dependent action"]
+    },
+    {
+      "id": "reference-route",
+      "shape": "Keep the common path in the README and link detailed or uncommon cases to maintained documentation.",
+      "required": ["common path", "reference target"]
+    },
+    {
+      "id": "contribution",
+      "shape": "Name the accepted contribution path and link its rules without restating the complete guide.",
+      "required": ["contribution path", "rules link"]
+    }
+  ],
+  "professional_patterns": [
+    {
+      "id": "sentence-grammar",
+      "shape": "Keep the subject and predicate explicit, place modifiers beside their target, and replace ambiguous pronouns with the exact noun.",
+      "required": ["subject", "predicate", "modifier target"]
+    },
+    {
+      "id": "definition",
+      "shape": "Define a term by naming its category and the property that distinguishes it in this context.",
+      "required": ["term", "category", "distinguishing property"]
+    },
+    {
+      "id": "claim-evidence",
+      "shape": "State one claim, give the evidence or verified reason, then state only the consequence supported by it.",
+      "required": ["claim", "evidence or reason", "supported consequence"]
+    },
+    {
+      "id": "qualified-claim",
+      "shape": "Place the applicable version, environment, assumption, or exception before the claim it limits.",
+      "required": ["scope or condition", "claim"]
+    },
+    {
+      "id": "comparison",
+      "shape": "Compare alternatives on the same named dimensions and support each conclusion with observable evidence.",
+      "required": ["alternatives", "shared dimensions", "evidence"]
+    },
+    {
+      "id": "parallel-structure",
+      "shape": "Give headings and items in one list the same grammatical role and comparable level of detail.",
+      "required": ["shared grammatical role", "comparable scope"]
+    },
+    {
+      "id": "procedure",
+      "shape": "Give prerequisites, ordered actions, expected results, and recovery only for failures the reader can encounter.",
+      "required": ["prerequisites", "actions", "expected results"]
+    },
+    {
+      "id": "fact-boundary",
+      "shape": "Label sourced facts, observations, inferences, decisions, and recommendations as different statement types.",
+      "required": ["statement type", "basis"]
+    }
+  ]
+}

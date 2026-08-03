@@ -1,5 +1,13 @@
 # Chinese writing policy
 
+## Contents
+
+- Editing contract, information order, grammar, and translation
+- Colloquial, filler, AI-style, and article structure
+- Script, regional readability, and terminology
+- Comment value and established developer knowledge
+- Length control and general fallback
+
 ## Choose the editing contract
 
 Determine the audience, purpose, locale, document type, required terminology, and
@@ -77,7 +85,8 @@ already has a term.
 
 Do not narrate the act of writing or announce planned coverage. Start with the subject
 and claim. Remove generic era-setting openings, symmetrical filler, decorative
-conclusions, stacked praise, and invitations to the reader. Do not add Emoji.
+conclusions, stacked praise, and invitations to the reader. Under the strict,
+academic, and technical styles, do not add Emoji.
 
 ## Structure articles
 
@@ -95,7 +104,7 @@ conclusions, stacked praise, and invitations to the reader. Do not add Emoji.
 - Choose Simplified or Traditional Chinese from the user and repository context.
 - Keep one script throughout each artifact; do not place Simplified and Traditional
   variants side by side as a substitute for choosing a locale.
-- Use standard Mandarin that is readily understood across regions.
+- Use standard written Chinese that is readily understood across regions.
 - Do not translate English syntax word for word.
 - Preserve established technical names such as `USE`, `RESTRICT`, `SRC_URI`,
   `systemd`, and `nginx`.
@@ -121,8 +130,8 @@ Ask in order:
    or link the authoritative source outside the code when needed.
 3. Can a clearer name or smaller function express the intent? Refactor instead.
 4. Does a future maintainer need a non-obvious invariant, security boundary,
-   compatibility constraint, trade-off, or workaround? Keep one concise English
-   comment.
+   compatibility constraint, trade-off, or workaround? Keep one concise comment in
+   the repository's language. Strict and gentoo-overlay styles require English.
 
 Do not add comments for QA suppressions merely to restate the suppression. Do not
 write incident narratives in code. Put operational history in an issue or commit
