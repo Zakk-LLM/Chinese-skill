@@ -11,6 +11,7 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 CORPORA = {
     "readme": ROOT / "references" / "readme-corpus.json",
     "ui": ROOT / "references" / "ui-corpus.json",
+    "writing": ROOT / "references" / "writing-sources.json",
 }
 
 
@@ -38,7 +39,7 @@ def pattern_result(name, data, identifier, locale):
     for source_id in pattern["evidence"]:
         source = by_id[source_id]
         summary = {"id": source_id, "repository": source["repository"]}
-        if name == "readme":
+        if name in {"readme", "writing"}:
             summary["url"] = source["url"]
         else:
             files = [{"locale": entry["locale"], "url": entry["url"]}
@@ -86,7 +87,7 @@ def main():
         if hasattr(stream, "reconfigure"):
             stream.reconfigure(encoding="utf-8")
     parser = argparse.ArgumentParser(
-        description="Retrieve a selected README or UI writing corpus entry.")
+        description="Retrieve one selected writing corpus entry.")
     parser.add_argument("corpus", choices=sorted(CORPORA))
     action = parser.add_mutually_exclusive_group(required=True)
     action.add_argument("--list", action="store_true",

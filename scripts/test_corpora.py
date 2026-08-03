@@ -112,6 +112,33 @@ checks["selective output remains compact"] = (
     len(identity.stdout) < 4000 and len(failure.stdout) < 5000
 )
 
+writing_list = invoke("writing", "--list")
+writing_listed = json.loads(writing_list.stdout)
+checks["writing pattern index"] = (
+    writing_list.returncode == 0
+    and len(writing_listed["patterns"]) == 5
+    and all(set(item) == {"id", "group", "origin"}
+            for item in writing_listed["patterns"])
+)
+
+reader_test = invoke("writing", "--pattern", "reader-test")
+reader_test_data = json.loads(reader_test.stdout)
+checks["writing pattern evidence"] = (
+    reader_test.returncode == 0
+    and reader_test_data["pattern"]["origin"] == "sources"
+    and {item["id"] for item in reader_test_data["sources"]}
+    == set(reader_test_data["pattern"]["evidence"])
+    and len(reader_test.stdout) < 5000
+)
+
+writing_source = invoke("writing", "--source", "diataxis-start-2026")
+writing_source_data = json.loads(writing_source.stdout)
+checks["writing source is pinned"] = (
+    writing_source.returncode == 0
+    and writing_source_data["source"]["blob"]
+    == "8c2fbaa554f514b96dc828848b6c3e6c80479fe4"
+)
+
 failed = False
 for name, passed in checks.items():
     print(f"{'PASS' if passed else 'FAIL'} {name}")

@@ -1,0 +1,145 @@
+{
+  "schema": 1,
+  "verified": "2026-08-04",
+  "method": "Records independently phrased workflow patterns from pinned writing skills and documentation guides. No source prose is copied.",
+  "selection": [
+    "The source has a stable public revision and an identifiable publisher.",
+    "The extracted workflow changes document planning, drafting, or validation.",
+    "Source-specific ceremony and unsupported universal rules are recorded as defects, not adopted."
+  ],
+  "sources": [
+    {
+      "id": "anthropic-skill-creator-2026",
+      "kind": "skill",
+      "repository": "anthropics/skills",
+      "path": "skills/skill-creator/SKILL.md",
+      "commit": "b0cbd3df1533b396d281a6886d5132f623393a9c",
+      "blob": "65b3a402dbd09b8e83f9d637c6b553875189085c",
+      "date": "2026-03-06",
+      "url": "https://github.com/anthropics/skills/blob/b0cbd3df1533b396d281a6886d5132f623393a9c/skills/skill-creator/SKILL.md",
+      "license": "Apache-2.0",
+      "use_for": ["versioned writing evaluations", "fresh-context forward tests", "objective and qualitative result separation"],
+      "avoid": ["evaluation workspaces in release artifacts", "assertions for inherently subjective style choices"]
+    },
+    {
+      "id": "anthropic-doc-coauthoring-2025",
+      "kind": "skill",
+      "repository": "anthropics/skills",
+      "path": "skills/doc-coauthoring/SKILL.md",
+      "commit": "00756142ab04c82a447693cf373c4e0c554d1005",
+      "blob": "a5a69839ef4a161131d80b6daef10037a9686f4a",
+      "date": "2025-12-04",
+      "url": "https://github.com/anthropics/skills/blob/00756142ab04c82a447693cf373c4e0c554d1005/skills/doc-coauthoring/SKILL.md",
+      "license": "not-stated",
+      "use_for": ["document contract questions", "fresh-reader ambiguity checks", "revision pruning"],
+      "avoid": ["copying source wording", "forcing a long staged workflow on short edits", "requiring manual reader simulation when a fresh agent is available"]
+    },
+    {
+      "id": "github-documentation-writer-2026",
+      "kind": "skill",
+      "repository": "github/awesome-copilot",
+      "path": "skills/documentation-writer/SKILL.md",
+      "commit": "336af71f1b7d2e6e15a8a986ba79ca031a40549b",
+      "blob": "93e3fbf57fe64179570de382347db8258c661b56",
+      "date": "2026-07-31",
+      "url": "https://github.com/github/awesome-copilot/blob/336af71f1b7d2e6e15a8a986ba79ca031a40549b/skills/documentation-writer/SKILL.md",
+      "license": "MIT",
+      "use_for": ["document function selection", "audience and scope contract", "repository-context precedence"],
+      "avoid": ["mandatory clarification for inferable facts", "mandatory outline approval for every request", "external-source prohibitions imposed without repository need"]
+    },
+    {
+      "id": "diataxis-start-2026",
+      "kind": "guidance",
+      "repository": "evildmp/diataxis-documentation-framework",
+      "path": "source/start-here.rst",
+      "commit": "2a4f011b038256c89efb9c9cb0b38c201d73120b",
+      "blob": "8c2fbaa554f514b96dc828848b6c3e6c80479fe4",
+      "date": "2026-08-03",
+      "url": "https://github.com/evildmp/diataxis-documentation-framework/blob/2a4f011b038256c89efb9c9cb0b38c201d73120b/source/start-here.rst",
+      "license": "CC-BY-SA-4.0",
+      "use_for": ["tutorial, how-to, reference, and explanation separation", "section purpose", "content routing"],
+      "avoid": ["forcing the four functions onto short repository artifacts", "copying framework prose", "treating a document label as a substitute for audience analysis"]
+    },
+    {
+      "id": "github-docs-how-to-2026",
+      "kind": "guidance",
+      "repository": "github/docs",
+      "path": "content/contributing/style-guide-and-content-model/how-to-content-type.md",
+      "commit": "a385982155efc1c234b3fb9fabe748873af300c3",
+      "blob": "197d064ec4a93783ebfa933bb236c869b46be55c",
+      "date": "2026-07-31",
+      "url": "https://github.com/github/docs/blob/a385982155efc1c234b3fb9fabe748873af300c3/content/contributing/style-guide-and-content-model/how-to-content-type.md",
+      "license": "CC-BY-4.0",
+      "use_for": ["task-focused procedures", "prerequisites", "expected results"],
+      "avoid": ["GitHub-specific frontmatter", "product-specific content limits", "copying source templates into unrelated repositories"]
+    },
+    {
+      "id": "github-docs-quickstart-2026",
+      "kind": "guidance",
+      "repository": "github/docs",
+      "path": "content/contributing/style-guide-and-content-model/quickstart-content-type.md",
+      "commit": "a385982155efc1c234b3fb9fabe748873af300c3",
+      "blob": "9a10e81695f8b961c39526ee65e3ed19e38b556d",
+      "date": "2026-07-31",
+      "url": "https://github.com/github/docs/blob/a385982155efc1c234b3fb9fabe748873af300c3/content/contributing/style-guide-and-content-model/quickstart-content-type.md",
+      "license": "CC-BY-4.0",
+      "use_for": ["short successful first path", "audience prerequisites", "completion criteria"],
+      "avoid": ["presenting a quickstart as complete reference", "multiple competing first paths", "repository-specific metadata"]
+    },
+    {
+      "id": "github-docs-translation-2026",
+      "kind": "guidance",
+      "repository": "github/docs",
+      "path": "content/contributing/writing-for-github-docs/writing-content-to-be-translated.md",
+      "commit": "a385982155efc1c234b3fb9fabe748873af300c3",
+      "blob": "8d1c2d545a1b14ad36f171d1e8517925bb8971ea",
+      "date": "2026-07-31",
+      "url": "https://github.com/github/docs/blob/a385982155efc1c234b3fb9fabe748873af300c3/content/contributing/writing-for-github-docs/writing-content-to-be-translated.md",
+      "license": "CC-BY-4.0",
+      "use_for": ["translation-ready sentence structure", "pronoun clarity", "modifier and terminology consistency"],
+      "avoid": ["English-only grammar rules applied mechanically to Chinese", "treating translation readiness as evidence of factual accuracy"]
+    }
+  ],
+  "patterns": [
+    {
+      "id": "document-contract",
+      "origin": "sources",
+      "evidence": ["anthropic-doc-coauthoring-2025", "github-documentation-writer-2026", "github-docs-quickstart-2026"],
+      "use_when": "Starting or substantially restructuring a document",
+      "shape": "Resolve audience, purpose, scope, prerequisites, verified inputs, and expected outcome before choosing a structure.",
+      "required": ["audience", "purpose", "scope", "verified inputs", "expected outcome"]
+    },
+    {
+      "id": "document-function",
+      "origin": "sources",
+      "evidence": ["github-documentation-writer-2026", "diataxis-start-2026", "github-docs-how-to-2026"],
+      "use_when": "Choosing sections for technical documentation",
+      "shape": "Give each section one primary function: guided learning, task completion, factual lookup, or conceptual explanation.",
+      "required": ["section function", "reader need", "excluded content"]
+    },
+    {
+      "id": "procedure-contract",
+      "origin": "sources",
+      "evidence": ["diataxis-start-2026", "github-docs-how-to-2026", "github-docs-quickstart-2026"],
+      "use_when": "Writing a procedure or quick start",
+      "shape": "Place prerequisites before actions, keep the supported path focused, and give an observable completion state when the reader needs one.",
+      "required": ["prerequisites", "ordered actions", "observable result"]
+    },
+    {
+      "id": "reader-test",
+      "origin": "sources",
+      "evidence": ["anthropic-skill-creator-2026", "anthropic-doc-coauthoring-2025"],
+      "use_when": "A substantial document can fail through missing context or ambiguity",
+      "shape": "Give the finished artifact without author context to a fresh reader, test realistic questions, and revise only observed contract failures.",
+      "required": ["artifact only", "realistic questions", "ambiguity check", "targeted revision"]
+    },
+    {
+      "id": "translation-ready",
+      "origin": "sources",
+      "evidence": ["github-docs-translation-2026", "github-docs-quickstart-2026"],
+      "use_when": "Writing for several regions or future localization",
+      "shape": "Use short unambiguous sentences, explicit referents, stable terminology, and conditions placed beside the claims or actions they limit.",
+      "required": ["explicit referents", "consistent terminology", "local conditions", "one script"]
+    }
+  ]
+}

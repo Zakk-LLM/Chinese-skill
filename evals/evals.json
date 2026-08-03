@@ -1,0 +1,65 @@
+{
+  "skill_name": "chinese-skill",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "請以繁體中文把這段改成可發布的專業技術文字：全新的同步引擎透過資料處理，大幅提升穩定性並改善整體使用體驗。沒有其他測量資料。",
+      "expected_output": "A concise request for the missing baseline, measurement, scope, or mechanism instead of a polished unsupported claim.",
+      "expectations": [
+        "The response does not present a stability or experience improvement as verified.",
+        "The response does not invent a benchmark, percentage, mechanism, or causal explanation.",
+        "The response asks for only the evidence needed to make the claim publishable."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "將這則通知改成繁體中文專業文字，保留版本與處置：binhost 檢查未通過（mirrors）：部署版本裝的是 be975bb8，master 是 382bf3db，這台機器在跑舊代碼。重新部署後再次檢查。",
+      "expected_output": "A compact alert that states the failed check, deployed and expected versions, exact state, and recovery action.",
+      "expectations": [
+        "The output preserves be975bb8 and 382bf3db.",
+        "The output uses precise execution or deployment wording instead of 跑.",
+        "The output states the redeploy-and-check action once without conversational filler."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "把以下 PR 說明縮成簡體中文。已知原因只有：旧格式无法表示空值。修改是新增 nullable 字段。不要增加测试报告。原稿：本次 PR 主要包含 nullable 字段的新增。简单来说，我们已经完成了相关代码修改，并且所有检查都已经顺利通过。",
+      "expected_output": "One or two sentences containing only the verified cause and change rationale.",
+      "expectations": [
+        "The output states that the old format cannot represent null values.",
+        "The output states that nullable was added without repeating a change inventory.",
+        "The output contains no work diary, routine passing report, heading, or recap."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "依嚴格模式審查並改寫這段 Python 註釋。刪除開發者已能從程式碼得知的內容，保留相容性限制：# 建立空列表\nitems = []\n# 保持欄位順序，因為版本 1 的讀取器按位置比較序列化欄位\nfields = [name, value]",
+      "expected_output": "Only the concise English compatibility comment remains above the field assignment.",
+      "expectations": [
+        "The empty-list comment is removed.",
+        "The version 1 positional compatibility rationale is preserved.",
+        "The retained source comment is concise English."
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "為簡體中文介面寫永久刪除项目 alpha 的確認文字。刪除後無法恢復，但使用者可改為停用项目。只輸出標題、正文、主要按鈕與次要按鈕。",
+      "expected_output": "A compact destructive confirmation naming the object, irreversible effect, and safer alternative.",
+      "expectations": [
+        "The output uses Simplified Chinese consistently.",
+        "The body names alpha and says deletion cannot be undone.",
+        "The controls use direct actions and include the disable alternative without terminal punctuation."
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "以繁體中文寫一份短操作指南。讀者是熟悉 Linux 的系統管理員。事實：修改 systemd 單元的 ExecStart 後，必須執行 systemctl daemon-reload；接著重新啟動 nginx；systemctl is-active nginx 輸出 active 表示完成。不要解釋 systemd 基礎。",
+      "expected_output": "A task-focused procedure with the condition, two actions, and observable result, without beginner background.",
+      "expectations": [
+        "The output preserves every command and identifier exactly.",
+        "The condition appears before the dependent actions.",
+        "The output gives active as the completion state and contains no systemd tutorial."
+      ]
+    }
+  ]
+}

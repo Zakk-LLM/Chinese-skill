@@ -74,13 +74,13 @@ pre-commit 使用者可引用本儲存庫的 `chinese-lint` hook。GitHub Action
 ```yaml
 repos:
   - repo: https://github.com/Zakk-LLM/Chinese-skill
-    rev: v1.0.0
+    rev: v1.1.0
     hooks:
       - id: chinese-lint
 ```
 
 ```yaml
-- uses: Zakk-LLM/Chinese-skill@v1.0.0
+- uses: Zakk-LLM/Chinese-skill@v1.1.0
   with:
     path: docs
     style: technical
@@ -90,6 +90,7 @@ repos:
 ## 規則
 
 - [寫作規則](references/writing-policy.md)：文章、改寫、翻譯、篇幅及註釋
+- [長篇文件工作流程](references/document-workflow.md)：文件用途、證據邊界、程序及讀者驗證
 - [README 規則](references/readme-style.md)：入口文件的結構、句法及資訊順序
 - [UI 規則](references/ui-style.md)：控制項、狀態、錯誤、確認及輔助功能文字
 - [PR 規則](references/pr-policy.md)：commit、PR、審查及發布說明
@@ -100,19 +101,25 @@ repos:
 
 ## 語料與詞典
 
-[README 語料](references/readme-corpus.json)記錄六個中文開源專案在 2019 年底前的 README 結構。[UI 語料](references/ui-corpus.json)記錄六個大型開源專案的固定版本中文詞庫。固定檔案均記錄 commit 與 Git blob。由語料歸納的規則至少由兩個來源支持；內部規則另行標示，不宣稱由語料直接得出。兩份語料不複製來源文字，也不將來源中的口語、宣傳語或直譯句式列為規範。
+[README 語料](references/readme-corpus.json)記錄六個中文開源專案在 2019 年底前的 README 結構。[UI 語料](references/ui-corpus.json)記錄六個大型開源專案的固定版本中文詞庫。[寫作來源](references/writing-sources.json)記錄技術寫作指南及相似技能中可移植的工作流程。
+
+固定檔案均記錄 commit 與 Git blob。由來源歸納的規則至少由兩個來源支持；內部規則另行標示，不宣稱由來源直接得出。來源索引不複製原文，也不將來源中的口語、宣傳語或強制流程列為通用規範。
 
 代理不應直接載入完整語料。先列出規則識別碼，再按需取得一條規則；只有核對來源時才取得單一來源記錄。
 
 ```bash
 python3 scripts/corpus_lookup.py readme --list
+python3 scripts/corpus_lookup.py writing --list
 python3 scripts/corpus_lookup.py readme --pattern identity
 python3 scripts/corpus_lookup.py ui --pattern failure --locale zh-TW
+python3 scripts/corpus_lookup.py writing --pattern reader-test
 python3 scripts/corpus_lookup.py readme --source gogs-2019
 python3 scripts/verify_corpora.py
 ```
 
 `verify_corpora.py` 需要網路連線，用於核對來源路徑、commit 日期與 Git blob。GitHub 達到速率限制時，程式會要求設定 `GITHUB_TOKEN` 並以狀態碼 2 結束，不會誤報為內容不一致。
+
+[寫作評測](evals/evals.json)保存文章、通知、PR、註釋、UI 及操作指南的固定測例。修改技能時應以相同提示比較修改前後輸出；主觀文風由盲測審查，客觀要求按評測條件核對。
 
 內建詞典包括國家教育研究院兩岸對照計算機名詞、OpenCC、MediaWiki 地區詞轉換表、CC-CEDICT、Unihan、McBopomofo、jieba、THUOCL 與 Rime essay。萌娘百科及中文維基詞庫採可選安裝，不隨專案發布。
 

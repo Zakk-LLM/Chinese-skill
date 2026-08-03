@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Verify pinned corpus files and live README contracts against GitHub."""
+"""Verify pinned writing files and live repository contracts against GitHub."""
 
 import hashlib
 import json
@@ -14,6 +14,7 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 CONFIGS = (
     ROOT / "references" / "readme-corpus.json",
     ROOT / "references" / "ui-corpus.json",
+    ROOT / "references" / "writing-sources.json",
 )
 
 

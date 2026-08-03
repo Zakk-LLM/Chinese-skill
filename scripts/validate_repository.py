@@ -336,6 +336,88 @@ def validate_ui_corpus(errors):
             errors.append(f"insufficient UI corpus evidence: {pattern['id']}")
 
 
+def validate_writing_sources(errors):
+    data = load_json("references/writing-sources.json")
+    if data.get("schema") != 1:
+        errors.append("unsupported writing source schema")
+    if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", data.get("verified", "")):
+        errors.append("writing sources have no valid verification date")
+    selection = data.get("selection", [])
+    if (not data.get("method") or not selection
+            or not all(isinstance(value, str) and value for value in selection)):
+        errors.append("writing sources have no selection method")
+
+    sources = data.get("sources", [])
+    identifiers = [item.get("id") for item in sources]
+    if not sources or len(identifiers) != len(set(identifiers)):
+        errors.append("writing source ids must be present and unique")
+    for source in sources:
+        required = {"id", "kind", "repository", "path", "commit", "blob", "date",
+                    "url", "license", "use_for", "avoid"}
+        if set(source) != required:
+            errors.append(f"incomplete writing source: {source.get('id')}")
+            continue
+        if source["kind"] not in {"skill", "guidance"}:
+            errors.append(f"invalid writing source kind: {source['id']}")
+        if not re.fullmatch(r"[0-9a-f]{40}", source["commit"]):
+            errors.append(f"writing source is not pinned: {source['id']}")
+        if not re.fullmatch(r"[0-9a-f]{40}", source["blob"]):
+            errors.append(f"writing source has no valid blob: {source['id']}")
+        if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", source["date"]):
+            errors.append(f"writing source has no valid date: {source['id']}")
+        expected_url = (f"https://github.com/{source['repository']}/blob/"
+                        f"{source['commit']}/{source['path']}")
+        if source["url"] != expected_url:
+            errors.append(f"writing source URL is not reproducible: {source['id']}")
+        if (not source["license"] or not source["use_for"] or not source["avoid"]
+                or not all(isinstance(value, str) and value
+                           for key in ("use_for", "avoid") for value in source[key])):
+            errors.append(f"writing source has empty observations: {source['id']}")
+
+    patterns = data.get("patterns", [])
+    pattern_ids = [item.get("id") for item in patterns]
+    if (not patterns or len(pattern_ids) != len(set(pattern_ids))
+            or not all(isinstance(identifier, str)
+                       and re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", identifier)
+                       for identifier in pattern_ids)):
+        errors.append("writing pattern ids must be present and unique")
+    for pattern in patterns:
+        required = {"id", "origin", "evidence", "use_when", "shape", "required"}
+        if set(pattern) != required:
+            errors.append(f"incomplete writing pattern: {pattern.get('id')}")
+            continue
+        evidence = pattern["evidence"]
+        if (pattern["origin"] != "sources" or len(evidence) < 2
+                or len(evidence) != len(set(evidence))
+                or set(evidence) - set(identifiers)):
+            errors.append(f"invalid writing pattern evidence: {pattern['id']}")
+        if not pattern["use_when"] or not pattern["shape"] or not pattern["required"]:
+            errors.append(f"empty writing pattern: {pattern['id']}")
+
+
+def validate_evals(errors):
+    data = load_json("evals/evals.json")
+    if data.get("skill_name") != "chinese-skill":
+        errors.append("eval skill name does not match SKILL.md")
+    evals = data.get("evals", [])
+    identifiers = [item.get("id") for item in evals]
+    if not evals or len(identifiers) != len(set(identifiers)):
+        errors.append("eval ids must be present and unique")
+    for item in evals:
+        required = {"id", "prompt", "expected_output", "expectations"}
+        if set(item) != required:
+            errors.append(f"incomplete writing eval: {item.get('id')}")
+            continue
+        if not isinstance(item["id"], int) or item["id"] < 1:
+            errors.append(f"invalid writing eval id: {item['id']!r}")
+        if not item["prompt"] or not item["expected_output"]:
+            errors.append(f"empty writing eval: {item['id']}")
+        expectations = item["expectations"]
+        if (not expectations or len(expectations) != len(set(expectations))
+                or not all(isinstance(value, str) and value for value in expectations)):
+            errors.append(f"invalid writing eval expectations: {item['id']}")
+
+
 def validate_sources(errors):
     data = load_json("references/lexicon-sources.json")
     if data.get("schema") != 1:
@@ -399,6 +481,15 @@ def validate_sources(errors):
 
 
 def validate_repository(errors, release):
+    version_path = ROOT / "VERSION"
+    if not version_path.is_file():
+        errors.append("VERSION is missing")
+        version = None
+    else:
+        version = version_path.read_text(encoding="utf-8").strip()
+        if not re.fullmatch(r"\d+\.\d+\.\d+", version):
+            errors.append("VERSION is not a semantic version")
+            version = None
     if not (ROOT / "LICENSE").is_file():
         errors.append("root LICENSE is missing")
     elif "contributors\n\nPermission is hereby granted" not in (
@@ -466,11 +557,15 @@ def validate_repository(errors, release):
             errors.append(f"localized README is missing: {filename}")
             continue
         text = path.read_text(encoding="utf-8")
-        for required in ("Python 3.11", "scripts/corpus_lookup.py",
+        required_values = ("Python 3.11", "scripts/corpus_lookup.py",
+                         "corpus_lookup.py writing --list",
                          "scripts/verify_corpora.py", "scripts/test_corpora.py",
                          "scripts/test_integrations.py",
-                         "--fix", "pre-commit", "Zakk-LLM/Chinese-skill@v1.0.0",
-                         locale_target):
+                         "references/document-workflow.md", "evals/evals.json",
+                         "--fix", "pre-commit", locale_target)
+        if version:
+            required_values += (f"Zakk-LLM/Chinese-skill@v{version}",)
+        for required in required_values:
             if required not in text:
                 errors.append(f"incomplete localized README {filename}: {required}")
     if release and (ROOT / "lexicons" / "optional").exists():
@@ -501,6 +596,8 @@ def main():
     validate_wording(errors)
     validate_readme_corpus(errors)
     validate_ui_corpus(errors)
+    validate_writing_sources(errors)
+    validate_evals(errors)
     validate_sources(errors)
     validate_repository(errors, args.release)
     if errors:

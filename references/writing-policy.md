@@ -3,6 +3,7 @@
 ## Contents
 
 - Editing contract, information order, grammar, and translation
+- Evidence boundaries for claims, future behavior, and recovery actions
 - Colloquial, filler, AI-style, and article structure
 - Script, regional readability, and terminology
 - Comment value and established developer knowledge
@@ -24,6 +25,21 @@ links, quotations, and formatting unless the user requests a structural rewrite.
 If the request is underspecified, use a conservative edit: retain the source locale and
 meaning, remove clear defects, and return only the revised text. Ask before changing the
 audience, position, factual claim, quotation, or technical meaning.
+
+## Preserve the evidence boundary
+
+Do not make an unsupported claim sound verified merely by replacing promotional or vague
+wording with formal language. A claim about performance, reliability, completeness,
+security, compatibility, user experience, or future behavior needs a supplied basis such
+as a measurement, baseline, mechanism, scope, specification, public commitment, or issue.
+
+When that basis is absent, ask for the smallest missing fact instead of inventing a
+credible-sounding replacement. If the requested format permits placeholders, mark the
+evidence gap. Delete the claim only when the user authorizes shortening or removal.
+
+Apply the same boundary to instructions and UI messages. Do not add a retry, update,
+rollback, support contact, or other recovery action unless the source or interface makes
+that action available.
 
 ## Order of information
 

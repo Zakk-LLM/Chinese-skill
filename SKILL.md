@@ -27,7 +27,7 @@ Read repository instruction files again at the same checkpoints. Repository-spec
 - Use backticks for identifiers and literal values. Do not wrap ordinary Chinese terms in `「」` or `『』`.
 - Do not add Emoji when the selected style rejects it.
 
-Use the locale-appropriate term meaning execution for a command, script, phase, test, or action. Use the term meaning operation for an ongoing program, service, system, or deployed code version. Do not replace either with a colloquial motion verb.
+Use the locale-appropriate term meaning execution for a command, script, phase, test, or action. Use the term meaning operation for an ongoing program, service, system, or deployed code version. For deployed code, state which version is executing; do not weaken the state to merely using old code. Do not replace either term with a colloquial motion verb.
 
 Read [references/writing-policy.md](references/writing-policy.md) when rewriting or auditing more than a short paragraph.
 
@@ -45,12 +45,18 @@ Use the requested operation precisely:
 - Polish: correct grammar, wording, rhythm, and terminology without adding facts.
 - Shorten: remove repetition, framing, examples, and background that are not required.
 - Professionalize: replace conversational or promotional language with evidence,
-  constraints, measured effects, and established domain terms.
+  constraints, measured effects, and established domain terms. When no evidence is
+  supplied, ask for it instead of inventing a formal substitute or a design intention.
 
 Default to a conservative rewrite when the user gives no detailed style contract:
 preserve meaning and formatting, use the source locale, remove clear formulaic wording,
 split confusing sentences, and return only the revised text. Ask before changing the
 audience, position, factual claim, quotation, or technical meaning.
+
+When a short source consists mainly of an unsupported effect, future promise, or recovery
+instruction, ask one question for the missing evidence or available action. Do not repeat
+the claim as a caveated fact, design goal, or likely outcome. The question must not propose
+replacement wording or infer a residual fact that the source does not state.
 
 For a cross-regional audience, keep one script throughout the artifact and prefer shared
 standard vocabulary. Do not combine Simplified and Traditional variants to display both.
@@ -79,6 +85,10 @@ When maintaining corpus metadata, run `scripts/verify_corpora.py` and
 
 - For articles, rewrites, translations, long passages, or comment audits, read
   [references/writing-policy.md](references/writing-policy.md).
+- For a new or substantially restructured tutorial, how-to guide, reference,
+  explanation, proposal, specification, or decision document, read
+  [references/document-workflow.md](references/document-workflow.md). Do not load this
+  workflow for a short rewrite or wording correction.
 - For README writing or revision, read
   [references/readme-style.md](references/readme-style.md). If a concrete structure or
   sentence pattern is still needed, run `scripts/corpus_lookup.py readme --list`, then
@@ -129,4 +139,5 @@ Before sending or publishing Chinese text, verify:
 8. PR and commit text contains rationale, not a work diary or routine test report.
 9. A revised draft did not grow without a new required fact.
 10. No disallowed Emoji or decorative symbol remains under the selected style.
-11. The response ends when the requested information is complete.
+11. Unsupported effects, future behavior, and recovery actions were not made more certain.
+12. The response ends when the requested information is complete.

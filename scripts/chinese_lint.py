@@ -59,8 +59,9 @@ CLAUSE_CONNECTORS = re.compile(
     r"並且|並|同时|同時|以便|因此|因而|所以|但是|然而|如果|若是|除非|"
     r"即使|雖然|虽然|儘管|尽管|而且|以及|另一方面")
 INTERNAL_RULE_FILES = {
-    (ROOT / "references" / name).resolve()
-    for name in ("wording.json", "copy-fixtures.json", "technical-terms.json")
+    *((ROOT / "references" / name).resolve()
+      for name in ("wording.json", "copy-fixtures.json", "technical-terms.json")),
+    (ROOT / "evals" / "evals.json").resolve(),
 }
 LITERAL_TERMS = {
     term for group in RULES["literal_groups"] for term in group["terms"]
