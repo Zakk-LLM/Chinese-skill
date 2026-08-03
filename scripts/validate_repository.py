@@ -6,6 +6,7 @@ import json
 import os
 import pathlib
 import re
+import subprocess
 import sys
 
 
@@ -14,6 +15,45 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 
 def load_json(relative):
     return json.loads((ROOT / relative).read_text(encoding="utf-8"))
+
+
+def validate_release_git(errors, version, root=ROOT, runner=subprocess.run):
+    command = ["git", "-C", str(root)]
+    try:
+        status = runner(
+            [*command, "status", "--porcelain=v1", "--untracked-files=all"],
+            check=False,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+        )
+    except OSError as error:
+        errors.append(f"cannot inspect release worktree: {error}")
+        return
+    if status.returncode:
+        detail = status.stderr.strip() or f"git exited with {status.returncode}"
+        errors.append(f"cannot inspect release worktree: {detail}")
+        return
+    if status.stdout.strip():
+        errors.append("release worktree contains tracked or untracked changes")
+
+    if version is None:
+        return
+    head_version = runner(
+        [*command, "show", "HEAD:VERSION"],
+        check=False,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+    )
+    if head_version.returncode:
+        errors.append("release commit does not contain VERSION")
+    elif head_version.stdout.strip() != version:
+        errors.append(
+            f"release commit VERSION is {head_version.stdout.strip()!r}, "
+            f"working tree VERSION is {version!r}")
 
 
 def validate_frontmatter(errors):
@@ -619,6 +659,8 @@ def validate_repository(errors, release):
         if not re.fullmatch(r"\d+\.\d+\.\d+", version):
             errors.append("VERSION is not a semantic version")
             version = None
+    if release:
+        validate_release_git(errors, version)
     if not (ROOT / "LICENSE").is_file():
         errors.append("root LICENSE is missing")
     elif "contributors\n\nPermission is hereby granted" not in (
@@ -658,14 +700,18 @@ def validate_repository(errors, release):
                 errors.append(f"incomplete reusable action: {value}")
     workflow = (ROOT / ".github" / "workflows" / "tests.yml").read_text(
         encoding="utf-8")
-    for command in ("shellcheck install.sh", "scripts/test_chinese_lint.py",
-                    "scripts/test_install.py", "scripts/test_lexicons.py",
-                    "scripts/test_corpora.py", "scripts/test_evals.py",
-                    "scripts/test_integrations.py",
-                    "scripts/validate_repository.py",
-                    "sync_lexicons.py --verify", "README.zh-CN.md", "uses: ./"):
+    for command in ("scripts/check_repository.py --release --require-shellcheck",
+                    "uses: ./"):
         if command not in workflow:
             errors.append(f"CI does not run required check: {command}")
+    check_entry = (ROOT / "scripts" / "check_repository.py").read_text(
+        encoding="utf-8")
+    for value in ('SCRIPTS.glob("test_*.py")', '"bash", "-n", "install.sh"',
+                  '"shellcheck", "install.sh"', '"sync_lexicons.py", "--verify"',
+                  '"validate_repository.py"', '"README.zh-CN.md"',
+                  '"verify_corpora.py"'):
+        if value not in check_entry:
+            errors.append(f"repository check entry is incomplete: {value}")
     corpus_workflow = ROOT / ".github" / "workflows" / "verify-corpora.yml"
     if not corpus_workflow.is_file():
         errors.append("scheduled corpus verification workflow is missing")
@@ -675,7 +721,7 @@ def validate_repository(errors, release):
                       "scripts/verify_corpora.py", "GITHUB_TOKEN"):
             if value not in corpus_workflow_text:
                 errors.append(f"corpus workflow is incomplete: {value}")
-    if "--exclude 'test_*'" in workflow:
+    if "--exclude 'test_*'" in workflow or "--exclude 'test_*'" in check_entry:
         errors.append("CI excludes test files from the Chinese wording check")
     readmes = {
         "README.md": "README.zh-CN.md",
@@ -689,15 +735,27 @@ def validate_repository(errors, release):
         text = path.read_text(encoding="utf-8")
         required_values = ("Python 3.11", "scripts/corpus_lookup.py",
                          "corpus_lookup.py writing --list",
-                         "scripts/verify_corpora.py", "scripts/test_corpora.py",
-                         "scripts/test_integrations.py",
+                         "scripts/verify_corpora.py", "DEVELOPMENT.md",
+                         "scripts/maintenance_report.py",
+                         "scripts/check_repository.py",
                          "references/document-workflow.md", "evals/evals.json",
                          "--fix", "pre-commit", locale_target)
         if version:
-            required_values += (f"Zakk-LLM/Chinese-skill@v{version}",)
+            required_values += (f"Zakk-LLM/Chinese-skill@v{version}",
+                                f"rev: v{version}")
         for required in required_values:
             if required not in text:
                 errors.append(f"incomplete localized README {filename}: {required}")
+    development = ROOT / "DEVELOPMENT.md"
+    if not development.is_file():
+        errors.append("DEVELOPMENT.md is missing")
+    else:
+        development_text = development.read_text(encoding="utf-8")
+        for value in ("scripts/maintenance_report.py", "scripts/check_repository.py",
+                      "README.md", "README.zh-CN.md", "VERSION",
+                      "references/pr-policy.md"):
+            if value not in development_text:
+                errors.append(f"DEVELOPMENT.md is incomplete: {value}")
     if release and (ROOT / "lexicons" / "optional").exists():
         errors.append("optional lexicons must not be included in a release")
     for path in ROOT.rglob("*"):
@@ -717,7 +775,7 @@ def validate_repository(errors, release):
 def main():
     parser = argparse.ArgumentParser(description="Validate the skill repository.")
     parser.add_argument("--release", action="store_true",
-                        help="also reject local files excluded from a public release")
+                        help="require a clean release commit and public release contents")
     args = parser.parse_args()
     errors = []
     validate_frontmatter(errors)

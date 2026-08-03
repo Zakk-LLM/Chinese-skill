@@ -24,24 +24,7 @@ jobs:
       - name: Validate scripts and bundled data
         env:
           PYTHONDONTWRITEBYTECODE: "1"
-        run: |
-          bash -n install.sh
-          shellcheck install.sh
-          python3 scripts/test_chinese_lint.py
-          LC_ALL=C PYTHONUTF8=0 PYTHONCOERCECLOCALE=0 \
-            python3 scripts/test_chinese_lint.py
-          python3 scripts/test_install.py
-          python3 scripts/test_lexicons.py
-          python3 scripts/test_corpora.py
-          python3 scripts/test_evals.py
-          python3 scripts/test_integrations.py
-          python3 scripts/sync_lexicons.py --verify
-          python3 scripts/validate_repository.py --release
-          python3 scripts/chinese_lint.py --locale zh-TW \
-            --exclude 'README.zh-CN.md' \
-            --exclude 'lexicons/*' --exclude '*/lexicons/*' .
-          python3 scripts/chinese_lint.py --kind prose --style readme \
-            --locale zh-CN README.zh-CN.md
+        run: python3 scripts/check_repository.py --release --require-shellcheck
       - name: Exercise reusable Chinese lint action
         uses: ./
         with:

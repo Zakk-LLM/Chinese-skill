@@ -74,13 +74,13 @@ pre-commit 用户可引用本仓库的 `chinese-lint` hook。GitHub Actions 可�
 ```yaml
 repos:
   - repo: https://github.com/Zakk-LLM/Chinese-skill
-    rev: v1.2.0
+    rev: v1.3.0
     hooks:
       - id: chinese-lint
 ```
 
 ```yaml
-- uses: Zakk-LLM/Chinese-skill@v1.2.0
+- uses: Zakk-LLM/Chinese-skill@v1.3.0
   with:
     path: docs
     style: technical
@@ -145,20 +145,23 @@ python3 scripts/sync_lexicons.py --verify-optional
 python3 scripts/chinese_lint.py --kind prose --locale zh-CN --regional docs/
 ```
 
-## 验证
+## 开发与维护
 
-提交修改前运行：
+维护者应先阅读[开发与维护](DEVELOPMENT.md)。该文件说明学习顺序、规则迭代、来源要求、版本策略及发布检查。维护报告只列出可核对的仓库数据，不判断文字质量。
 
 ```bash
-shellcheck install.sh
-python3 scripts/test_chinese_lint.py
-python3 scripts/test_install.py
-python3 scripts/test_lexicons.py
-python3 scripts/test_corpora.py
-python3 scripts/test_evals.py
-python3 scripts/test_integrations.py
-python3 scripts/sync_lexicons.py --verify
-python3 scripts/validate_repository.py --release
+python3 scripts/maintenance_report.py
+python3 scripts/maintenance_report.py --json
+```
+
+## 验证
+
+普通修改使用本地检查。公开发布必须先提交候选内容，再启用发布模式并要求 ShellCheck；来源有变更时再加入网络核对。发布模式会拒绝未提交内容，并核对 `HEAD` 中的版本。
+
+```bash
+python3 scripts/check_repository.py
+python3 scripts/check_repository.py --release --require-shellcheck
+python3 scripts/check_repository.py --release --network --require-shellcheck
 ```
 
 ## 许可证
