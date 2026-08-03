@@ -89,7 +89,7 @@ PR 模式只檢查已知模板標記前的自由描述，並限制字數、語�
 
 ## 詞典
 
-內建國家教育研究院兩岸對照計算機名詞、OpenCC、MediaWiki 地區詞轉換表、CC-CEDICT、Unihan、McBopomofo 及 jieba 詞庫。萌娘百科標題因授權限制改為可選來源。查詢結果會區分官方術語、一般詞典、轉換資料、地區用詞、輸入法語料、斷詞語料及專名候選。
+內建國家教育研究院兩岸對照計算機名詞、OpenCC、MediaWiki 地區詞轉換表、CC-CEDICT、Unihan、McBopomofo、jieba、THUOCL 全部 11 類及 Rime essay。萌娘百科與中文維基資料採可選安裝。查詢結果會標示來源與權威等級。
 
 ```bash
 python3 scripts/lexicon_lookup.py '程式碼'
@@ -99,6 +99,7 @@ python3 scripts/lexicon_lookup.py --reference
 python3 scripts/sync_lexicons.py --verify
 python3 scripts/sync_lexicons.py --refresh
 python3 scripts/sync_lexicons.py --source moegirl
+python3 scripts/sync_lexicons.py --source zhwiki
 python3 scripts/sync_lexicons.py --verify-optional
 ```
 
@@ -111,13 +112,13 @@ python3 scripts/chinese_lint.py --kind prose --locale zh-TW --regional docs/
 
 `technical-terms.json` 的判斷優先於推導結果，`wording.json` 的 `regional_exceptions`
 記錄兩岸皆通的詞。命中若落在更長的詞內（如 `東西向`、`連接埠`），會由 CC-CEDICT、
-McBopomofo 及 jieba 的詞界資料排除。
+McBopomofo、jieba、THUOCL 及 Rime essay 的詞界資料排除。
 
 `references/technical-terms.json` 收錄 154 條術語，涵蓋計算、開發、測試、版本控制、
 安全、Linux 及 Gentoo；`enforce` 的條目才會由 `--locale` 檢查地區用詞。`--reference`
 列出未內建的外部術語庫及其權威等級，供人工查證。
 
-萌娘百科快照採 CC BY-NC-SA 3.0，不隨專案發布。同步指令會把快照、manifest、授權及出處寫入 Git 忽略的 `lexicons/optional/`；包含該目錄的副本不得用於商業散布。
+可選詞庫分別寫入 Git 忽略的 `lexicons/optional/<source>/`，可同時安裝。萌娘百科快照採 CC BY-NC-SA 3.0，不得用於商業散布；中文維基快照採 CC BY-SA 4.0。兩者均不隨專案發布。
 
 專案原始碼與原創文件採 MIT License；內建及可選詞庫維持各自的授權。完整授權範圍見
 `LICENSE` 與 `lexicons/ATTRIBUTION.md`。

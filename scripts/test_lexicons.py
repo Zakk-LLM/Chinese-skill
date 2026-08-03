@@ -46,14 +46,22 @@ checks["preserved term has one result"] = (
 config = json.loads((ROOT / "references/lexicon-sources.json").read_text())
 manifest = json.loads((ROOT / "lexicons/manifest.json").read_text())
 moegirl = next(source for source in config["sources"] if source["id"] == "moegirl")
+zhwiki = next(source for source in config["sources"] if source["id"] == "zhwiki")
 checks["Moegirl is an optional source"] = moegirl.get("bundled") is False
+checks["Chinese Wikipedia is an optional source"] = zhwiki.get("bundled") is False
 with tempfile.TemporaryDirectory(prefix="chinese-skill-moegirl-") as raw_root:
     original_lexicons = LOOKUP.LEXICONS
     LOOKUP.LEXICONS = pathlib.Path(raw_root)
-    (LOOKUP.LEXICONS / "optional").mkdir()
-    with gzip.open(LOOKUP.LEXICONS / "optional" / moegirl["file"], "wt") as handle:
+    (LOOKUP.LEXICONS / "optional" / "moegirl").mkdir(parents=True)
+    with gzip.open(LOOKUP.LEXICONS / "optional" / "moegirl" /
+                   moegirl["file"], "wt") as handle:
         handle.write(FIXTURES["moegirl"] + "\n")
     checks["optional Moegirl lookup"] = has_source(FIXTURES["moegirl"], "moegirl")
+    (LOOKUP.LEXICONS / "optional" / "zhwiki").mkdir()
+    with gzip.open(LOOKUP.LEXICONS / "optional" / "zhwiki" /
+                   zhwiki["file"], "wt") as handle:
+        handle.write("---\nname: test\n...\n維基百科\twei ji bai ke\n")
+    checks["optional Chinese Wikipedia lookup"] = has_source("維基百科", "zhwiki")
     LOOKUP.LEXICONS = original_lexicons
 checks["missing optional Moegirl data is accepted"] = not has_source(
     FIXTURES["moegirl"], "moegirl")
@@ -89,6 +97,8 @@ with tempfile.TemporaryDirectory(prefix="chinese-skill-inventory-") as raw_root:
 checks["NAER terminology"] = has_source(FIXTURES["naer"], "naer")
 checks["regional conversion"] = has_source(FIXTURES["zhconversion"], "zhconversion")
 checks["segmentation corpus"] = has_source(FIXTURES["jieba"], "jieba")
+checks["THUOCL domain corpus"] = has_source("初始化", "thuocl")
+checks["Rime essay corpus"] = has_source("一一映射", "rime-essay")
 checks["every source names a license file"] = all(
     "license_file" in source
     for source in json.loads((ROOT / "references/lexicon-sources.json").read_text())["sources"])
@@ -181,17 +191,22 @@ with tempfile.TemporaryDirectory(prefix="chinese-skill-sync-") as raw_root:
     optional_source = copy.deepcopy(moegirl)
     optional_data = (FIXTURES["moegirl"] + "\n").encode()
     optional_source["sha256"] = SYNC.digest(optional_data)
+    wiki_source = copy.deepcopy(zhwiki)
+    wiki_data = b'---\nname: test\n...\nWikipedia\twei ji bai ke\n'
+    wiki_source["sha256"] = SYNC.digest(wiki_data)
     real_fetch = SYNC.fetch
 
     def optional_fetch(url, relaxed_tls=False):
         if url == optional_source["url"]:
             return optional_data
+        if url == wiki_source["url"]:
+            return wiki_data
         return b"test license\n"
 
     SYNC.fetch = optional_fetch
     try:
         SYNC.synchronize_optional(optional_source, True)
-        optional_destination = SYNC.DESTINATION / "optional"
+        optional_destination = SYNC.DESTINATION / "optional" / "moegirl"
         optional_manifest = json.loads(
             (optional_destination / "manifest.json").read_text())
         checks["optional synchronization is isolated"] = (
@@ -199,6 +214,12 @@ with tempfile.TemporaryDirectory(prefix="chinese-skill-sync-") as raw_root:
             and not SYNC.snapshot_failures(
                 SYNC.optional_config(optional_source), optional_manifest,
                 optional_destination))
+        SYNC.synchronize_optional(wiki_source, True)
+        wiki_destination = SYNC.DESTINATION / "optional" / "zhwiki"
+        checks["optional sources coexist"] = (
+            optional_destination.is_dir()
+            and (wiki_destination / wiki_source["file"]).is_file())
+        SYNC.verify_optional({"sources": [optional_source, wiki_source]})
     finally:
         SYNC.fetch = real_fetch
 SYNC.ROOT = original_root

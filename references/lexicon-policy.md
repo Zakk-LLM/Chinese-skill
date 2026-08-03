@@ -11,7 +11,8 @@ Choose terminology in this order:
    bundled NAER cross-strait computing terms;
 5. OpenCC, the MediaWiki regional tables, and CC-CEDICT as conversion or dictionary
    evidence;
-6. McBopomofo, jieba, and Moegirl as candidate or boundary corpora only.
+6. McBopomofo, jieba, THUOCL, Rime essay, Moegirl, and Chinese Wikipedia as
+   candidate or boundary corpora only.
 
 A lower source never overrides a higher source. Frequency, dictionary presence, and
 character conversion do not prove that a term is correct in context.
@@ -52,8 +53,12 @@ McBopomofo supplies Traditional Chinese input candidates and frequencies. It con
 several regional and competing forms, so presence is not approval.
 
 The jieba dictionary supplies word boundaries only. The linter uses it, CC-CEDICT, and
-McBopomofo to suppress a match that sits inside a longer word; word frequency there is
-not evidence of correct terminology.
+McBopomofo together with THUOCL and Rime essay to suppress a match that sits inside a
+longer word; word frequency there is not evidence of correct terminology.
+
+THUOCL supplies 11 domain lists, including computing, law, medicine, places, idioms,
+and general-interest subjects. Rime essay supplies input candidates and frequencies.
+Neither source establishes professional terminology or preferred regional usage.
 
 NAER records official Taiwan terms with their Mainland counterparts. A row often lists
 several accepted Chinese forms; choose by domain and repository usage instead of taking
@@ -62,6 +67,10 @@ the first form.
 The optional Moegirl source supplies article titles and proper names across popular
 culture. Use it to check spelling or preserve a known title. Do not use it to decide
 grammar, register, technical terminology, or professional tone.
+
+The optional Chinese Wikipedia source supplies article-derived names and phrases. It
+has the same evidentiary limit as Moegirl and may contain conversion or extraction
+errors. Optional sources are installed independently and may coexist.
 
 ## Required evidence
 

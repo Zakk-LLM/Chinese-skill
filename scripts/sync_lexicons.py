@@ -33,6 +33,14 @@ LICENSES = {
         "07dd922ddab159dd4c1865dee73f009aa3c8fdc1/LICENSE.txt"
     ),
     "OGDL-1.0.txt": None,
+    "Rime-LGPL-3.0.txt": (
+        "https://raw.githubusercontent.com/rime/rime-essay/"
+        "e9b1a374a6ea015fca5bdd04318924b4483ac35a/LICENSE"
+    ),
+    "THUOCL-MIT.txt": (
+        "https://raw.githubusercontent.com/thunlp/THUOCL/"
+        "a30ce79d895d01ab5132a5c74c29703ff7efb4cc/LICENSE"
+    ),
     "Unicode-3.0.txt": "https://www.unicode.org/license.txt",
 }
 
@@ -264,6 +272,7 @@ def clone_file(source, destination):
 
 def stage_snapshots(destination=None):
     destination = destination or DESTINATION
+    destination.parent.mkdir(parents=True, exist_ok=True)
     staged = pathlib.Path(tempfile.mkdtemp(
         prefix=f".{destination.name}-stage-", dir=destination.parent))
     if destination.exists():
@@ -297,7 +306,7 @@ def optional_config(source):
 
 
 def synchronize_optional(source, refresh):
-    destination = DESTINATION / "optional"
+    destination = DESTINATION / "optional" / source["id"]
     synchronized_at = datetime.datetime.now(datetime.UTC).isoformat()
     staged = stage_snapshots(destination)
     try:
@@ -331,10 +340,9 @@ def synchronize_optional(source, refresh):
                 sync_license(name, LICENSES[name], refresh, staged))
         attribution = (
             "# Optional lexicon attribution\n\n"
-            "Moegirl article titles are a separate work by Moegirl contributors "
-            "under CC BY-NC-SA 3.0. The downloaded text is recompressed without "
-            "changing its contents. The source URL and digests are recorded in "
-            "manifest.json.\n"
+            f"{source['attribution']}\n\n"
+            "The downloaded text is recompressed without changing its contents. "
+            "The source URL and digests are recorded in `manifest.json`.\n"
         )
         atomic_write(staged / "ATTRIBUTION.md", attribution.encode())
         atomic_write(staged / "manifest.json",
@@ -358,15 +366,31 @@ def verify_optional(config):
         return
     sources = {source["id"]: source for source in config["sources"]
                if not source.get("bundled", True)}
-    manifest = json.loads((destination / "manifest.json").read_text())
-    manifest_ids = [source["id"] for source in manifest.get("sources", [])]
-    if len(manifest_ids) != 1 or manifest_ids[0] not in sources:
-        raise SystemExit("optional manifest must contain one configured optional source")
-    failures = snapshot_failures(
-        optional_config(sources[manifest_ids[0]]), manifest, destination)
+    failures = []
+    installed = []
+    for path in sorted(destination.iterdir()):
+        if not path.is_dir() or path.name not in sources:
+            failures.append(f"unknown optional lexicon path: {path.name}")
+            continue
+        manifest_path = path / "manifest.json"
+        if not manifest_path.is_file():
+            failures.append(f"missing optional manifest: {path.name}")
+            continue
+        manifest = json.loads(manifest_path.read_text())
+        manifest_ids = [item["id"] for item in manifest.get("sources", [])]
+        if manifest_ids != [path.name]:
+            failures.append(f"optional manifest does not match directory: {path.name}")
+            continue
+        failures.extend(snapshot_failures(
+            optional_config(sources[path.name]), manifest, path))
+        installed.append(path.name)
     if failures:
         raise SystemExit("\n".join(failures))
-    print("verified optional lexicon snapshot")
+    if installed:
+        print(f"verified {len(installed)} optional lexicon snapshots: "
+              f"{', '.join(installed)}")
+    else:
+        print("optional lexicons are not installed")
 
 
 def main():

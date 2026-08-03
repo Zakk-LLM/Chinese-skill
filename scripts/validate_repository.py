@@ -129,6 +129,8 @@ def validate_sources(errors):
         if missing:
             errors.append(f"incomplete lexicon source {source.get('id')}: {sorted(missing)!r}")
             continue
+        if not source.get("bundled", True) and not source.get("attribution"):
+            errors.append(f"optional lexicon has no attribution: {source['id']}")
         license_name = source["license_file"]
         if not re.fullmatch(r"[^/]+\.txt", license_name):
             errors.append(f"invalid license filename: {source['id']}")
@@ -189,7 +191,7 @@ def validate_repository(errors, release):
     if "Python 3.11" not in (ROOT / "README.md").read_text():
         errors.append("README.md does not state the minimum Python version")
     if release and (ROOT / "lexicons" / "optional").exists():
-        errors.append("optional non-commercial lexicons must not be included in a release")
+        errors.append("optional lexicons must not be included in a release")
     for path in ROOT.rglob("*"):
         if any(part in {".git", "lexicons"} for part in path.parts):
             continue

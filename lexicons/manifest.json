@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "generated_at": "2026-08-03T10:22:47.922348+00:00",
+  "generated_at": "2026-08-03T10:37:18.634096+00:00",
   "sources": [
     {
       "id": "opencc",
@@ -16,7 +16,7 @@
           "state": "existing"
         }
       ],
-      "verified_at": "2026-08-03T10:22:47.922348+00:00",
+      "verified_at": "2026-08-03T10:37:18.634096+00:00",
       "retrieved_at": "2026-08-03T10:11:21.502362+00:00"
     },
     {
@@ -33,7 +33,7 @@
           "state": "existing"
         }
       ],
-      "verified_at": "2026-08-03T10:22:47.922348+00:00",
+      "verified_at": "2026-08-03T10:37:18.634096+00:00",
       "retrieved_at": "2026-08-03T10:11:21.502362+00:00"
     },
     {
@@ -50,7 +50,7 @@
           "state": "existing"
         }
       ],
-      "verified_at": "2026-08-03T10:22:47.922348+00:00",
+      "verified_at": "2026-08-03T10:37:18.634096+00:00",
       "retrieved_at": "2026-08-03T10:11:21.502362+00:00"
     },
     {
@@ -81,7 +81,7 @@
           "state": "existing"
         }
       ],
-      "verified_at": "2026-08-03T10:22:47.922348+00:00",
+      "verified_at": "2026-08-03T10:37:18.634096+00:00",
       "retrieved_at": "2026-08-03T10:11:21.502362+00:00"
     },
     {
@@ -98,7 +98,7 @@
           "state": "existing"
         }
       ],
-      "verified_at": "2026-08-03T10:22:47.922348+00:00",
+      "verified_at": "2026-08-03T10:37:18.634096+00:00",
       "retrieved_at": "2026-08-03T10:11:21.502362+00:00"
     },
     {
@@ -115,7 +115,7 @@
           "state": "existing"
         }
       ],
-      "verified_at": "2026-08-03T10:22:47.922348+00:00",
+      "verified_at": "2026-08-03T10:37:18.634096+00:00",
       "retrieved_at": "2026-08-03T10:11:21.502362+00:00"
     },
     {
@@ -132,8 +132,112 @@
           "state": "existing"
         }
       ],
-      "verified_at": "2026-08-03T10:22:47.922348+00:00",
+      "verified_at": "2026-08-03T10:37:18.634096+00:00",
       "retrieved_at": "2026-08-03T10:11:21.502362+00:00"
+    },
+    {
+      "id": "thuocl",
+      "version": "2018-11-21",
+      "authority": "candidate-corpus",
+      "license": "MIT",
+      "files": [
+        {
+          "path": "thuocl-it-2018-11-21.txt.gz",
+          "source_sha256": "e8cd42c9f5559735fa3bfb91515cbe051f991efd4a803038a1d5c0da85af3526",
+          "stored_sha256": "127e90e1974d737b1f188fe2d02b1549e357eb73fb43365133c55b5ec38a2e40",
+          "bytes": 122955,
+          "state": "downloaded"
+        },
+        {
+          "path": "thuocl-animal-2018-11-21.txt.gz",
+          "source_sha256": "bcdc95a32fe713d4bc32957ae26174e3b464908e318e821c9abb295e90249145",
+          "stored_sha256": "907b7233309d110a51d8fe52f05cb0de95591189ab9ebc33245b87ebe6bcc23f",
+          "bytes": 145542,
+          "state": "downloaded"
+        },
+        {
+          "path": "thuocl-finance-2018-11-21.txt.gz",
+          "source_sha256": "68e63d2009e59c6f388eeaa789d19b6a681657de3e8e56cc3479b21cd8548542",
+          "stored_sha256": "59bc8e676388b8d141cec8918fc8148c59d7f23c33ff63265c0bd8e0f8bdfcd6",
+          "bytes": 28579,
+          "state": "downloaded"
+        },
+        {
+          "path": "thuocl-car-2018-11-21.txt.gz",
+          "source_sha256": "58ffd756b89e8574852bc72c254276a1d7fa8821342eb3cbf3be73ca33ab921c",
+          "stored_sha256": "d34899c6891001912c1b3fcf232c0509aa0cfacebfbe4d6361a4e8fa4bc3f814",
+          "bytes": 16039,
+          "state": "downloaded"
+        },
+        {
+          "path": "thuocl-idiom-2018-11-21.txt.gz",
+          "source_sha256": "c339d5d6e37d4f8ecdcb82f2a02b7fdfc66796f0a5215155f2aff8a77e89a7eb",
+          "stored_sha256": "1840553434fc65e8816d0ad1497a8ae463f871ad2d31b4c793b6272fea00d7af",
+          "bytes": 85073,
+          "state": "downloaded"
+        },
+        {
+          "path": "thuocl-place-2018-11-21.txt.gz",
+          "source_sha256": "ca5574399da5750a2c36dc373f36e31a66ed1f8a4b21646df6ca44ec0b888d89",
+          "stored_sha256": "558f114ff95087d693f1ba222eadeb15b5aaae8f7745870643b65940e3b258a9",
+          "bytes": 286783,
+          "state": "downloaded"
+        },
+        {
+          "path": "thuocl-food-2018-11-21.txt.gz",
+          "source_sha256": "084caa96ad4f976720003e9420097ba7cb5ddbb17f9f8c8f76bc4b8e0cc777fd",
+          "stored_sha256": "7def50ea818a02025c5b3c1e64317b26ed0fdbcc0198745a839e4daae5367463",
+          "bytes": 69299,
+          "state": "downloaded"
+        },
+        {
+          "path": "thuocl-law-2018-11-21.txt.gz",
+          "source_sha256": "8ef1a5f41052ac95dedde88b167c5031a43b3e0211bf128b6125736cc76ef7b2",
+          "stored_sha256": "e382301a2c0583b93550679926007b7b5b561dd1917e8059ba5849455e051033",
+          "bytes": 109930,
+          "state": "downloaded"
+        },
+        {
+          "path": "thuocl-historical-figures-2018-11-21.txt.gz",
+          "source_sha256": "d0e5094016e6db8c55d363dc022f48f7b1753cf6d07e216f63cf522ce8e53605",
+          "stored_sha256": "9de08ed38aaee324c68aa2d9b9cbe8b499203dc670b75564222747978143d268",
+          "bytes": 84504,
+          "state": "downloaded"
+        },
+        {
+          "path": "thuocl-medical-2018-11-21.txt.gz",
+          "source_sha256": "a01f39f1677af0b6a620bbc68bf293e8e436f06248b74adb625cd61d9ad7bbcd",
+          "stored_sha256": "2ddb582b7d9d1bb7e5ef16802c70a9e5480a5ec796bd3b2e90a9701fd85e7f67",
+          "bytes": 140932,
+          "state": "downloaded"
+        },
+        {
+          "path": "thuocl-poem-2018-11-21.txt.gz",
+          "source_sha256": "f7045571f57114a3a70d2eaaeec8f991897d536be808f93161709f1289c8108c",
+          "stored_sha256": "c0adfa7cf79dd9d98da37aab06fe79ec2455377502be754e0e413059816497a3",
+          "bytes": 161019,
+          "state": "downloaded"
+        }
+      ],
+      "verified_at": "2026-08-03T10:37:18.634096+00:00",
+      "retrieved_at": "2026-08-03T10:37:18.634096+00:00"
+    },
+    {
+      "id": "rime-essay",
+      "version": "2026-07-13",
+      "authority": "candidate-corpus",
+      "license": "LGPL-3.0",
+      "files": [
+        {
+          "path": "rime-essay-2026-07-13.txt.gz",
+          "source_sha256": "a6f8409c261e5d21bd78e6cbcde8f8e1ef7f68c07ff1c2692c07dd4ff4151cea",
+          "stored_sha256": "c16a54222493b533d004f53b80d6e2d97cddfeb46811f2474c312b29daf14958",
+          "bytes": 2572643,
+          "state": "downloaded"
+        }
+      ],
+      "verified_at": "2026-08-03T10:37:18.634096+00:00",
+      "retrieved_at": "2026-08-03T10:37:18.634096+00:00"
     }
   ],
   "licenses": [
@@ -166,6 +270,16 @@
       "path": "licenses/OGDL-1.0.txt",
       "sha256": "dc9a32230f7b3d41d85d2bf013cc3043f0e6215b213c7a69add5522c3f341dd7",
       "bytes": 935
+    },
+    {
+      "path": "licenses/Rime-LGPL-3.0.txt",
+      "sha256": "da7eabb7bafdf7d3ae5e9f223aa5bdc1eece45ac569dc21b3b037520b4464768",
+      "bytes": 7651
+    },
+    {
+      "path": "licenses/THUOCL-MIT.txt",
+      "sha256": "db4b8cca414db4cf487b933d07a0514f77caf44f9f3d392f2bc9d7ba0d511c58",
+      "bytes": 1063
     },
     {
       "path": "licenses/Unicode-3.0.txt",

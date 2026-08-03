@@ -135,6 +135,18 @@ WORD_CORPORA = (
     (LEXICONS / "cc-cedict.txt.gz", (0, 1)),
     (LEXICONS / "mcbopomofo-data-3.0.txt.gz", (1,)),
     (LEXICONS / "jieba-dict-0.42.1.txt.gz", (0,)),
+    (LEXICONS / "thuocl-it-2018-11-21.txt.gz", (0,)),
+    (LEXICONS / "thuocl-animal-2018-11-21.txt.gz", (0,)),
+    (LEXICONS / "thuocl-finance-2018-11-21.txt.gz", (0,)),
+    (LEXICONS / "thuocl-car-2018-11-21.txt.gz", (0,)),
+    (LEXICONS / "thuocl-idiom-2018-11-21.txt.gz", (0,)),
+    (LEXICONS / "thuocl-place-2018-11-21.txt.gz", (0,)),
+    (LEXICONS / "thuocl-food-2018-11-21.txt.gz", (0,)),
+    (LEXICONS / "thuocl-law-2018-11-21.txt.gz", (0,)),
+    (LEXICONS / "thuocl-historical-figures-2018-11-21.txt.gz", (0,)),
+    (LEXICONS / "thuocl-medical-2018-11-21.txt.gz", (0,)),
+    (LEXICONS / "thuocl-poem-2018-11-21.txt.gz", (0,)),
+    (LEXICONS / "rime-essay-2026-07-13.txt.gz", (0,)),
 )
 REGIONAL_TABLES = {
     "zh-TW": ("TWPhrases.txt", "ZH_TO_TW", "STCharacters.txt"),
@@ -213,7 +225,7 @@ def longer_words(terms):
                 for line in handle:
                     if line.startswith("#"):
                         continue
-                    fields = line.split(" ")
+                    fields = line.split()
                     for column in columns:
                         if column >= len(fields):
                             continue

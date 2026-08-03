@@ -43,12 +43,13 @@ Replace `<skill-dir>` with the directory containing this `SKILL.md`.
 
 The result labels each source's authority. NAER supplies official Taiwan and Mainland
 computing terms; OpenCC and the MediaWiki tables supply conversion and regional
-evidence; CC-CEDICT supplies headwords; Unihan supplies character variants.
+evidence; CC-CEDICT supplies headwords; Unihan supplies character variants. THUOCL
+and Rime essay supply domain candidates and word-boundary evidence only.
 
-McBopomofo supplies Traditional Chinese input candidates. The optional Moegirl snapshot
-supplies proper names and article titles after it is installed with
-`sync_lexicons.py --source moegirl`. Never cite a candidate corpus as professional
-terminology evidence.
+McBopomofo supplies Traditional Chinese input candidates. Optional Moegirl and Chinese
+Wikipedia snapshots supply names and titles after installation with
+`sync_lexicons.py --source <source>`. Never cite a candidate corpus as professional
+terminology evidence. Keep each optional source's license and attribution with it.
 
 When the bundled sources disagree or the term is absent, list the external terminology
 databases to consult, then verify the term in the highest-authority one that covers the

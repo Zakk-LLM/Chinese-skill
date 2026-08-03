@@ -17,7 +17,13 @@ The files in this directory remain separate works under their original licenses.
   (`ZhConversion.php`, REL1_43): MediaWiki contributors, GPL-2.0-or-later.
 - [jieba dictionary 0.42.1](https://github.com/fxsjy/jieba/tree/v0.42.1): Sun Junyi
   and contributors, MIT.
+- [THUOCL](https://github.com/thunlp/THUOCL/tree/a30ce79d895d01ab5132a5c74c29703ff7efb4cc):
+  Tsinghua University Natural Language Processing Group, MIT. All 11 domain lists
+  are recompressed without content changes.
+- [Rime essay](https://github.com/rime/rime-essay/tree/e9b1a374a6ea015fca5bdd04318924b4483ac35a):
+  Gong Chen, Kunki Chiu, ksqsf, and upstream contributors, LGPL-3.0.
 
-The Moegirl title snapshot is not included. `sync_lexicons.py --source moegirl`
-downloads it to the ignored `optional/` directory with its attribution and
-CC BY-NC-SA 3.0 license.
+The Moegirl and Chinese Wikipedia snapshots are not included. Their synchronization
+commands write separate attribution, license, and manifest files below the ignored
+`optional/<source>/` directory. Moegirl uses CC BY-NC-SA 3.0; Chinese Wikipedia text
+uses CC BY-SA 4.0.

@@ -76,6 +76,49 @@ def jieba_results(query, contains):
                    "detail": f"frequency={fields[1]}; word boundary evidence only"}
 
 
+THUOCL_FILES = {
+    "it": "thuocl-it-2018-11-21.txt.gz",
+    "animal": "thuocl-animal-2018-11-21.txt.gz",
+    "finance": "thuocl-finance-2018-11-21.txt.gz",
+    "car": "thuocl-car-2018-11-21.txt.gz",
+    "idiom": "thuocl-idiom-2018-11-21.txt.gz",
+    "place": "thuocl-place-2018-11-21.txt.gz",
+    "food": "thuocl-food-2018-11-21.txt.gz",
+    "law": "thuocl-law-2018-11-21.txt.gz",
+    "historical-figures": "thuocl-historical-figures-2018-11-21.txt.gz",
+    "medical": "thuocl-medical-2018-11-21.txt.gz",
+    "poem": "thuocl-poem-2018-11-21.txt.gz",
+}
+
+
+def thuocl_results(query, contains):
+    for category, filename in THUOCL_FILES.items():
+        with gzip.open(LEXICONS / filename, "rt") as handle:
+            for line in handle:
+                fields = line.split()
+                if not fields or not matches(query, [fields[0]], contains):
+                    continue
+                frequency = fields[1] if len(fields) > 1 else "unknown"
+                yield {"source": "thuocl", "authority": "candidate-corpus",
+                       "term": fields[0],
+                       "detail": f"category={category}; frequency={frequency}; "
+                                 "domain vocabulary evidence only"}
+
+
+def rime_essay_results(query, contains):
+    path = LEXICONS / "rime-essay-2026-07-13.txt.gz"
+    with gzip.open(path, "rt") as handle:
+        for line in handle:
+            fields = line.split()
+            if not fields or not matches(query, [fields[0]], contains):
+                continue
+            frequency = fields[1] if len(fields) > 1 else "unknown"
+            yield {"source": "rime-essay", "authority": "candidate-corpus",
+                   "term": fields[0],
+                   "detail": f"frequency={frequency}; input candidate and word "
+                             "boundary evidence only"}
+
+
 def cedict_results(query, contains):
     pattern = re.compile(r"^(\S+) (\S+) \[([^]]+)] /(.*)/$")
     with gzip.open(LEXICONS / "cc-cedict.txt.gz", "rt") as handle:
@@ -101,7 +144,7 @@ def opencc_results(query, contains):
 
 
 def moegirl_results(query, contains):
-    path = LEXICONS / "optional" / "moegirl-titles-20260713.txt.gz"
+    path = LEXICONS / "optional" / "moegirl" / "moegirl-titles-20260713.txt.gz"
     if not path.exists():
         return
     with gzip.open(path, "rt") as handle:
@@ -110,6 +153,21 @@ def moegirl_results(query, contains):
             if matches(query, [title], contains):
                 yield {"source": "moegirl", "authority": "candidate-corpus",
                        "term": title, "detail": "article title; not terminology evidence"}
+
+
+def zhwiki_results(query, contains):
+    path = LEXICONS / "optional" / "zhwiki" / "zhwiki-20260416.dict.yaml.gz"
+    if not path.exists():
+        return
+    with gzip.open(path, "rt") as handle:
+        for line in handle:
+            if line.startswith("#") or "\t" not in line:
+                continue
+            title = line.split("\t", 1)[0]
+            if matches(query, [title], contains):
+                yield {"source": "zhwiki", "authority": "candidate-corpus",
+                       "term": title,
+                       "detail": "Wikipedia-derived entry; not terminology evidence"}
 
 
 def mcbopomofo_results(query, contains):
@@ -153,7 +211,10 @@ SEARCHERS = {
     "unihan": unihan_results,
     "mcbopomofo": mcbopomofo_results,
     "moegirl": moegirl_results,
+    "zhwiki": zhwiki_results,
     "jieba": jieba_results,
+    "thuocl": thuocl_results,
+    "rime-essay": rime_essay_results,
 }
 
 

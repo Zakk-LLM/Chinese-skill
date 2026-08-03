@@ -47,7 +47,22 @@
       "sha256": "8f360cd416d9ebd88e20792cae0bbae3f6b1bf160418da9855e6e20086907c6e",
       "file": "moegirl-titles-20260713.txt.gz",
       "format": "plain-to-gzip",
-      "license_file": "CC-BY-NC-SA-3.0.txt"
+      "license_file": "CC-BY-NC-SA-3.0.txt",
+      "attribution": "Moegirl article titles are a separate work by Moegirl contributors under CC BY-NC-SA 3.0."
+    },
+    {
+      "id": "zhwiki",
+      "version": "20260416",
+      "bundled": false,
+      "role": "Chinese Wikipedia article titles and phrases",
+      "authority": "candidate-corpus",
+      "license": "CC-BY-SA-4.0",
+      "url": "https://github.com/felixonmars/fcitx5-pinyin-zhwiki/releases/download/0.3.0/zhwiki-20260416.dict.yaml",
+      "sha256": "5c140e462f9c00a119500b7fec0d3b927f0f83920001a7ea408e26748d09ea07",
+      "file": "zhwiki-20260416.dict.yaml.gz",
+      "format": "plain-to-gzip",
+      "license_file": "CC-BY-SA-4.0.txt",
+      "attribution": "The dictionary is generated from Chinese Wikipedia by felixonmars and follows the Wikimedia text license, CC BY-SA 4.0."
     },
     {
       "id": "mcbopomofo",
@@ -114,6 +129,96 @@
       "url": "https://raw.githubusercontent.com/fxsjy/jieba/v0.42.1/jieba/dict.txt",
       "sha256": "7197c3211ddd98962b036cdf40324d1ea2bfaa12bd028e68faa70111a88e12a8",
       "file": "jieba-dict-0.42.1.txt.gz",
+      "format": "plain-to-gzip"
+    },
+    {
+      "id": "thuocl",
+      "version": "2018-11-21",
+      "commit": "a30ce79d895d01ab5132a5c74c29703ff7efb4cc",
+      "role": "domain vocabulary and word-boundary evidence",
+      "authority": "candidate-corpus",
+      "license": "MIT",
+      "license_file": "THUOCL-MIT.txt",
+      "files": [
+        {
+          "url": "https://raw.githubusercontent.com/thunlp/THUOCL/a30ce79d895d01ab5132a5c74c29703ff7efb4cc/data/THUOCL_IT.txt",
+          "sha256": "e8cd42c9f5559735fa3bfb91515cbe051f991efd4a803038a1d5c0da85af3526",
+          "file": "thuocl-it-2018-11-21.txt.gz",
+          "format": "plain-to-gzip"
+        },
+        {
+          "url": "https://raw.githubusercontent.com/thunlp/THUOCL/a30ce79d895d01ab5132a5c74c29703ff7efb4cc/data/THUOCL_animal.txt",
+          "sha256": "bcdc95a32fe713d4bc32957ae26174e3b464908e318e821c9abb295e90249145",
+          "file": "thuocl-animal-2018-11-21.txt.gz",
+          "format": "plain-to-gzip"
+        },
+        {
+          "url": "https://raw.githubusercontent.com/thunlp/THUOCL/a30ce79d895d01ab5132a5c74c29703ff7efb4cc/data/THUOCL_caijing.txt",
+          "sha256": "68e63d2009e59c6f388eeaa789d19b6a681657de3e8e56cc3479b21cd8548542",
+          "file": "thuocl-finance-2018-11-21.txt.gz",
+          "format": "plain-to-gzip"
+        },
+        {
+          "url": "https://raw.githubusercontent.com/thunlp/THUOCL/a30ce79d895d01ab5132a5c74c29703ff7efb4cc/data/THUOCL_car.txt",
+          "sha256": "58ffd756b89e8574852bc72c254276a1d7fa8821342eb3cbf3be73ca33ab921c",
+          "file": "thuocl-car-2018-11-21.txt.gz",
+          "format": "plain-to-gzip"
+        },
+        {
+          "url": "https://raw.githubusercontent.com/thunlp/THUOCL/a30ce79d895d01ab5132a5c74c29703ff7efb4cc/data/THUOCL_chengyu.txt",
+          "sha256": "c339d5d6e37d4f8ecdcb82f2a02b7fdfc66796f0a5215155f2aff8a77e89a7eb",
+          "file": "thuocl-idiom-2018-11-21.txt.gz",
+          "format": "plain-to-gzip"
+        },
+        {
+          "url": "https://raw.githubusercontent.com/thunlp/THUOCL/a30ce79d895d01ab5132a5c74c29703ff7efb4cc/data/THUOCL_diming.txt",
+          "sha256": "ca5574399da5750a2c36dc373f36e31a66ed1f8a4b21646df6ca44ec0b888d89",
+          "file": "thuocl-place-2018-11-21.txt.gz",
+          "format": "plain-to-gzip"
+        },
+        {
+          "url": "https://raw.githubusercontent.com/thunlp/THUOCL/a30ce79d895d01ab5132a5c74c29703ff7efb4cc/data/THUOCL_food.txt",
+          "sha256": "084caa96ad4f976720003e9420097ba7cb5ddbb17f9f8c8f76bc4b8e0cc777fd",
+          "file": "thuocl-food-2018-11-21.txt.gz",
+          "format": "plain-to-gzip"
+        },
+        {
+          "url": "https://raw.githubusercontent.com/thunlp/THUOCL/a30ce79d895d01ab5132a5c74c29703ff7efb4cc/data/THUOCL_law.txt",
+          "sha256": "8ef1a5f41052ac95dedde88b167c5031a43b3e0211bf128b6125736cc76ef7b2",
+          "file": "thuocl-law-2018-11-21.txt.gz",
+          "format": "plain-to-gzip"
+        },
+        {
+          "url": "https://raw.githubusercontent.com/thunlp/THUOCL/a30ce79d895d01ab5132a5c74c29703ff7efb4cc/data/THUOCL_lishimingren.txt",
+          "sha256": "d0e5094016e6db8c55d363dc022f48f7b1753cf6d07e216f63cf522ce8e53605",
+          "file": "thuocl-historical-figures-2018-11-21.txt.gz",
+          "format": "plain-to-gzip"
+        },
+        {
+          "url": "https://raw.githubusercontent.com/thunlp/THUOCL/a30ce79d895d01ab5132a5c74c29703ff7efb4cc/data/THUOCL_medical.txt",
+          "sha256": "a01f39f1677af0b6a620bbc68bf293e8e436f06248b74adb625cd61d9ad7bbcd",
+          "file": "thuocl-medical-2018-11-21.txt.gz",
+          "format": "plain-to-gzip"
+        },
+        {
+          "url": "https://raw.githubusercontent.com/thunlp/THUOCL/a30ce79d895d01ab5132a5c74c29703ff7efb4cc/data/THUOCL_poem.txt",
+          "sha256": "f7045571f57114a3a70d2eaaeec8f991897d536be808f93161709f1289c8108c",
+          "file": "thuocl-poem-2018-11-21.txt.gz",
+          "format": "plain-to-gzip"
+        }
+      ]
+    },
+    {
+      "id": "rime-essay",
+      "version": "2026-07-13",
+      "commit": "e9b1a374a6ea015fca5bdd04318924b4483ac35a",
+      "role": "general input-method vocabulary, frequency, and word-boundary evidence",
+      "authority": "candidate-corpus",
+      "license": "LGPL-3.0",
+      "license_file": "Rime-LGPL-3.0.txt",
+      "url": "https://raw.githubusercontent.com/rime/rime-essay/e9b1a374a6ea015fca5bdd04318924b4483ac35a/essay.txt",
+      "sha256": "a6f8409c261e5d21bd78e6cbcde8f8e1ef7f68c07ff1c2692c07dd4ff4151cea",
+      "file": "rime-essay-2026-07-13.txt.gz",
       "format": "plain-to-gzip"
     }
   ],
