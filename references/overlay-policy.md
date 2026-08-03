@@ -44,7 +44,8 @@ file.
 - A routine or behavior-neutral issue fix needs only bare `Closes #N`.
 - Keep overlay GitHub issues out of `pkgdev commit -b/--bug` and `-c/--closes`; those
   options use bare numbers for Gentoo Bugzilla and full URLs for other trackers.
-- Do not add AI attribution, generated-by trailers, or any `Co-Authored-By` trailer.
+- Do not add AI attribution or generated-by trailers. A `Co-Authored-By` or
+  `Signed-off-by` naming a person stays allowed.
 - Let `pkgdev` generate trailers and use the contributor's real identity and email,
   never a GitHub noreply address.
 - Keep one logical change per clean squashed commit; use one commit per package in a

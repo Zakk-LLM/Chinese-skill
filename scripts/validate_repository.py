@@ -42,8 +42,8 @@ def validate_agent_metadata(errors):
     text = path.read_text()
     required = {
         "display_name": "Chinese Writing Control",
-        "short_description": "Enforce concise Chinese and technical terminology",
-        "default_prompt": "Use $chinese-skill to review Chinese wording and terminology concisely.",
+        "short_description": "Write and revise concise professional Chinese",
+        "default_prompt": "Use $chinese-skill to write or revise concise, professional Chinese without formulaic AI wording or Emoji.",
     }
     for field, expected in required.items():
         match = re.search(rf"^\s{{2}}{field}:\s+[\"'](.+)[\"']\s*$", text, re.M)
@@ -85,7 +85,7 @@ def validate_wording(errors):
     if len(literal) != len(set(literal)):
         errors.append("literal wording rules must be unique")
     patterns = [rule["pattern"] for rule in data["regex_rules"]]
-    for key in ("attribution_patterns", "invalid_signoff_patterns",
+    for key in ("emoji_patterns", "attribution_patterns", "invalid_signoff_patterns",
                 "routine_passing_patterns", "workflow_narration_patterns",
                 "author_narration_patterns", "pr_inventory_patterns"):
         patterns.extend(data[key])
@@ -94,6 +94,13 @@ def validate_wording(errors):
             re.compile(pattern)
         except re.error as error:
             errors.append(f"invalid wording regular expression: {error}")
+    if set(data.get("prose_limits", {})) != {
+            "sentence_characters", "clause_markers",
+            "repeated_sentence_characters"}:
+        errors.append("prose limits are incomplete")
+    elif any(not isinstance(value, int) or value < 1
+             for value in data["prose_limits"].values()):
+        errors.append("prose limits must be positive integers")
     if set(data["pr_body_limits"]) != {"general", "gentoo-overlay"}:
         errors.append("PR body limits must cover both profiles")
     for profile, limits in data["pr_body_limits"].items():

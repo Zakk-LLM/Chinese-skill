@@ -36,6 +36,18 @@ When revising an existing draft, do not increase its character, block, heading, 
 list-item count unless the revision adds a required fact that was absent. Replacing
 colloquial or imprecise wording is not permission to add an explanation.
 
+## Never sign as an AI
+
+Do not add `Generated with`, `AI-Generated-By`, `Claude-Session`, a `Co-authored-by` naming a
+model, or any other trailer that credits a model or agent, in any repository and in any
+artifact. This rule has no exception for tooling defaults; remove the trailer before
+committing. `chinese_lint.py` enforces it for every kind and profile.
+
+Trailers that credit people stay allowed. `Co-authored-by: Alice <alice@example.org>` and
+`Signed-off-by: Zakk <zakk@example.org>` pass in every profile; only a routing address such
+as `@users.noreply.github.com` is rejected, because a sign-off needs the contributor's real
+email.
+
 ## Exclude work-diary content
 
 Do not include:

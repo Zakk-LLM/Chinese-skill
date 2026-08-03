@@ -15,6 +15,14 @@
     {
       "message": "state the exact operation without anthropomorphizing software",
       "terms": ["自己讀", "自己读", "自己掃", "自己扫", "認得", "认得", "跟著換", "跟着换", "圈出來", "圈出来", "留著", "留着", "拿到", "幫你", "帮你", "會自動幫", "会自动帮"]
+    },
+    {
+      "message": "remove formulaic AI wording and state the concrete claim",
+      "terms": ["開啟全新篇章", "开启全新篇章", "帶來全新體驗", "带来全新体验", "帶您深入了解", "带您深入了解", "讓我們一起", "让我们一起", "不僅僅是", "不仅仅是", "值得一提", "相信通過", "相信通过"]
+    },
+    {
+      "message": "replace region-bound slang with standard Chinese",
+      "terms": ["踩坑", "避坑", "填坑", "整活", "拉胯", "小白", "乾貨", "干货", "懶人包", "懒人包", "小撇步", "卡關", "卡关", "雷包", "超雷", "洗版"]
     }
   ],
   "regex_rules": [
@@ -57,8 +65,29 @@
     {
       "pattern": "[\\u4e00-\\u9fff][,.;:!?](?=\\s|$|[\\u4e00-\\u9fff])",
       "message": "use Chinese punctuation after Chinese text"
+    },
+    {
+      "pattern": "(?:在|於|于)(?:當今|当今)[^，。\\n]{0,24}(?:時代|时代|背景下)",
+      "message": "remove the generic era-setting introduction"
+    },
+    {
+      "pattern": "(?:本文|本篇|這篇文章|这篇文章)(?:將|将|會|会)?(?:深入)?(?:探討|探讨|介紹|介绍|分析|解析|說明|说明|旨在)",
+      "message": "start with the subject and claim instead of narrating the article"
+    },
+    {
+      "pattern": "(?:更加|更為|更为)(?:便捷|高效|智慧|智能|強大|强大|靈活|灵活|卓越)",
+      "message": "replace promotional adjectives with a concrete property or measured result"
     }
   ],
+  "emoji_patterns": [
+    "[\\U0001F000-\\U0001FAFF]",
+    "[\\u2600-\\u27BF]\\uFE0F?|[0-9#*]\\uFE0F?\\u20E3|\\uFE0F|\\u200D"
+  ],
+  "prose_limits": {
+    "sentence_characters": 80,
+    "clause_markers": 5,
+    "repeated_sentence_characters": 8
+  },
   "locale_markers": {
     "zh-TW": "為與後裡於這檔軟網碼執運檢過體應說讀寫來開發現錯誤務萬個門頁書號據線數陣列儲從將還讓",
     "zh-CN": "为与后里于这档软网码执运检过体应说读写来开发现错误务万个门页书号据线数阵列储从将还让"
@@ -68,10 +97,11 @@
     "zh-CN": ["软件", "程序", "文件", "权限"]
   },
   "attribution_patterns": [
-    "^\\s*Co-authored-by:",
-    "^\\s*(?:Generated|Created|Written)(?:-|\\s)+(?:with|by):?\\s+.*(?:Anthropic|Claude|Codex|ChatGPT|Copilot|Cursor|Gemini|OpenAI|OpenCode)",
-    "^\\s*AI-(?:Generated|Assisted)-By:",
-    "^\\s*Signed-off-by:\\s*(?:Claude|Codex|ChatGPT|Copilot|Gemini|OpenCode)(?:\\s*<|$)"
+    "^\\s*(?:[#/*;%-]+\\s*)?Co-authored-by:.*(?:anthropic|claude|codex|chatgpt|gpt-|copilot|cursor|devin|gemini|openai|opencode)",
+    "^\\s*(?:[#/*;%-]+\\s*)?Claude-Session:",
+    "^\\s*(?:[#/*;%-]+\\s*)?(?:Generated|Created|Written)(?:-|\\s)+(?:with|by):?\\s+.*(?:Anthropic|Claude|Codex|ChatGPT|Copilot|Cursor|Gemini|OpenAI|OpenCode)",
+    "^\\s*(?:[#/*;%-]+\\s*)?AI-(?:Generated|Assisted)-By:",
+    "^\\s*(?:[#/*;%-]+\\s*)?Signed-off-by:\\s*(?:Claude|Codex|ChatGPT|Copilot|Gemini|OpenCode)(?:\\s*<|$)"
   ],
   "invalid_signoff_patterns": [
     "^\\s*Signed-off-by:.*<[^>]+@users\\.noreply\\.github\\.com>"

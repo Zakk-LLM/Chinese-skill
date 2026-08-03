@@ -4,7 +4,7 @@
 
 ## 範圍
 
-規則適用於對話、README、文件、介面文字、通知、日誌、測試、程式碼、註釋、審查、commit 與 PR。所有中文都需人工審查，不以副檔名區分。
+規則適用於文章撰寫、改寫、潤飾、貼入文字、對話、README、文件、介面文字、通知、日誌、測試、程式碼、註釋、審查、commit 與 PR。所有中文都需人工審查，不以副檔名區分。
 
 主要檢查項目：
 
@@ -13,7 +13,10 @@
 - 是否保留機翻或英語直譯句式；
 - 詞彙是否符合倉庫與技術領域；
 - 是否包含口語、贅詞、自造詞或無必要的外語；
+- 是否包含 Emoji、模板化 AI 套語、宣傳形容詞或文章自述；
+- 句子是否過長、包含過多條件或重複既有句子；
 - 簡體與繁體是否混用；
+- 所用詞彙是否能讓不同中文地區的讀者理解；
 - 是否重複差異、標題或開發者已知的機制；
 - 註釋是否必要，保留的程式碼註釋是否為簡潔英文。
 
@@ -64,6 +67,7 @@ cd Chinese-skill
 python3 scripts/chinese_lint.py <path>
 python3 scripts/chinese_lint.py --kind source <path>
 python3 scripts/chinese_lint.py --kind prose --locale zh-TW README.md docs/
+printf '%s\n' '待檢查文字' | python3 scripts/chinese_lint.py --kind prose -
 python3 scripts/chinese_lint.py --kind commit-message message.txt
 python3 scripts/chinese_lint.py --kind pr-body --title 'scope: summary' body.txt
 python3 scripts/test_chinese_lint.py
@@ -73,10 +77,19 @@ python3 scripts/validate_repository.py --release
 python3 scripts/sync_lexicons.py --verify
 ```
 
-預設的 `all` 模式同時檢查正文與支援的程式註釋。`--kind source` 或 `--kind prose`
-只用於刻意限制檢查範圍。`--kind commit-message` 另外檢查標題長度、結尾標點及第二行是否空白；
-`--profile gentoo-overlay` 再要求英文標題、`scope: summary` 格式，並拒絕 AI 署名與
-`Co-Authored-By` 欄位。
+預設的 `all` 模式同時檢查正文與支援的程式註釋。`-` 代表標準輸入，適合檢查貼入文字。
+`--kind source` 或 `--kind prose`
+只用於刻意限制檢查範圍。`--kind commit-message` 另外檢查標題長度、結尾標點及第二行是否空白，
+`--profile gentoo-overlay` 再要求英文標題與 `scope: summary` 格式。
+
+AI 署名（`Generated with`、`Claude-Session`、指向模型的 `Co-authored-by` 等）在所有檢查模式與
+profile 一律報錯；署名為人的 `Co-authored-by` 與 `Signed-off-by` 不受限制。
+
+正文不得加入 Emoji。檢查器也會報告模板化 AI 開場、文章自述、宣傳形容詞、超過 80 個
+非空白字元的句子、多層分句及完全重複的句子。這些結果是修改候選，仍需按語意人工判斷。
+
+每份內容只能使用一種簡繁字形。面向多個中文地區時採用容易理解的現代標準中文。
+所在地區的正式技術用語可以保留，例如本文件使用的 `程式碼`，不需要混列其他地區的同義詞。
 
 PR 模式只檢查已知模板標記前的自由描述，並限制字數、語意區塊及清單項目；標題重複、
 工作日誌、完成宣稱、例行測試報告及自設標題均會報錯。一般 profile 限制 600 個非空白字元、
@@ -89,7 +102,9 @@ PR 模式只檢查已知模板標記前的自由描述，並限制字數、語�
 
 ## 詞典
 
-內建國家教育研究院兩岸對照計算機名詞、OpenCC、MediaWiki 地區詞轉換表、CC-CEDICT、Unihan、McBopomofo、jieba、THUOCL 全部 11 類及 Rime essay。萌娘百科與中文維基資料採可選安裝。查詢結果會標示來源與權威等級。
+內建國家教育研究院兩岸對照計算機名詞、OpenCC、MediaWiki 地區詞轉換表、
+CC-CEDICT、Unihan、McBopomofo、jieba、THUOCL 全部 11 類及 Rime essay。
+萌娘百科與中文維基資料採可選安裝。查詢結果會標示來源與權威等級。
 
 ```bash
 python3 scripts/lexicon_lookup.py '程式碼'

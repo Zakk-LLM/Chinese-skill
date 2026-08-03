@@ -44,6 +44,10 @@ PROSE_SUFFIXES = {".adoc", ".markdown", ".md", ".rst", ".text", ".txt"}
 SKIP_DIRS = {".git", ".hg", ".svn", "node_modules", "vendor", "__pycache__"}
 CJK = re.compile(r"[\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]")
 SENTENCE_END = re.compile(r"[。！？!?]")
+SENTENCE = re.compile(r"[^。！？!?\n]+[。！？!?]?")
+CLAUSE_CONNECTORS = re.compile(
+    r"並且|並|同时|同時|以便|因此|因而|所以|但是|然而|如果|若是|除非|"
+    r"即使|雖然|虽然|儘管|尽管|而且|以及|另一方面")
 INTERNAL_RULE_FILES = {
     (ROOT / "references" / name).resolve()
     for name in ("wording.json", "copy-fixtures.json", "technical-terms.json")
@@ -522,6 +526,9 @@ def is_utf8_text(path):
 
 def files_from(paths, patterns):
     for raw in paths:
+        if raw == "-":
+            yield pathlib.Path("-")
+            continue
         path = pathlib.Path(raw)
         if path.is_file():
             if not excluded(path, patterns, explicit=True):
@@ -547,6 +554,42 @@ def paragraph_unit_findings(paragraph, line, limit):
                     compact[:24]))
     if len(SENTENCE_END.findall(paragraph)) > 4:
         out.append((line, "paragraph exceeds four sentences", compact[:24]))
+    sentence_limit = RULES["prose_limits"]["sentence_characters"]
+    clause_limit = RULES["prose_limits"]["clause_markers"]
+    for match in SENTENCE.finditer(paragraph):
+        sentence = match.group(0).strip()
+        if not CJK.search(sentence):
+            continue
+        sample = re.sub(r"\s", "", sentence)
+        sentence_line = line + paragraph.count("\n", 0, match.start())
+        if len(sample) > sentence_limit:
+            out.append((sentence_line,
+                        f"sentence exceeds {sentence_limit} non-space characters",
+                        sample[:24]))
+        markers = len(re.findall(r"[，；：,;:]", sentence))
+        markers += len(CLAUSE_CONNECTORS.findall(sentence))
+        if markers >= clause_limit:
+            out.append((sentence_line,
+                        "split the sentence into direct claims and conditions",
+                        sample[:24]))
+    return out
+
+
+def repeated_sentence_findings(text):
+    minimum = RULES["prose_limits"]["repeated_sentence_characters"]
+    seen = set()
+    out = []
+    for match in SENTENCE.finditer(text):
+        sentence = match.group(0).strip()
+        if not sentence.endswith(tuple("。！？!?")):
+            continue
+        normalized = re.sub(r"[\s`*_>#-]", "", sentence)
+        if len(normalized) < minimum or not CJK.search(normalized):
+            continue
+        if normalized in seen:
+            out.append((line_number(text, match.start()),
+                        "remove the repeated sentence", normalized[:24]))
+        seen.add(normalized)
     return out
 
 
@@ -637,13 +680,20 @@ def commit_findings(text, profile):
 
 
 def attribution_findings(text):
+    """AI signatures are banned in every file, kind, and profile."""
     out = []
     for pattern in RULES["attribution_patterns"]:
         for match in re.finditer(pattern, text, re.M | re.I):
             out.append((line_number(text, match.start()),
-                        "remove disallowed attribution from commit and PR text",
+                        "remove the AI attribution; AI signatures are not allowed",
                         match.group(0)[:48]))
     return out
+
+
+def emoji_findings(text):
+    return pattern_findings(text, "emoji_patterns",
+                            "remove Emoji and state the meaning in text")
+
 
 
 def signoff_findings(text):
@@ -672,6 +722,16 @@ def authored_pr_text(text):
     positions = [text.find(marker) for marker in RULES["pr_template_markers"]]
     positions = [position for position in positions if position >= 0]
     return text[:min(positions)] if positions else text
+
+
+def mask_markup_code(text):
+    """Preserve offsets while excluding fenced and inline code from prose rules."""
+    def blank(match):
+        return "".join("\n" if char == "\n" else " " for char in match.group(0))
+
+    text = re.sub(r"(?ms)^ {0,3}(?:```|~~~).*?^ {0,3}(?:```|~~~)\s*$",
+                  blank, text)
+    return re.sub(r"`+[^`\n]*`+", blank, text)
 
 
 def pr_body_findings(text, profile, title):
@@ -717,11 +777,16 @@ def pr_body_findings(text, profile, title):
 def lint_file(path, kind, profile, title, paragraph_limit, locale="auto",
               regional=False):
     try:
-        text = path.read_text()
+        text = sys.stdin.read() if str(path) == "-" else path.read_text()
     except (OSError, UnicodeDecodeError) as error:
         return [(0, f"cannot read text: {error}", "")]
     checked_text = authored_pr_text(text) if kind == "pr-body" else text
-    findings = phrase_findings(checked_text)
+    if kind in {"prose", "pr-body", "commit-message"} or (
+            kind == "all" and prose_path(path, text)):
+        checked_text = mask_markup_code(checked_text)
+    findings = attribution_findings(text)
+    findings.extend(emoji_findings(text))
+    findings.extend(phrase_findings(checked_text))
     findings.extend(locale_findings(checked_text, locale))
     findings.extend(terminology_findings(checked_text, locale))
     if regional:
@@ -735,6 +800,7 @@ def lint_file(path, kind, profile, title, paragraph_limit, locale="auto",
         paragraph_checker = (data_paragraph_findings if path.suffix in DATA_SUFFIXES
                              else paragraph_findings)
         findings.extend(paragraph_checker(checked_text, paragraph_limit))
+        findings.extend(repeated_sentence_findings(checked_text))
     if kind == "commit-message":
         findings.extend(commit_findings(text, profile))
     if kind in {"pr-body", "commit-message"}:
@@ -750,7 +816,6 @@ def lint_file(path, kind, profile, title, paragraph_limit, locale="auto",
     if kind == "pr-body":
         findings.extend(pr_body_findings(checked_text, profile, title))
     if profile == "gentoo-overlay" and kind in {"pr-body", "commit-message"}:
-        findings.extend(attribution_findings(text))
         findings.extend(signoff_findings(text))
         if kind == "pr-body":
             if title is None:
@@ -766,7 +831,8 @@ def lint_file(path, kind, profile, title, paragraph_limit, locale="auto",
 def main():
     parser = argparse.ArgumentParser(
         description="Check Chinese wording and reject Chinese code comments.")
-    parser.add_argument("paths", nargs="+", help="files or directories to inspect")
+    parser.add_argument("paths", nargs="+",
+                        help="files or directories to inspect; use - for standard input")
     parser.add_argument("--kind",
                         choices=("all", "source", "prose", "pr-body", "commit-message"),
                         default="all", help="rules for the inspected text")
@@ -792,7 +858,8 @@ def main():
         for line, message, sample in lint_file(
                 path, args.kind, args.profile, args.title, args.paragraph_limit,
                 args.locale, args.regional):
-            where = f"{path}:{line}" if line else str(path)
+            label = "stdin" if str(path) == "-" else str(path)
+            where = f"{label}:{line}" if line else label
             detail = f" [{sample}]" if sample else ""
             print(f"{where}: {message}{detail}")
             total += 1

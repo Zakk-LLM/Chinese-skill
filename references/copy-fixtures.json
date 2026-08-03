@@ -14,6 +14,13 @@
   "adjacent_ascii_punctuation": "完成.下一句,仍需處理。",
   "expanded_terminology": "遠程倉庫的字符串處理需要調整環境變量。",
   "clean_prose": "因為 `dev-libs/libfoo` 缺少 `USE=ssl`，所以 `emerge` 在 `src_configure` 階段失敗。",
+  "emoji": "因為通知需要顯示機器人狀態，所以保留 🤖 圖示。",
+  "ai_article": "在當今快速發展的數位時代，本文將深入探討這項技術如何為使用者帶來更加便捷的體驗。",
+  "complex_sentence": "系統收到請求後先檢查快取，並在資料不存在時查詢資料庫，同時記錄處理狀態以便後續分析，因此即使上游服務暫時無法回應，也會繼續處理。",
+  "repeated_sentence": "此設定會拒絕空值。此設定會拒絕空值。",
+  "regional_slang": "這份懶人包可以協助新手避坑。",
+  "shared_traditional": "這段程式碼會檢查輸入格式。",
+  "stdin_article": "本文將深入探討設定方式。",
   "lookup": {
     "opencc": "軟件",
     "cedict": "软件",

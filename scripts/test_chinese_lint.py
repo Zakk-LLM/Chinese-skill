@@ -4,6 +4,7 @@
 import importlib.util
 import json
 import pathlib
+import subprocess
 import sys
 import tempfile
 
@@ -127,10 +128,9 @@ with tempfile.TemporaryDirectory() as base:
     human_attributed = root / "human-attributed.txt"
     human_attributed.write_text("app-misc/foo: update\n\n"
                                 "Co-authored-by: Alice <alice@example.org>\n")
-    check("overlay Co-Authored-By", any("attribution" in item[1]
-                                         for item in LINT.lint_file(
-                                             human_attributed, "commit-message",
-                                             "gentoo-overlay", None, 280)))
+    check("human co-author trailer is allowed", not any(
+        "attribution" in item[1] for item in LINT.lint_file(
+            human_attributed, "commit-message", "gentoo-overlay", None, 280)))
     signed = root / "signed.txt"
     signed.write_text("app-misc/foo: update\n\n"
                       "Signed-off-by: Claude Shannon <claude@example.org>\n")
@@ -152,11 +152,11 @@ with tempfile.TemporaryDirectory() as base:
                                          generated, "commit-message", "gentoo-overlay",
                                          None, 280)))
     emoji = root / "emoji.txt"
-    emoji.write_text("因為通知需要顯示機器人狀態，所以保留 🤖 圖示。\n")
-    check("ordinary robot emoji", not any("attribution" in item[1]
-                                           for item in LINT.lint_file(
-                                               emoji, "pr-body", "gentoo-overlay",
-                                               "docs: explain robot icon", 280)))
+    emoji.write_text(FIXTURES["emoji"] + "\n")
+    check("Emoji is rejected", any("remove Emoji" in item[1]
+                                     for item in LINT.lint_file(
+                                         emoji, "pr-body", "gentoo-overlay",
+                                         "docs: explain robot icon", 280)))
     data = root / "terms.json"
     data.write_text('{"note": "' + "字" * 400 + '"}\n')
     check("data file Chinese length", any(
@@ -370,5 +370,76 @@ with tempfile.TemporaryDirectory() as base:
     check("longer word suppresses a match", not any(
         "colloquial" in item[1] for item in LINT.lint_file(
             contained, "prose", "general", None, 280, "zh-TW", True)))
+    general_attribution = root / "general-attribution.txt"
+    general_attribution.write_text("fix: update parser\n\n"
+                                   "因為輸入含 BOM，所以先剝除。\n\n"
+                                   "Co-authored-by: Claude <noreply@anthropic.com>\n")
+    check("AI attribution in any profile", any(
+        "AI signatures are not allowed" in item[1] for item in LINT.lint_file(
+            general_attribution, "commit-message", "general", None, 280)))
+    source_attribution = root / "attributed.py"
+    source_attribution.write_text("# Generated with Claude Code\nvalue = 1\n")
+    check("AI attribution in source", any(
+        "AI signatures are not allowed" in item[1] for item in LINT.lint_file(
+            source_attribution, "all", "general", None, 280)))
+    human_trailer = root / "human-trailer.txt"
+    human_trailer.write_text("fix: update parser\n\n"
+                             "Co-authored-by: Alice <alice@example.org>\n")
+    check("human trailer stays outside overlay", not LINT.lint_file(
+        human_trailer, "commit-message", "general", None, 280))
+    check("human trailer stays inside overlay", not LINT.lint_file(
+        human_trailer, "commit-message", "gentoo-overlay", None, 280))
+    human_signoff = root / "human-signoff.txt"
+    human_signoff.write_text("app-misc/foo: add 1.4.2\n\n"
+                             "Signed-off-by: Zakk <zakk@example.org>\n")
+    check("human sign-off is allowed", not LINT.lint_file(
+        human_signoff, "commit-message", "gentoo-overlay", None, 280))
+
+    ai_article = root / "ai-article.txt"
+    ai_article.write_text(FIXTURES["ai_article"] + "\n")
+    article_findings = LINT.lint_file(
+        ai_article, "prose", "general", None, 280, "zh-TW")
+    check("generic AI introduction", any(
+        "era-setting" in item[1] for item in article_findings))
+    check("article narration", any(
+        "narrating the article" in item[1] for item in article_findings))
+    check("promotional adjective", any(
+        "promotional adjectives" in item[1] for item in article_findings))
+
+    complex_sentence = root / "complex-sentence.txt"
+    complex_sentence.write_text(FIXTURES["complex_sentence"] + "\n")
+    check("complex sentence", any(
+        "split the sentence" in item[1] for item in LINT.lint_file(
+            complex_sentence, "prose", "general", None, 280, "zh-TW")))
+
+    repeated = root / "repeated.txt"
+    repeated.write_text(FIXTURES["repeated_sentence"] + "\n")
+    check("repeated sentence", any(
+        "repeated sentence" in item[1] for item in LINT.lint_file(
+            repeated, "prose", "general", None, 280, "zh-TW")))
+
+    regional_slang = root / "regional-slang.txt"
+    regional_slang.write_text(FIXTURES["regional_slang"] + "\n")
+    check("region-bound slang", len([
+        item for item in LINT.lint_file(
+            regional_slang, "prose", "general", None, 280, "zh-TW")
+        if "region-bound slang" in item[1]]) == 2)
+
+    shared_traditional = root / "shared-traditional.txt"
+    shared_traditional.write_text(FIXTURES["shared_traditional"] + "\n")
+    check("Traditional technical term remains valid", not LINT.lint_file(
+        shared_traditional, "prose", "general", None, 280, "zh-TW"))
+
+    stdin_result = subprocess.run(
+        [sys.executable, str(TARGET), "--kind", "prose", "-"],
+        input=FIXTURES["stdin_article"] + "\n", text=True,
+        stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    check("standard input", stdin_result.returncode == 1
+          and "narrating the article" in stdin_result.stdout)
+
+    inline_code = root / "inline-code.md"
+    inline_code.write_text("Pattern: `" + FIXTURES["stdin_article"] + "`\n")
+    check("inline code is excluded from prose rules", not LINT.lint_file(
+        inline_code, "prose", "general", None, 280))
 
 raise SystemExit(1 if failures else 0)

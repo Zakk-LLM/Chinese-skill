@@ -1,5 +1,22 @@
 # Chinese writing policy
 
+## Choose the editing contract
+
+Determine the audience, purpose, locale, document type, required terminology, and
+permitted degree of change. For pasted text, preserve facts, numbers, code, commands,
+links, quotations, and formatting unless the user requests a structural rewrite.
+
+- Writing may create structure but may not invent evidence.
+- Rewriting may reorder content but must preserve meaning.
+- Polishing corrects language and tone without adding claims.
+- Shortening removes repetition and nonessential context before compressing sentences.
+- Professional writing states evidence, constraints, impact, and required action without
+  conversational or promotional framing.
+
+If the request is underspecified, use a conservative edit: retain the source locale and
+meaning, remove clear defects, and return only the revised text. Ask before changing the
+audience, position, factual claim, quotation, or technical meaning.
+
 ## Order of information
 
 Write in this order when the fields exist:
@@ -58,15 +75,41 @@ Name the actual variable, phase, service, file, state transition, or user action
 Do not anthropomorphize software. Do not create a novel label when the ecosystem
 already has a term.
 
+Do not narrate the act of writing or announce planned coverage. Start with the subject
+and claim. Remove generic era-setting openings, symmetrical filler, decorative
+conclusions, stacked praise, and invitations to the reader. Do not add Emoji.
+
+## Structure articles
+
+- Give each paragraph one claim, its evidence or reason, and its consequence when needed.
+- Put necessary context before the decision it qualifies.
+- Split a sentence when it contains several conditions, contrasts, causes, or actions.
+- Use headings only when they help readers locate independent subjects.
+- Do not repeat the introduction in the conclusion.
+- For technical or professional articles, distinguish measured results, sourced facts,
+  assumptions, inferences, and recommendations.
+- Do not fabricate citations, measurements, consensus, or causal explanations.
+
 ## Keep Chinese native
 
 - Choose Simplified or Traditional Chinese from the user and repository context.
+- Keep one script throughout each artifact; do not place Simplified and Traditional
+  variants side by side as a substitute for choosing a locale.
 - Use standard Mandarin that is readily understood across regions.
 - Do not translate English syntax word for word.
 - Preserve established technical names such as `USE`, `RESTRICT`, `SRC_URI`,
   `systemd`, and `nginx`.
 - Do not insert English adjectives where a concrete Chinese description is clearer.
 - Use Chinese punctuation in Chinese sentences and ASCII punctuation inside code.
+
+For readers across China, Taiwan, Hong Kong, Singapore, and Malaysia, prefer shared
+standard vocabulary. Avoid dialect syntax, local jokes, Internet slang, and
+administrative shorthand that requires regional context.
+
+Keep established local technical terms when they remain understandable. For example,
+`程式碼` remains valid in Traditional Chinese. If a precise term is not broadly
+understood, retain the established English name or define the selected term once.
+Do not mix scripts or list every regional synonym.
 
 ## Comment gate
 
@@ -107,3 +150,11 @@ Apply this rule to comments, README files, developer documentation, reviews, com
 - Do not report routine passing checks unless the user requested them or a test changed
   the implementation decision.
 - Stop after the answer, decision, or actionable list is complete.
+
+## General fallback
+
+When no repository or publication style applies, use modern standard Chinese in the
+source locale. Prefer subject–verb–object order, concrete verbs, short sentences, one
+claim per paragraph, established technical names, and Chinese punctuation. Preserve
+uncertainty and attribution. Do not invent a term, fact, transition, heading, example,
+or conclusion merely to make the text appear complete.

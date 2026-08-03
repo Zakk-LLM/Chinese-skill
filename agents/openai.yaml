@@ -1,4 +1,4 @@
 interface:
   display_name: "Chinese Writing Control"
-  short_description: "Enforce concise Chinese and technical terminology"
-  default_prompt: "Use $chinese-skill to review Chinese wording and terminology concisely."
+  short_description: "Write and revise concise professional Chinese"
+  default_prompt: "Use $chinese-skill to write or revise concise, professional Chinese without formulaic AI wording or Emoji."
