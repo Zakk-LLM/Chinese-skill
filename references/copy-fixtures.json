@@ -1,0 +1,30 @@
+{
+  "bad_comment": "中文說明",
+  "bad_prose": "簡單來說，先跑一次。",
+  "mixed_locale": "這個文件通过檢查。",
+  "expanded_mixed": "开发軟體",
+  "several_wrong": "软件\n网络",
+  "ordinary_core": "核心功能",
+  "wrong_region": "這個軟件需要更新。",
+  "machine_translation": "對設定檔進行檢查後，快取被系統所忽略。",
+  "redundant_aspect": "設定檔中存在著兩個重複的項目。",
+  "vague_improvement": "這次調整顯著地提升了效能。",
+  "full_width_brackets": "請確認「快取」目錄的權限。",
+  "ascii_punctuation": "檢查結果如下:",
+  "adjacent_ascii_punctuation": "完成.下一句,仍需處理。",
+  "expanded_terminology": "遠程倉庫的字符串處理需要調整環境變量。",
+  "clean_prose": "因為 `dev-libs/libfoo` 缺少 `USE=ssl`，所以 `emerge` 在 `src_configure` 階段失敗。",
+  "lookup": {
+    "opencc": "軟件",
+    "cedict": "软件",
+    "unihan": "发",
+    "mcbopomofo": "程式碼",
+    "moegirl": "Gentoo Linux",
+    "naer": "algorithm",
+    "zhconversion": "网络",
+    "jieba": "三角函数"
+  },
+  "regional_vocabulary": "遠程服務器的打印機無法使用。",
+  "regional_server": "服務器",
+  "contained_word": "這批東西向的測試涵蓋三角函數。"
+}

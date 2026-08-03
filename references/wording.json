@@ -1,0 +1,103 @@
+{
+  "literal_groups": [
+    {
+      "message": "remove discourse filler and state the fact directly",
+      "terms": ["簡單來說", "简单来说", "換句話說", "换句话说", "坦白說", "坦白说", "坦白講", "坦白讲", "其實", "其实", "說白了", "说白了", "值得注意的是", "總的來說", "总的来说", "綜上所述", "综上所述", "需要強調的是", "需要强调的是", "毫無疑問", "毫无疑问", "眾所周知", "众所周知", "顯而易見", "显而易见", "不難看出", "不难看出", "由此可見", "由此可见", "總而言之", "总而言之", "如前所述", "一般來說", "一般来说", "在此之前值得一提", "可以說是", "可以说是", "在我看來", "在我看来", "老實說", "老实说", "說實話", "说实话", "在這種情況下", "在这种情况下", "如上所述", "不用多說", "不用多说"]
+    },
+    {
+      "message": "use established technical terms instead of AI-style wording",
+      "terms": ["賦能", "赋能", "抓手", "閉環", "闭环", "底層邏輯", "底层逻辑", "認知升級", "认知升级", "長期主義", "长期主义", "顆粒度", "颗粒度", "組合拳", "组合拳", "打法", "破圈", "沉澱", "沉淀", "生態位", "生态位", "至關重要", "至关重要", "邁上新台階", "迈上新台阶", "一站式", "全方位", "無縫", "无缝", "極大地", "极大地", "顯著地", "显著地", "強有力", "强有力", "打造", "助力", "深耕", "痛點", "痛点", "護城河", "护城河", "更上一層樓", "更上一层楼", "顛覆性", "颠覆性", "革命性", "前所未有", "業界領先", "业界领先", "行業標杆", "行业标杆", "全新升級", "全新升级", "強勢", "强势"]
+    },
+    {
+      "message": "replace colloquial wording with a concrete state or action",
+      "terms": ["就行", "搞定", "拉下來", "拉下来", "裝上", "装上", "白跑", "一堆", "一大堆", "啥", "咋", "玩意", "省事", "靠譜", "靠谱", "壓根", "压根", "老是", "看一眼", "東西", "东西", "沒啥", "没啥", "亂七八糟", "乱七八糟", "讀不到", "读不到", "取不到", "對不上", "对不上", "發不出", "发不出", "擋住", "挡住", "沒成", "没成", "清掉", "一個都沒刪", "一个都没删", "沒有第二條路進來", "没有第二条路进来", "照樣", "照样", "折騰", "折腾", "搞不定", "湊合", "凑合", "隨手", "随手", "順手", "顺手", "沒轍", "没辙", "卡住了"]
+    },
+    {
+      "message": "state the exact operation without anthropomorphizing software",
+      "terms": ["自己讀", "自己读", "自己掃", "自己扫", "認得", "认得", "跟著換", "跟着换", "圈出來", "圈出来", "留著", "留着", "拿到", "幫你", "帮你", "會自動幫", "会自动帮"]
+    }
+  ],
+  "regex_rules": [
+    {
+      "pattern": "跑(?!步|道|車|车|馬|马)",
+      "message": "use 執行/执行 for an action or 運行/运行为 an ongoing state"
+    },
+    {
+      "pattern": "(?:的話|的话)(?=[，。；：]|$)",
+      "message": "remove the conversational conditional ending"
+    },
+    {
+      "pattern": "通過.{0,10}的方式|通过.{0,10}的方式",
+      "message": "name the direct action"
+    },
+    {
+      "pattern": "進行(?:了)?(?:構建|同步|下載|安裝|驗證|檢查)|进行(?:了)?(?:构建|同步|下载|安装|验证|检查)",
+      "message": "use the direct verb"
+    },
+    {
+      "pattern": "(?:對|对)[^，。；：、\\n]{0,12}(?:進行|进行)",
+      "message": "name the direct action instead of a 對…進行 construction"
+    },
+    {
+      "pattern": "被(?!所有)[^，。；：、\\n]{0,8}所(?=[\\u4e00-\\u9fff])",
+      "message": "remove the redundant passive marker"
+    },
+    {
+      "pattern": "存在(?:著|着)",
+      "message": "drop the redundant aspect marker"
+    },
+    {
+      "pattern": "(?:大大|極大|极大|顯著|显著|有效)(?:地)?(?:提升|提高|改善|優化|优化)(?![^，。；：\\n]{0,20}(?:\\d+(?:\\.\\d+)?%|[一二三四五六七八九十]+倍))",
+      "message": "state the measured change instead of a vague improvement claim"
+    },
+    {
+      "pattern": "[「『][\\u4e00-\\u9fff]{1,8}[」』]",
+      "message": "do not wrap ordinary Chinese terms in full-width brackets; use backticks for identifiers"
+    },
+    {
+      "pattern": "[\\u4e00-\\u9fff][,.;:!?](?=\\s|$|[\\u4e00-\\u9fff])",
+      "message": "use Chinese punctuation after Chinese text"
+    }
+  ],
+  "locale_markers": {
+    "zh-TW": "為與後裡於這檔軟網碼執運檢過體應說讀寫來開發現錯誤務萬個門頁書號據線數陣列儲從將還讓",
+    "zh-CN": "为与后里于这档软网码执运检过体应说读写来开发现错误务万个门页书号据线数阵列储从将还让"
+  },
+  "regional_exceptions": {
+    "zh-TW": ["權限", "文件", "程序", "指針", "介質", "字節", "項目", "腳本"],
+    "zh-CN": ["软件", "程序", "文件", "权限"]
+  },
+  "attribution_patterns": [
+    "^\\s*Co-authored-by:",
+    "^\\s*(?:Generated|Created|Written)(?:-|\\s)+(?:with|by):?\\s+.*(?:Anthropic|Claude|Codex|ChatGPT|Copilot|Cursor|Gemini|OpenAI|OpenCode)",
+    "^\\s*AI-(?:Generated|Assisted)-By:",
+    "^\\s*Signed-off-by:\\s*(?:Claude|Codex|ChatGPT|Copilot|Gemini|OpenCode)(?:\\s*<|$)"
+  ],
+  "invalid_signoff_patterns": [
+    "^\\s*Signed-off-by:.*<[^>]+@users\\.noreply\\.github\\.com>"
+  ],
+  "routine_passing_patterns": [
+    "(?:測試|测试|檢查|检查|掃描|扫描|驗證|验证).{0,16}(?:全部|全數|全数)?(?:通過|通过|成功|正常)",
+    "(?:(?:all|every)\\s+)?(?:tests?|checks?|scans?|builds?|pytest|pkgcheck)(?:\\s|[:：`-]){1,8}(?:pass(?:ed)?|succeed(?:ed)?|green)"
+  ],
+  "workflow_narration_patterns": [
+    "(?:本次|此次|這次|这次)\\s*(?:PR|提交|修改|更新).{0,12}(?:主要)?(?:包含|包括|完成)",
+    "(?:目前|現在|现在)?(?:所有|全部).{0,12}(?:已)?(?:完成|正常|通過|通过)",
+    "(?:已|已经|已經)(?:全面|全部)?(?:完成|完善|補齊|补齐|覆蓋|覆盖)(?:所有|全部)?(?:修改|更新|功能|內容|内容|情況|情况)?",
+    "(?:全面|完整)(?:支援|支持|覆蓋|覆盖)(?:所有|全部)?",
+    "(?:確保|确保|保證|保证)(?:所有|全部|完整|全面).{0,12}(?:正常|正確|正确|安全|相容|兼容|可用)"
+  ],
+  "author_narration_patterns": [
+    "(?:^|[，。；：\\n])\\s*(?:我|我們|我们)(?:已|將|将|會|会|新增|增加|修改|更新|修正|實作|实现|完成)"
+  ],
+  "pr_inventory_patterns": [
+    "^\\s*(?:本次|此次|這次|这次)\\s*(?:PR|修改|更新).{0,12}(?:包含|包括)"
+  ],
+  "pr_template_markers": [
+    "<!-- Please put the pull request description above -->"
+  ],
+  "pr_body_limits": {
+    "general": {"characters": 600, "blocks": 4, "list_items": 5},
+    "gentoo-overlay": {"characters": 360, "blocks": 3, "list_items": 4}
+  }
+}

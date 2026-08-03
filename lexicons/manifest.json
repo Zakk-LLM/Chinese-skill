@@ -1,0 +1,176 @@
+{
+  "schema": 1,
+  "generated_at": "2026-08-03T10:22:47.922348+00:00",
+  "sources": [
+    {
+      "id": "opencc",
+      "version": "1.4.1",
+      "authority": "conversion",
+      "license": "Apache-2.0",
+      "files": [
+        {
+          "path": "opencc-1.4.1-resources.zip",
+          "source_sha256": "db4ea259d43fedc0d3b928e31c2b9ea6656529217df18d6c80f814bc748a1dcb",
+          "stored_sha256": "db4ea259d43fedc0d3b928e31c2b9ea6656529217df18d6c80f814bc748a1dcb",
+          "bytes": 1224332,
+          "state": "existing"
+        }
+      ],
+      "verified_at": "2026-08-03T10:22:47.922348+00:00",
+      "retrieved_at": "2026-08-03T10:11:21.502362+00:00"
+    },
+    {
+      "id": "cc-cedict",
+      "version": "rolling",
+      "authority": "general-dictionary",
+      "license": "CC-BY-SA-4.0",
+      "files": [
+        {
+          "path": "cc-cedict.txt.gz",
+          "source_sha256": "ea2577d81b7249e61824c2da3f6f8e1aaa8c8a102689c36015399d405035d181",
+          "stored_sha256": "ea2577d81b7249e61824c2da3f6f8e1aaa8c8a102689c36015399d405035d181",
+          "bytes": 3965817,
+          "state": "existing"
+        }
+      ],
+      "verified_at": "2026-08-03T10:22:47.922348+00:00",
+      "retrieved_at": "2026-08-03T10:11:21.502362+00:00"
+    },
+    {
+      "id": "unihan",
+      "version": "17.0.0",
+      "authority": "character-data",
+      "license": "Unicode-3.0",
+      "files": [
+        {
+          "path": "unihan-17.0.0.zip",
+          "source_sha256": "f7a48b2b545acfaa77b2d607ae28747404ce02baefee16396c5d2d7a8ef34b5e",
+          "stored_sha256": "f7a48b2b545acfaa77b2d607ae28747404ce02baefee16396c5d2d7a8ef34b5e",
+          "bytes": 8518517,
+          "state": "existing"
+        }
+      ],
+      "verified_at": "2026-08-03T10:22:47.922348+00:00",
+      "retrieved_at": "2026-08-03T10:11:21.502362+00:00"
+    },
+    {
+      "id": "mcbopomofo",
+      "version": "3.0",
+      "authority": "candidate-corpus",
+      "license": "MIT",
+      "files": [
+        {
+          "path": "mcbopomofo-data-3.0.txt.gz",
+          "source_sha256": "38b84b4d42bd087018992d8de834d0d746c37b46f20ef4375d00eb8a203cd060",
+          "stored_sha256": "ae2836939fa31a3426122d4af56a6a8fd4443358c5ba1d57659f8352aa5ac9ff",
+          "bytes": 1770413,
+          "state": "existing"
+        },
+        {
+          "path": "mcbopomofo-plain-3.0.txt.gz",
+          "source_sha256": "cd3a8dddf5643c0ea34698e12b221c3c68e61d73c460f73f41869cf83f51f3de",
+          "stored_sha256": "03ae9d7fab0c6cf39f7dfa5ca6652cc98fea61ecf5a0c20a19c89b74983f83f5",
+          "bytes": 55793,
+          "state": "existing"
+        },
+        {
+          "path": "mcbopomofo-associated-3.0.txt.gz",
+          "source_sha256": "5149a41f3b950bff30f22b4092557fea76815022a732de5d91d1870208512f94",
+          "stored_sha256": "4150c88a79acf49006a8ce0fc4ccdd28b6a2bcf31aa62964e5c294b1f5fcf5e0",
+          "bytes": 811934,
+          "state": "existing"
+        }
+      ],
+      "verified_at": "2026-08-03T10:22:47.922348+00:00",
+      "retrieved_at": "2026-08-03T10:11:21.502362+00:00"
+    },
+    {
+      "id": "naer-computing",
+      "version": "2026-08-03",
+      "authority": "official-terminology",
+      "license": "OGDL-1.0",
+      "files": [
+        {
+          "path": "naer-computing-2026-08-03.csv.gz",
+          "source_sha256": "d8d65ba4097d45dd1c5d6b737fc942a1bd92d74d76ce6d6fb5348001b11b75bd",
+          "stored_sha256": "9237774faaeba74f3bf58d81b8a84c5c4ca7669c97a2f5d8aaad3c66585b315f",
+          "bytes": 36284,
+          "state": "existing"
+        }
+      ],
+      "verified_at": "2026-08-03T10:22:47.922348+00:00",
+      "retrieved_at": "2026-08-03T10:11:21.502362+00:00"
+    },
+    {
+      "id": "mediawiki-zhconversion",
+      "version": "REL1_43",
+      "authority": "regional-vocabulary",
+      "license": "GPL-2.0-or-later",
+      "files": [
+        {
+          "path": "mediawiki-zhconversion-REL1_43.php.gz",
+          "source_sha256": "128e3240f31ad69513ec26b38c04b9ab485508429a2b9b4877e0926a0155d6a8",
+          "stored_sha256": "24ff8252f55903f9850f928dbca185e7615ebfe17543581466fe9ace38193001",
+          "bytes": 142880,
+          "state": "existing"
+        }
+      ],
+      "verified_at": "2026-08-03T10:22:47.922348+00:00",
+      "retrieved_at": "2026-08-03T10:11:21.502362+00:00"
+    },
+    {
+      "id": "jieba",
+      "version": "0.42.1",
+      "authority": "segmentation-corpus",
+      "license": "MIT",
+      "files": [
+        {
+          "path": "jieba-dict-0.42.1.txt.gz",
+          "source_sha256": "7197c3211ddd98962b036cdf40324d1ea2bfaa12bd028e68faa70111a88e12a8",
+          "stored_sha256": "35e47c1fb9baf2a351a179afb8c22878caa0305e7294c855f05af524f46d51a3",
+          "bytes": 1904875,
+          "state": "existing"
+        }
+      ],
+      "verified_at": "2026-08-03T10:22:47.922348+00:00",
+      "retrieved_at": "2026-08-03T10:11:21.502362+00:00"
+    }
+  ],
+  "licenses": [
+    {
+      "path": "licenses/Apache-2.0.txt",
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "bytes": 11358
+    },
+    {
+      "path": "licenses/CC-BY-SA-4.0.txt",
+      "sha256": "28a9529c7d0bb4dc51f4bf5c116a3d16ef247a052f7591466768ddf563fd1cf5",
+      "bytes": 20138
+    },
+    {
+      "path": "licenses/GPL-2.0.txt",
+      "sha256": "ea5429175b5ed3b83131d2a3b848ef1bd0142a6192e1027be9e1efaf031a3928",
+      "bytes": 19309
+    },
+    {
+      "path": "licenses/Jieba-MIT.txt",
+      "sha256": "18ba0984839f85853b29fadaf992f7dba8fd0ca0fbeae34de2b8735222dc7a37",
+      "bytes": 1075
+    },
+    {
+      "path": "licenses/McBopomofo-MIT.txt",
+      "sha256": "f7535859a29614f35c3f2f8a59ada4615fc5c43b29fe6972334b082e5c33aced",
+      "bytes": 1091
+    },
+    {
+      "path": "licenses/OGDL-1.0.txt",
+      "sha256": "dc9a32230f7b3d41d85d2bf013cc3043f0e6215b213c7a69add5522c3f341dd7",
+      "bytes": 935
+    },
+    {
+      "path": "licenses/Unicode-3.0.txt",
+      "sha256": "e7a93b009565cfce55919a381437ac4db883e9da2126fa28b91d12732bc53d96",
+      "bytes": 1995
+    }
+  ]
+}

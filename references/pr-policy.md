@@ -1,0 +1,106 @@
+# Pull request and review policy
+
+## Confirm the repository contract
+
+Read the active repository instructions, PR template, commit template, contribution guide, and recent accepted examples. Confirm the target branch, scope, locale, title convention, body convention, required checks, and whether exact text needs approval.
+
+If a material choice is still unknown, ask before drafting a comment, commit, PR, or review. Do not copy the gentoo-zh format into an unrelated repository. Do not invent an issue reference, cause, test result, or acceptance condition.
+
+## Write the smallest useful PR body
+
+Use the title for what changed. Use the body only for facts a reviewer cannot infer
+from the diff and needs to judge the change.
+
+Prefer this shape:
+
+```text
+Because <verified cause>, <behavior or constraint>; therefore <required change>.
+
+Closes #N
+```
+
+Use numbered points only for independent causal changes. Do not add headings for a
+single reason.
+
+Unless repository rules impose a different limit, keep the authored description within
+600 non-space characters, four semantic blocks, and five list items. The gentoo-zh
+overlay limits are 360 characters, three blocks, and four list items. `Closes #N` does
+not consume a block.
+
+Treat every sentence as having a cost. Keep it only when deleting it would hide a
+verified cause, review constraint, non-obvious impact, or required issue link. Do not
+add `摘要`, `修改內容`, `變更內容`, `測試`, `Summary`, `Changes`, or `Testing`
+headings. Do not turn the diff into an inventory.
+
+When revising an existing draft, do not increase its character, block, heading, or
+list-item count unless the revision adds a required fact that was absent. Replacing
+colloquial or imprecise wording is not permission to add an explanation.
+
+## Exclude work-diary content
+
+Do not include:
+
+- how many review findings existed;
+- a chronological account of attempts;
+- statements that all checks are green;
+- a list of commands that passed;
+- claims that the change is comprehensive;
+- praise or criticism of the previous implementation;
+- a repeated summary after the body;
+- details already visible in the diff.
+- `本次 PR`, `主要包含`, `已完成`, `已完善`, `已補齊`, or similar narration;
+- first-person accounts such as `我已修改` or `我們新增`;
+- unsupported assurances such as `全面支援`, `確保全部正確`, or `所有功能正常`.
+
+Mention a test only when its result changed the design decision or proves a subtle
+counterexample that the reviewer cannot infer otherwise.
+
+## Preserve required templates
+
+Do not remove, reorder, rewrite, or summarize a repository's required template. Put
+free-form text in the location named by its marker and tick only checks that ran.
+Character, block, heading, list, and routine-test rules apply to the authored
+description, not the unchanged template. A completion report requested by repository
+instructions remains a separate handoff; do not paste it into the PR body.
+
+## Return the requested artifact only
+
+When the user asks for a PR title or body that will be pasted or submitted, return the
+exact artifact without an assistant introduction, explanation, review summary, or
+closing recap. If repository policy requires approval before publication, present the
+exact title, body, and file list as separate labeled fields; add nothing to those fields.
+
+## Lessons from binhost PRs #72–#76
+
+Sources: [#72](https://github.com/gentoo-zh/binhost/pull/72),
+[#73](https://github.com/gentoo-zh/binhost/pull/73),
+[#74](https://github.com/gentoo-zh/binhost/pull/74),
+[#75](https://github.com/gentoo-zh/binhost/pull/75), and
+[#76](https://github.com/gentoo-zh/binhost/pull/76).
+
+- A long list of implementation details, test counts, and review history obscures the
+  reason. Keep only facts needed to assess risk and correctness.
+- Retrospective transitions, completeness claims, and review counts often introduce a
+  work diary. Replace them with the current defect, evidence, and consequence.
+- Replace colloquial technical descriptions with the exact deployed state, input,
+  operation, or failure.
+- Do not change a merged PR title to describe commits that entered later. Open a new
+  branch and PR, then verify the commit is an ancestor of the target branch.
+- Corrections should state the wrong assumption, verified environment difference, and
+  required configuration. Avoid a long retrospective.
+
+## Review comments
+
+Start with severity and location when reviewing code. State the concrete failing input
+or state, its impact, and the acceptance condition. Do not address the author, speculate
+about intent, or pad the finding with praise.
+
+Example:
+
+```text
+P1 — `publish.sh:49`: a missing or non-numeric `SIZE` skips validation and reaches the
+transfer phase. Require exactly one integer `SIZE` per stanza and abort before ssh or
+rsync; add missing, duplicate, and non-numeric fixtures.
+```
+
+Use the repository's review format when one exists. Otherwise confirm the expected severity and location notation before producing a review intended for submission.

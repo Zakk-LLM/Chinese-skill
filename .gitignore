@@ -1,0 +1,7 @@
+__pycache__/
+*.py[cod]
+.lexicons-stage-*/
+.lexicons-old-*/
+lexicons/optional/
+lexicons/.optional-stage-*/
+lexicons/.optional-old-*/

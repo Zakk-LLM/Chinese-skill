@@ -1,0 +1,215 @@
+{
+  "schema": 1,
+  "sources": [
+    {
+      "id": "opencc",
+      "version": "1.4.1",
+      "role": "script and regional vocabulary conversion",
+      "authority": "conversion",
+      "license": "Apache-2.0",
+      "url": "https://github.com/BYVoid/OpenCC/releases/download/ver.1.4.1/opencc-v1.4.1-resources.zip",
+      "sha256": "db4ea259d43fedc0d3b928e31c2b9ea6656529217df18d6c80f814bc748a1dcb",
+      "file": "opencc-1.4.1-resources.zip",
+      "format": "zip",
+      "license_file": "Apache-2.0.txt"
+    },
+    {
+      "id": "cc-cedict",
+      "version": "rolling",
+      "role": "traditional and simplified headword lookup from the unverified editor export",
+      "authority": "general-dictionary",
+      "license": "CC-BY-SA-4.0",
+      "url": "https://cc-cedict.org/editor/editor_export_cedict.php?c=gz",
+      "file": "cc-cedict.txt.gz",
+      "format": "gzip",
+      "license_file": "CC-BY-SA-4.0.txt"
+    },
+    {
+      "id": "unihan",
+      "version": "17.0.0",
+      "role": "character variant evidence",
+      "authority": "character-data",
+      "license": "Unicode-3.0",
+      "url": "https://www.unicode.org/Public/17.0.0/ucd/Unihan.zip",
+      "sha256": "f7a48b2b545acfaa77b2d607ae28747404ce02baefee16396c5d2d7a8ef34b5e",
+      "file": "unihan-17.0.0.zip",
+      "format": "zip",
+      "license_file": "Unicode-3.0.txt"
+    },
+    {
+      "id": "moegirl",
+      "version": "20260713",
+      "bundled": false,
+      "role": "proper names and popular-culture titles",
+      "authority": "candidate-corpus",
+      "license": "CC-BY-NC-SA-3.0",
+      "url": "https://github.com/outloudvi/mw2fcitx/releases/download/20260713/titles.txt",
+      "sha256": "8f360cd416d9ebd88e20792cae0bbae3f6b1bf160418da9855e6e20086907c6e",
+      "file": "moegirl-titles-20260713.txt.gz",
+      "format": "plain-to-gzip",
+      "license_file": "CC-BY-NC-SA-3.0.txt"
+    },
+    {
+      "id": "mcbopomofo",
+      "version": "3.0",
+      "commit": "07dd922ddab159dd4c1865dee73f009aa3c8fdc1",
+      "role": "Traditional Chinese input-method vocabulary and frequency",
+      "authority": "candidate-corpus",
+      "license": "MIT",
+      "files": [
+        {
+          "url": "https://raw.githubusercontent.com/openvanilla/fcitx5-mcbopomofo/07dd922ddab159dd4c1865dee73f009aa3c8fdc1/data/data.txt",
+          "sha256": "38b84b4d42bd087018992d8de834d0d746c37b46f20ef4375d00eb8a203cd060",
+          "file": "mcbopomofo-data-3.0.txt.gz",
+          "format": "plain-to-gzip"
+        },
+        {
+          "url": "https://raw.githubusercontent.com/openvanilla/fcitx5-mcbopomofo/07dd922ddab159dd4c1865dee73f009aa3c8fdc1/data/data-plain-bpmf.txt",
+          "sha256": "cd3a8dddf5643c0ea34698e12b221c3c68e61d73c460f73f41869cf83f51f3de",
+          "file": "mcbopomofo-plain-3.0.txt.gz",
+          "format": "plain-to-gzip"
+        },
+        {
+          "url": "https://raw.githubusercontent.com/openvanilla/fcitx5-mcbopomofo/07dd922ddab159dd4c1865dee73f009aa3c8fdc1/data/associated-phrases-v2.txt",
+          "sha256": "5149a41f3b950bff30f22b4092557fea76815022a732de5d91d1870208512f94",
+          "file": "mcbopomofo-associated-3.0.txt.gz",
+          "format": "plain-to-gzip"
+        }
+      ],
+      "license_file": "McBopomofo-MIT.txt"
+    },
+    {
+      "id": "naer-computing",
+      "version": "2026-08-03",
+      "role": "official Taiwan and Mainland computing terminology pairs",
+      "authority": "official-terminology",
+      "license": "OGDL-1.0",
+      "license_file": "OGDL-1.0.txt",
+      "url": "https://opendata.naer.edu.tw/%E5%AD%B8%E8%A1%93%E5%90%8D%E8%A9%9E/%E5%9C%8B%E5%AE%B6%E6%95%99%E8%82%B2%E7%A0%94%E7%A9%B6%E9%99%A2-%E5%85%A9%E5%B2%B8%E5%B0%8D%E7%85%A7%E5%90%8D%E8%A9%9E-%E8%A8%88%E7%AE%97%E6%A9%9F%E5%AD%B8%E8%A1%93%E5%90%8D%E8%A9%9E.csv",
+      "sha256": "d8d65ba4097d45dd1c5d6b737fc942a1bd92d74d76ce6d6fb5348001b11b75bd",
+      "file": "naer-computing-2026-08-03.csv.gz",
+      "format": "plain-to-gzip",
+      "relaxed_tls": true,
+      "note": "the host's certificate omits the Subject Key Identifier that OpenSSL strict mode requires; chain and hostname verification still apply and the pinned digest fixes the content"
+    },
+    {
+      "id": "mediawiki-zhconversion",
+      "version": "REL1_43",
+      "role": "regional vocabulary conversion for zh-TW, zh-CN, and zh-HK",
+      "authority": "regional-vocabulary",
+      "license": "GPL-2.0-or-later",
+      "license_file": "GPL-2.0.txt",
+      "url": "https://raw.githubusercontent.com/wikimedia/mediawiki/REL1_43/includes/languages/data/ZhConversion.php",
+      "sha256": "128e3240f31ad69513ec26b38c04b9ab485508429a2b9b4877e0926a0155d6a8",
+      "file": "mediawiki-zhconversion-REL1_43.php.gz",
+      "format": "plain-to-gzip"
+    },
+    {
+      "id": "jieba",
+      "version": "0.42.1",
+      "role": "word boundaries used to suppress substring false positives",
+      "authority": "segmentation-corpus",
+      "license": "MIT",
+      "license_file": "Jieba-MIT.txt",
+      "url": "https://raw.githubusercontent.com/fxsjy/jieba/v0.42.1/jieba/dict.txt",
+      "sha256": "7197c3211ddd98962b036cdf40324d1ea2bfaa12bd028e68faa70111a88e12a8",
+      "file": "jieba-dict-0.42.1.txt.gz",
+      "format": "plain-to-gzip"
+    }
+  ],
+  "reference_only": [
+    {
+      "id": "naer-computer",
+      "role": "Taiwan and Mainland computing terminology",
+      "authority": "official-terminology",
+      "license": "Taiwan-OGDL-1.0",
+      "url": "https://data.nat.gov.tw/dataset/15275",
+      "checked": "2026-08-03"
+    },
+    {
+      "id": "naer-terms",
+      "role": "Taiwan academic terminology search across disciplines",
+      "authority": "official-terminology",
+      "url": "https://terms.naer.edu.tw/",
+      "checked": "2026-08-03"
+    },
+    {
+      "id": "cnterm-computer",
+      "role": "Mainland China computer terminology",
+      "authority": "official-terminology",
+      "url": "http://www.cnterm.cn/sd/xxjs/zwh/jsj/",
+      "note": "the site presents no usable TLS certificate; plain HTTP only",
+      "checked": "2026-08-03"
+    },
+    {
+      "id": "moe-revised-dictionary",
+      "role": "Taiwan general Chinese usage and character readings",
+      "authority": "official-terminology",
+      "url": "https://dict.revised.moe.edu.tw/",
+      "checked": "2026-08-03"
+    },
+    {
+      "id": "microsoft-terminology",
+      "role": "product UI and general IT terminology",
+      "authority": "vendor-terminology",
+      "url": "https://learn.microsoft.com/globalization/reference/microsoft-terminology",
+      "checked": "2026-08-03"
+    },
+    {
+      "id": "linux-kernel-zh-cn",
+      "role": "Linux kernel Simplified Chinese terminology",
+      "authority": "upstream-project",
+      "url": "https://www.kernel.org/doc/html/latest/translations/zh_CN/glossary.html",
+      "checked": "2026-08-03"
+    },
+    {
+      "id": "linux-kernel-zh-tw",
+      "role": "Linux kernel Traditional Chinese terminology",
+      "authority": "upstream-project",
+      "url": "https://www.kernel.org/doc/html/latest/translations/zh_TW/index.html",
+      "checked": "2026-08-03"
+    },
+    {
+      "id": "gentoo-devmanual",
+      "role": "Gentoo concepts and canonical English names",
+      "authority": "upstream-project",
+      "url": "https://devmanual.gentoo.org/",
+      "checked": "2026-08-03"
+    },
+    {
+      "id": "gentoo-handbook-zh-cn",
+      "role": "Gentoo installation and Portage terminology in Simplified Chinese",
+      "authority": "upstream-project",
+      "url": "https://wiki.gentoo.org/wiki/Handbook:AMD64/zh-cn",
+      "checked": "2026-08-03"
+    },
+    {
+      "id": "git-l10n-zh-tw",
+      "role": "Git command and version-control terminology in Traditional Chinese",
+      "authority": "upstream-project",
+      "url": "https://github.com/git/git/blob/master/po/zh_TW.po",
+      "checked": "2026-08-03"
+    },
+    {
+      "id": "gnome-l10n-zh-tw",
+      "role": "desktop and user-interface terminology in Traditional Chinese",
+      "authority": "upstream-project",
+      "url": "https://l10n.gnome.org/teams/zh_TW/",
+      "checked": "2026-08-03"
+    },
+    {
+      "id": "archwiki-zh-tw",
+      "role": "Linux distribution and system administration terminology",
+      "authority": "community-translation",
+      "url": "https://wiki.archlinux.org/title/Main_page_(正體中文)",
+      "checked": "2026-08-03"
+    },
+    {
+      "id": "debian-chinese",
+      "role": "distribution documentation and translation conventions",
+      "authority": "community-translation",
+      "url": "https://www.debian.org/international/Chinese/",
+      "checked": "2026-08-03"
+    }
+  ]
+}

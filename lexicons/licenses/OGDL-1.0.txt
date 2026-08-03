@@ -1,0 +1,18 @@
+Open Government Data License, version 1.0 (政府資料開放授權條款－第1版)
+
+Full terms: https://data.gov.tw/license
+English terms: https://data.gov.tw/en/license
+
+This notice is maintained in the repository because the licensor publishes the
+terms only as a web page. It records the obligations that apply to the bundled
+snapshot; the published terms above remain authoritative.
+
+Attribution: 國家教育研究院 2015「國家教育研究院－兩岸對照名詞－計算機學術名詞」
+Snapshot retrieved: 2026-08-03
+Dataset: https://data.gov.tw/dataset/15275
+
+The license permits use, reproduction, distribution, public transmission, and
+adaptation, including for commercial purposes, provided that the source of the
+data and the date of publication are stated. The provider gives no warranty of
+accuracy, completeness, or fitness for a particular purpose. A derived work must
+not imply that the provider endorses it.
