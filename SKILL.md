@@ -25,8 +25,7 @@ Read repository instruction files again at the same checkpoints. Repository-spec
   such as `程式碼`, remains valid when the artifact uses that locale.
 - Keep technical terms in their established English form when translation reduces precision.
 - Use backticks for identifiers and literal values. Do not wrap ordinary Chinese terms in `「」` or `『』`.
-- Under the strict style, do not add Emoji to prose, documentation, alerts, logs,
-  comments, commits, PRs, or reviews.
+- Do not add Emoji when the selected style rejects it.
 
 Use the locale-appropriate term meaning execution for a command, script, phase, test, or action. Use the term meaning operation for an ongoing program, service, system, or deployed code version. Do not replace either with a colloquial motion verb.
 
@@ -71,6 +70,9 @@ only the constraints appropriate to their document type.
 - For README writing or revision, read
   [references/readme-style.md](references/readme-style.md), then consult its compact
   corpus only for the pattern needed by the task.
+- For UI copy, message catalogs, notifications, forms, errors, confirmations, tooltips,
+  or accessible names, read [references/ui-style.md](references/ui-style.md), then
+  consult its corpus only for the relevant surface.
 - For terminology, localization, Gentoo, Linux, or disputed wording, read
   [references/lexicon-policy.md](references/lexicon-policy.md), then use
   `scripts/lexicon_lookup.py`.

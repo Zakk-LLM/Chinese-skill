@@ -57,6 +57,7 @@ cd Chinese-skill
 
 - `references/writing-policy.md`：語法、翻譯、詞彙、邏輯、篇幅及註釋；
 - `references/readme-style.md`：README 的結構、句法及專業技術文字；
+- `references/ui-style.md`：介面控制項、狀態、錯誤、確認與輔助功能文字；
 - `references/pr-policy.md`：PR、commit 與審查；
 - `references/overlay-policy.md`：gentoo-zh overlay 的附加規則。
 - `references/lexicon-policy.md`：詞典優先順序、地區詞彙及專業術語。
@@ -70,6 +71,7 @@ python3 scripts/chinese_lint.py --kind prose --locale zh-TW README.md docs/
 python3 scripts/chinese_lint.py --kind prose --style strict article.md
 python3 scripts/chinese_lint.py --kind prose --style academic paper.md
 python3 scripts/chinese_lint.py --kind prose --style readme README.md
+python3 scripts/chinese_lint.py --kind prose --style ui path/to/catalog
 printf '%s\n' '待檢查文字' | python3 scripts/chinese_lint.py --kind prose -
 python3 scripts/chinese_lint.py --kind commit-message message.txt
 python3 scripts/chinese_lint.py --kind pr-body --title 'scope: summary' body.txt
@@ -83,6 +85,7 @@ python3 scripts/sync_lexicons.py --verify
 預設的 `standard` 風格只套用通用規則，不限制 Emoji、註釋語言、PR 標題或正文長度。
 `strict` 保留禁用 Emoji、英文註釋、精簡正文及精簡 PR 的要求；另有 `academic`、
 `technical`、`readme` 與 `ui`。`readme` 檢查模板化開場、宣傳語、Emoji 及過長句段。
+`ui` 另檢查口語錯誤訊息、位置式操作指示、重複進行標記及含糊確認文字。
 
 `all` 模式同時檢查正文與支援的程式註釋。`-` 代表標準輸入。
 `--kind source` 或 `--kind prose`
@@ -117,6 +120,15 @@ profile 一律報錯；署名為人的 `Co-authored-by` 與 `Signed-off-by` 不�
 
 語料另收錄定義、因果、條件、比較及程序等專業文章模式。README 只保留讀者完成安裝、
 使用、評估或貢獻所需的部分；長篇說明改用 `technical` 或 `academic` 風格。
+
+## UI 語料
+
+`references/ui-corpus.json` 記錄 Grafana、Nextcloud、Mastodon、Discourse、GNOME Control
+Center 與 Visual Studio Code 的固定版本中文詞庫。語料只保留控制項、狀態、驗證、錯誤、
+確認及輔助功能文字的共同模式，不複製原文，也不把來源中的口語或直譯當成規範。
+
+這些固定版本不晚於 2022 年 11 月 29 日。日期與翻譯者資料只能降低生成文字介入的可能性，
+不能證明每個字串的作者身分；產品詞彙與母語審查仍優先。
 
 ## 詞典
 

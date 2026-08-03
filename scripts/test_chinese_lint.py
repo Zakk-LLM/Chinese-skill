@@ -484,6 +484,30 @@ with tempfile.TemporaryDirectory() as base:
         "remove Emoji" in item[1] for item in strict_lint_file(
             standard_symbol, "prose", "general", None, None, "zh-TW",
             style="readme")))
+    ui_cases = {
+        "casual error": ("ui_casual_error", "apologetic or casual"),
+        "positional action": ("ui_positional_action", "action or destination"),
+        "redundant progress": ("ui_redundant_progress", "ongoing-state marker"),
+        "generic error": ("ui_generic_error", "operation that failed"),
+        "generic confirmation": ("ui_generic_confirmation", "confirmed action"),
+    }
+    for label, (fixture, message) in ui_cases.items():
+        ui_text = root / f"ui-{label.replace(' ', '-')}.txt"
+        ui_text.write_text(FIXTURES[fixture] + "\n")
+        check(f"UI {label}", any(
+            message in item[1] for item in strict_lint_file(
+                ui_text, "prose", "general", None, None, "zh-TW",
+                style="ui")))
+    ui_clean = root / "ui-clean.txt"
+    ui_clean.write_text(FIXTURES["ui_clean_error"] + "\n")
+    check("clean UI error", not strict_lint_file(
+        ui_clean, "prose", "general", None, None, "zh-TW", style="ui"))
+    check("UI permits a semantic check mark", not strict_lint_file(
+        standard_symbol, "prose", "general", None, None, "zh-TW",
+        style="ui"))
+    check("UI rejects Emoji", any(
+        "remove Emoji" in item[1] for item in strict_lint_file(
+            emoji, "prose", "general", None, None, "zh-TW", style="ui")))
     quoted_term = root / "quoted-term.txt"
     quoted_term.write_text(FIXTURES["quoted_term"] + "\n")
     check("standard style allows Chinese quotation marks", not strict_lint_file(

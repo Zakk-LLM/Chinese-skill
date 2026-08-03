@@ -40,5 +40,11 @@
   "contained_word": "這批東西向的測試涵蓋三角函數。",
   "fenced_prompt": "說明段落。\n\n``` bash\nls /boot\n\n❯ cat entry.conf\n```\n",
   "locale_name": "语言可选 简体 / 正體 / English。",
-  "brand_locale": "鏡像節點包含 阿里雲，距離約 20 公里。"
+  "brand_locale": "鏡像節點包含 阿里雲，距離約 20 公里。",
+  "ui_casual_error": "抱歉，出了點問題。",
+  "ui_positional_action": "請點擊這裡繼續。",
+  "ui_redundant_progress": "正在載入設定中...",
+  "ui_generic_error": "發生了一個錯誤。",
+  "ui_generic_confirmation": "確定要這麼做嗎？",
+  "ui_clean_error": "無法儲存設定。請檢查網路連線後重試。"
 }

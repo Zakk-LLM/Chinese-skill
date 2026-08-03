@@ -116,6 +116,12 @@ def validate_wording(errors):
     repeated = data.get("repeated_sentence_characters")
     if not isinstance(repeated, int) or repeated < 1:
         errors.append("invalid repeated sentence length")
+    for style, symbols in data.get("emoji_exceptions", {}).items():
+        if style not in expected_styles:
+            errors.append(f"Emoji exception names an unknown style: {style}")
+        if (not symbols or len(symbols) != len(set(symbols))
+                or not all(isinstance(symbol, str) and symbol for symbol in symbols)):
+            errors.append(f"invalid Emoji exceptions: {style}")
     for rule in [*data["literal_groups"], *data["regex_rules"]]:
         if set(rule.get("styles", ())) - expected_styles:
             errors.append("wording rule names an unknown style")
@@ -200,6 +206,57 @@ def validate_readme_corpus(errors):
                 errors.append(f"incomplete README corpus pattern: {pattern.get('id')}")
             elif not pattern["shape"] or not pattern["required"]:
                 errors.append(f"empty README corpus pattern: {pattern['id']}")
+
+
+def validate_ui_corpus(errors):
+    data = load_json("references/ui-corpus.json")
+    if data.get("schema") != 1:
+        errors.append("unsupported UI corpus schema")
+    cutoff = data.get("cutoff", "")
+    if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", cutoff):
+        errors.append("UI corpus has no valid cutoff")
+
+    sources = data.get("sources", [])
+    identifiers = [item.get("id") for item in sources]
+    if not sources or len(identifiers) != len(set(identifiers)):
+        errors.append("UI corpus source ids must be present and unique")
+    file_urls = []
+    for source in sources:
+        required = {"id", "repository", "workflow", "files", "use_for", "avoid"}
+        if set(source) != required:
+            errors.append(f"incomplete UI corpus source: {source.get('id')}")
+            continue
+        if not source["files"] or not source["use_for"] or not source["avoid"]:
+            errors.append(f"UI corpus source has empty observations: {source['id']}")
+        for entry in source["files"]:
+            required_file = {"locale", "path", "commit", "date", "url"}
+            if set(entry) != required_file:
+                errors.append(f"incomplete UI corpus file: {source['id']}")
+                continue
+            if entry["locale"] not in {"zh-CN", "zh-TW", "zh-Hans", "zh-Hant"}:
+                errors.append(f"unknown UI corpus locale: {entry['locale']}")
+            if not re.fullmatch(r"[0-9a-f]{40}", entry["commit"]):
+                errors.append(f"UI corpus file is not pinned: {source['id']}")
+            if (not re.fullmatch(r"\d{4}-\d{2}-\d{2}", entry["date"])
+                    or entry["date"] > cutoff):
+                errors.append(f"UI corpus file exceeds cutoff: {source['id']}")
+            expected_url = (f"https://github.com/{source['repository']}/blob/"
+                            f"{entry['commit']}/{entry['path']}")
+            if entry["url"] != expected_url:
+                errors.append(f"UI corpus URL is not reproducible: {source['id']}")
+            file_urls.append(entry["url"])
+    if len(file_urls) != len(set(file_urls)):
+        errors.append("UI corpus file URLs must be unique")
+
+    patterns = data.get("patterns", [])
+    pattern_ids = [item.get("id") for item in patterns]
+    if not patterns or len(pattern_ids) != len(set(pattern_ids)):
+        errors.append("UI corpus pattern ids must be present and unique")
+    for pattern in patterns:
+        if set(pattern) != {"id", "surface", "shape", "required"}:
+            errors.append(f"incomplete UI corpus pattern: {pattern.get('id')}")
+        elif not pattern["surface"] or not pattern["shape"] or not pattern["required"]:
+            errors.append(f"empty UI corpus pattern: {pattern['id']}")
 
 
 def validate_sources(errors):
@@ -311,6 +368,7 @@ def main():
     validate_terms(errors)
     validate_wording(errors)
     validate_readme_corpus(errors)
+    validate_ui_corpus(errors)
     validate_sources(errors)
     validate_repository(errors, args.release)
     if errors:

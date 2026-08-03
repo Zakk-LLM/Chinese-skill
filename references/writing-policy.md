@@ -86,7 +86,7 @@ already has a term.
 Do not narrate the act of writing or announce planned coverage. Start with the subject
 and claim. Remove generic era-setting openings, symmetrical filler, decorative
 conclusions, stacked praise, and invitations to the reader. Under the strict,
-academic, and technical styles, do not add Emoji.
+academic, technical, readme, and ui styles, do not add Emoji.
 
 ## Structure articles
 

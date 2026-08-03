@@ -18,8 +18,13 @@
     },
     {
       "message": "remove formulaic AI wording and state the concrete claim",
-      "styles": ["strict", "academic", "technical", "readme"],
+      "styles": ["strict", "academic", "technical", "readme", "ui"],
       "terms": ["開啟全新篇章", "开启全新篇章", "帶來全新體驗", "带来全新体验", "帶您深入了解", "带您深入了解", "讓我們一起", "让我们一起", "不僅僅是", "不仅仅是", "值得一提", "相信通過", "相信通过"]
+    },
+    {
+      "message": "state the failed operation and available recovery instead of apologetic or casual UI wording",
+      "styles": ["ui"],
+      "terms": ["抱歉", "對不起", "对不起", "哎呀", "糟糕", "出了點問題", "出了点问题"]
     },
     {
       "message": "replace region-bound slang with standard Chinese",
@@ -81,13 +86,36 @@
     {
       "pattern": "(?:更加|更為|更为)(?:便捷|高效|智慧|智能|強大|强大|靈活|灵活|卓越)",
       "message": "replace promotional adjectives with a concrete property or measured result",
-      "styles": ["strict", "academic", "technical", "readme"]
+      "styles": ["strict", "academic", "technical", "readme", "ui"]
+    },
+    {
+      "pattern": "(?:請|请)?(?:點擊|点击)(?:此處|此处|這裡|这里)",
+      "message": "name the action or destination instead of a positional click instruction",
+      "styles": ["ui"]
+    },
+    {
+      "pattern": "正在[^，。！？\\n]{1,12}中(?:…|\\.\\.\\.)?",
+      "message": "use one ongoing-state marker, not both 正在 and 中",
+      "styles": ["ui"]
+    },
+    {
+      "pattern": "發生(?:了)?(?:一個)?錯誤|发生(?:了)?(?:一个)?错误",
+      "message": "state the operation that failed and the affected object",
+      "styles": ["ui"]
+    },
+    {
+      "pattern": "(?:確定|确定)(?:要)?(?:這麼做|这么做|這樣做|这样做|嗎|吗)[？?]?",
+      "message": "name the confirmed action, object, and effect",
+      "styles": ["ui"]
     }
   ],
   "emoji_patterns": [
     "[\\U0001F000-\\U0001FAFF]",
-    "[\\u2600-\\u27BF]\\uFE0F?|[0-9#*]\\uFE0F?\\u20E3|\\uFE0F|\\u200D"
+    "[\\u2600-\\u27BF]\\uFE0F?|[\\u2B00-\\u2BFF]\\uFE0F?|[0-9#*]\\uFE0F?\\u20E3|[\\u231A\\u231B\\u23E9-\\u23EC\\u23F0\\u23F3]|\\uFE0F|\\u200D"
   ],
+  "emoji_exceptions": {
+    "ui": ["✓"]
+  },
   "style_profiles": {
     "standard": {
       "emoji": "allow",
@@ -130,7 +158,7 @@
       "clause_markers": 6
     },
     "ui": {
-      "emoji": "allow",
+      "emoji": "reject",
       "comment_language": "repository",
       "paragraph_characters": 160,
       "paragraph_sentences": 3,

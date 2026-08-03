@@ -1,0 +1,193 @@
+{
+  "schema": 1,
+  "cutoff": "2022-11-29",
+  "method": "Records convergent UI-copy patterns from pinned community translation catalogs; it stores no catalog excerpts and does not treat age as proof of authorship.",
+  "sources": [
+    {
+      "id": "grafana-2022",
+      "repository": "grafana/grafana",
+      "workflow": "Crowdin-managed catalog",
+      "files": [
+        {
+          "locale": "zh-Hans",
+          "path": "public/locales/zh-Hans/grafana.json",
+          "commit": "343f65fffb01d6e1786b181592c627e7364fbc58",
+          "date": "2022-11-23",
+          "url": "https://github.com/grafana/grafana/blob/343f65fffb01d6e1786b181592c627e7364fbc58/public/locales/zh-Hans/grafana.json"
+        }
+      ],
+      "use_for": ["dashboard actions", "loading and result states", "accessible labels", "interpolation placement"],
+      "avoid": ["empty translations", "literal source-language syntax", "assuming one Chinese locale represents every region"]
+    },
+    {
+      "id": "nextcloud-2019",
+      "repository": "nextcloud/server",
+      "workflow": "community localization catalog",
+      "files": [
+        {
+          "locale": "zh-CN",
+          "path": "core/l10n/zh_CN.js",
+          "commit": "b175211366f9d7a6553f10d1bbdf04ce7bb37645",
+          "date": "2019-12-19",
+          "url": "https://github.com/nextcloud/server/blob/b175211366f9d7a6553f10d1bbdf04ce7bb37645/core/l10n/zh_CN.js"
+        },
+        {
+          "locale": "zh-TW",
+          "path": "core/l10n/zh_TW.js",
+          "commit": "9fd94b7e052e94b7170a67046c424e99ca6107f4",
+          "date": "2019-12-18",
+          "url": "https://github.com/nextcloud/server/blob/9fd94b7e052e94b7170a67046c424e99ca6107f4/core/l10n/zh_TW.js"
+        }
+      ],
+      "use_for": ["file operations", "validation", "security warnings", "failure recovery"],
+      "avoid": ["inconsistent punctuation", "mixed untranslated terms", "word-for-word conversion between locales"]
+    },
+    {
+      "id": "mastodon-2019",
+      "repository": "mastodon/mastodon",
+      "workflow": "community YAML catalogs",
+      "files": [
+        {
+          "locale": "zh-CN",
+          "path": "config/locales/zh-CN.yml",
+          "commit": "fb9137752a734caa6891637728cc243d79c1af97",
+          "date": "2019-12-18",
+          "url": "https://github.com/mastodon/mastodon/blob/fb9137752a734caa6891637728cc243d79c1af97/config/locales/zh-CN.yml"
+        },
+        {
+          "locale": "zh-TW",
+          "path": "config/locales/zh-TW.yml",
+          "commit": "fb9137752a734caa6891637728cc243d79c1af97",
+          "date": "2019-12-18",
+          "url": "https://github.com/mastodon/mastodon/blob/fb9137752a734caa6891637728cc243d79c1af97/config/locales/zh-TW.yml"
+        }
+      ],
+      "use_for": ["moderation actions", "completed states", "audit history", "object-specific confirmations"],
+      "avoid": ["product slang", "exclamation marks", "region-specific social vocabulary outside its product"]
+    },
+    {
+      "id": "discourse-2019",
+      "repository": "discourse/discourse",
+      "workflow": "Transifex-managed catalogs",
+      "files": [
+        {
+          "locale": "zh-CN",
+          "path": "config/locales/client.zh_CN.yml",
+          "commit": "91b290c7842f5c76b29adfeabe413b2a0fa55c20",
+          "date": "2019-12-19",
+          "url": "https://github.com/discourse/discourse/blob/91b290c7842f5c76b29adfeabe413b2a0fa55c20/config/locales/client.zh_CN.yml"
+        },
+        {
+          "locale": "zh-TW",
+          "path": "config/locales/client.zh_TW.yml",
+          "commit": "91b290c7842f5c76b29adfeabe413b2a0fa55c20",
+          "date": "2019-12-19",
+          "url": "https://github.com/discourse/discourse/blob/91b290c7842f5c76b29adfeabe413b2a0fa55c20/config/locales/client.zh_TW.yml"
+        }
+      ],
+      "use_for": ["forum actions", "empty states", "upload progress", "destructive confirmations"],
+      "avoid": ["apologetic filler", "casual error messages", "ASCII punctuation", "decorative arrows"]
+    },
+    {
+      "id": "gnome-control-center-2019",
+      "repository": "GNOME/gnome-control-center",
+      "workflow": "named human translators in gettext metadata",
+      "files": [
+        {
+          "locale": "zh-CN",
+          "path": "po/zh_CN.po",
+          "commit": "bc143344abec6253bbc3abc1654661baab2d3b7a",
+          "date": "2019-12-27",
+          "url": "https://github.com/GNOME/gnome-control-center/blob/bc143344abec6253bbc3abc1654661baab2d3b7a/po/zh_CN.po"
+        },
+        {
+          "locale": "zh-TW",
+          "path": "po/zh_TW.po",
+          "commit": "5a0b1ab058539f767d373dced94c19111e00c979",
+          "date": "2019-11-27",
+          "url": "https://github.com/GNOME/gnome-control-center/blob/5a0b1ab058539f767d373dced94c19111e00c979/po/zh_TW.po"
+        }
+      ],
+      "use_for": ["system settings", "permissions", "device labels", "recoverable and unrecoverable errors"],
+      "avoid": ["honorific repetition", "literal English sentence order", "inconsistent accelerator formatting"]
+    },
+    {
+      "id": "vscode-2019",
+      "repository": "microsoft/vscode-loc",
+      "workflow": "Microsoft localization catalog",
+      "files": [
+        {
+          "locale": "zh-Hans",
+          "path": "i18n/vscode-language-pack-zh-hans/translations/main.i18n.json",
+          "commit": "7cd14c86b9b826695bdfa7aa6eccbe5f829db7cc",
+          "date": "2019-12-16",
+          "url": "https://github.com/microsoft/vscode-loc/blob/7cd14c86b9b826695bdfa7aa6eccbe5f829db7cc/i18n/vscode-language-pack-zh-hans/translations/main.i18n.json"
+        }
+      ],
+      "use_for": ["developer-tool commands", "installation states", "technical errors", "keyboard-oriented labels"],
+      "avoid": ["installer verbosity", "ASCII punctuation after Chinese", "source-language rhetorical questions"]
+    }
+  ],
+  "patterns": [
+    {
+      "id": "action-label",
+      "surface": "button or menu item",
+      "shape": "Use a direct verb, adding the object only when nearby context does not identify it.",
+      "required": ["action", "unambiguous object"]
+    },
+    {
+      "id": "field-label",
+      "surface": "field, tab, column, or section label",
+      "shape": "Use a noun phrase without a sentence ending or explanatory clause.",
+      "required": ["field or subject name"]
+    },
+    {
+      "id": "placeholder",
+      "surface": "input placeholder",
+      "shape": "Name the expected value or format; put persistent constraints in help text.",
+      "required": ["expected input"]
+    },
+    {
+      "id": "progress",
+      "surface": "pending or loading state",
+      "shape": "Use either `正在<操作>…` or `<操作>中`, with the locale term for the operation, but do not combine both aspect markers.",
+      "required": ["ongoing operation"]
+    },
+    {
+      "id": "success",
+      "surface": "success message or toast",
+      "shape": "State the completed operation and object; do not reuse the control label as the result message.",
+      "required": ["completed operation", "object"]
+    },
+    {
+      "id": "failure",
+      "surface": "error message",
+      "shape": "State what could not be completed, then add a verified cause and available recovery action.",
+      "required": ["failed operation", "affected object"]
+    },
+    {
+      "id": "validation",
+      "surface": "field validation",
+      "shape": "State the exact missing value, accepted form, range, or conflict beside the field.",
+      "required": ["invalid condition", "acceptance condition"]
+    },
+    {
+      "id": "empty-state",
+      "surface": "empty or zero-result state",
+      "shape": "Distinguish no data from no matching result and offer only an action that is actually available.",
+      "required": ["empty-state cause", "available next action"]
+    },
+    {
+      "id": "confirmation",
+      "surface": "confirmation dialog",
+      "shape": "Name the action, object, irreversible effect, and safer alternative when one exists.",
+      "required": ["action", "object", "effect"]
+    },
+    {
+      "id": "accessible-name",
+      "surface": "accessible label or tooltip",
+      "shape": "Name the control action or current state without visual position, icon shape, or redundant control type.",
+      "required": ["action or state"]
+    }
+  ]
+}

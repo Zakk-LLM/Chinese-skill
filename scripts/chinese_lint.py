@@ -724,6 +724,8 @@ def attribution_findings(text):
 def emoji_findings(text, style="standard"):
     if RULES["style_profiles"][style]["emoji"] == "allow":
         return []
+    for symbol in RULES.get("emoji_exceptions", {}).get(style, ()):
+        text = text.replace(symbol, " " * len(symbol))
     return pattern_findings(text, "emoji_patterns",
                             "remove Emoji and state the meaning in text")
 

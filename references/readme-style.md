@@ -7,8 +7,9 @@ supported commands before editing. Preserve required headings, badges, links, lo
 switches, command syntax, and project-specific terms. A repository rule overrides this
 reference.
 
-For gentoo-zh overlay, the live `README.md` defines project-specific entry points and
-contribution conventions. Do not treat its wording as a universal template.
+For gentoo-zh overlay, read the live `README.md` and the target locale file. They define
+project-specific entry points and contribution conventions. Do not treat their wording
+as a universal template or include them in the historical cutoff.
 
 ## Write for tasks
 

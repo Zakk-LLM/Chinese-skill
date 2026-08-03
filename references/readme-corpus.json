@@ -8,8 +8,24 @@
       "repository": "gentoo-zh/overlay",
       "path": "README.md",
       "url": "https://github.com/gentoo-zh/overlay/blob/master/README.md",
-      "use_for": ["repository purpose", "installation entry point", "contribution and commit conventions"],
+      "use_for": ["current Simplified Chinese repository purpose", "installation entry point", "contribution and commit conventions"],
       "avoid": ["copying repository-specific policy into unrelated projects", "treating current prose as historical corpus"]
+    },
+    {
+      "id": "gentoo-zh-overlay-zh-tw",
+      "repository": "gentoo-zh/overlay",
+      "path": "README.zh-TW.md",
+      "url": "https://github.com/gentoo-zh/overlay/blob/master/README.zh-TW.md",
+      "use_for": ["current Traditional Chinese repository terminology", "locale-specific links", "parallel section structure"],
+      "avoid": ["using Taiwan-only terms in another locale without context", "treating current prose as historical corpus"]
+    },
+    {
+      "id": "gentoo-zh-overlay-zh-hk",
+      "repository": "gentoo-zh/overlay",
+      "path": "README.zh-HK.md",
+      "url": "https://github.com/gentoo-zh/overlay/blob/master/README.zh-HK.md",
+      "use_for": ["current Cantonese locale contract", "locale-specific links", "parallel section structure"],
+      "avoid": ["using Cantonese as cross-regional standard Chinese", "copying repository-specific policy into unrelated projects"]
     }
   ],
   "sources": [
