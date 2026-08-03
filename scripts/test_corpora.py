@@ -27,6 +27,15 @@ verifier = runpy.run_path(str(VERIFIER), run_name="corpus_verifier_test")
 checks["Git blob calculation"] = (
     verifier["git_blob"](b"test") == "30d74d258442c7c65512eafab474568dd706c430"
 )
+checks["GitHub rate limit classification"] = (
+    verifier["is_rate_limit"](
+        403, {"X-RateLimit-Remaining": "0"}, b"")
+    and verifier["is_rate_limit"](
+        403, {}, b'{"message":"API rate limit exceeded"}')
+    and not verifier["is_rate_limit"](403, {}, b"forbidden")
+    and verifier["is_rate_limit"](429, {}, b"")
+    and not verifier["is_rate_limit"](404, {}, b"not found")
+)
 
 readme_list = invoke("readme", "--list")
 listed = json.loads(readme_list.stdout)

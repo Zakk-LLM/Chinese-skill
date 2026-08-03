@@ -38,3 +38,10 @@ jobs:
             --exclude 'lexicons/*' --exclude '*/lexicons/*' .
           python3 scripts/chinese_lint.py --kind prose --style readme \
             --locale zh-CN README.zh-CN.md
+      - name: Exercise reusable Chinese lint action
+        uses: ./
+        with:
+          path: README.md
+          kind: prose
+          style: readme
+          locale: zh-TW

@@ -95,5 +95,8 @@ Use the `readme` lint style for a draft:
 python3 scripts/chinese_lint.py --kind prose --style readme README.md
 ```
 
-The linter detects selected wording and length problems. It cannot verify commands,
-compatibility, audience coverage, missing prerequisites, or whether a section is useful.
+The linter also checks skipped heading levels, trailing full stops in headings, generic
+link text, inconsistent list punctuation, deterministic Chinese typography, and terms
+that change form within one document. `--fix` changes only deterministic typography and
+heading punctuation. It cannot verify commands, compatibility, audience coverage,
+missing prerequisites, list grammar, or whether a section is useful.

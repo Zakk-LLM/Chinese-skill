@@ -1,0 +1,35 @@
+name: Chinese lint
+description: Check Chinese wording in a file or directory.
+inputs:
+  path:
+    description: File or directory to inspect.
+    required: false
+    default: .
+  kind:
+    description: Text kind accepted by chinese_lint.py.
+    required: false
+    default: all
+  style:
+    description: Writing style accepted by chinese_lint.py.
+    required: false
+    default: standard
+  locale:
+    description: Chinese locale accepted by chinese_lint.py.
+    required: false
+    default: auto
+runs:
+  using: composite
+  steps:
+    - name: Check Chinese wording
+      shell: bash
+      env:
+        CHINESE_LINT_PATH: ${{ inputs.path }}
+        CHINESE_LINT_KIND: ${{ inputs.kind }}
+        CHINESE_LINT_STYLE: ${{ inputs.style }}
+        CHINESE_LINT_LOCALE: ${{ inputs.locale }}
+      run: >-
+        python3 "$GITHUB_ACTION_PATH/scripts/chinese_lint.py"
+        --kind "$CHINESE_LINT_KIND"
+        --style "$CHINESE_LINT_STYLE"
+        --locale "$CHINESE_LINT_LOCALE"
+        "$CHINESE_LINT_PATH"

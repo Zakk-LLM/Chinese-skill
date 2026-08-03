@@ -46,5 +46,18 @@
   "ui_redundant_progress": "正在載入設定中...",
   "ui_generic_error": "發生了一個錯誤。",
   "ui_generic_confirmation": "確定要這麼做嗎？",
-  "ui_clean_error": "無法儲存設定。請檢查網路連線後重試。"
+  "ui_clean_error": "無法儲存設定。請檢查網路連線後重試。",
+  "typography_defects": "１２．３ 全形英數！！ ... -- 用了Redis。",
+  "typography_protected": "請執行 `tool --flag`，並開啟 https://example.com/a...。",
+  "quoted_sentence": "某人說「這是重點」。",
+  "markdown_structure_bad": "# 文件\n\n### 設定快取的方式。\n\n- 第一項。\n- 第二項\n\n請參閱[這裡](https://example.com)。\n",
+  "markdown_structure_clean": "# 文件\n\n## 設定快取\n\n- 第一項\n- 第二項\n\n請參閱[設定說明](https://example.com)。\n",
+  "ui_json_bad": "{\"saveButton\": \"儲存變更。\", \"errorMessage\": \"無法儲存設定。\"}",
+  "ui_html_bad": "<input placeholder=\"輸入名稱。\"><button>儲存。</button><div aria-label=\"關閉。\"></div>",
+  "ui_surface_clean": "{\"saveButton\": \"儲存變更\", \"errorMessage\": \"無法儲存設定。\"}",
+  "ui_exclamation": "儲存成功！",
+  "grammar_defects": "服務跑的很快。系統快速的執行檢查。這是認真地態度。",
+  "grammar_clean": "服務運行得很快。系統快速地執行檢查。這是認真的態度。",
+  "mixed_terms": "這段程式碼仍含舊代碼。請檢查裡面與裏面的內容。",
+  "locale_comparison": "zh-CN 使用代码；zh-TW 使用程式碼。術語對照：裡面／裏面。"
 }

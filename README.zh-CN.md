@@ -45,6 +45,8 @@ python3 scripts/chinese_lint.py README.md docs/
 python3 scripts/chinese_lint.py --kind source src/
 python3 scripts/chinese_lint.py --kind prose --style readme README.zh-CN.md
 python3 scripts/chinese_lint.py --kind prose --style ui path/to/catalog
+python3 scripts/chinese_lint.py --kind prose --format json article.md
+python3 scripts/chinese_lint.py --kind prose --style readme --fix README.zh-CN.md
 printf '%s\n' '待检查文字' | python3 scripts/chinese_lint.py --kind prose -
 python3 scripts/chinese_lint.py --kind commit-message message.txt
 python3 scripts/chinese_lint.py --kind pr-body --title 'scope: summary' body.txt
@@ -59,9 +61,31 @@ python3 scripts/chinese_lint.py --kind pr-body --title 'scope: summary' body.txt
 | `readme` | 项目入口文档 |
 | `ui` | 控件、状态、错误及确认文字 |
 
+`--format json` 输出稳定的规则标识符、严重程度、路径、行号、消息与样本，供编辑器及 CI 使用。`--fix` 只修正全角字母和数字、标点、空格及 README 标题句号，不改写语法或措辞。
+
 `--locale` 支持 `zh-CN`、`zh-TW`、`zh-HK`、`zh-SG` 与 `zh-MY`。香港使用繁体，新加坡与马来西亚使用简体；所在地区的正式技术术语可以保留。所有模式都会拒绝 AI 署名，但允许使用真实电子邮件地址的人类作者署名。
 
-自动检查只处理可稳定判断的问题。语法、因果关系、术语选择及注释价值仍需人工审核。
+检查器会提示置信度较高的“的／得／地”错误与文内术语混用。这类提示不会自动修正；因果关系、术语选择及注释价值仍需人工审核。
+
+## 项目集成
+
+pre-commit 用户可引用本仓库的 `chinese-lint` hook。GitHub Actions 可直接使用 `Zakk-LLM/Chinese-skill@版本`，并通过 `path`、`kind`、`style` 与 `locale` 指定检查范围。
+
+```yaml
+repos:
+  - repo: https://github.com/Zakk-LLM/Chinese-skill
+    rev: main
+    hooks:
+      - id: chinese-lint
+```
+
+```yaml
+- uses: Zakk-LLM/Chinese-skill@main
+  with:
+    path: docs
+    style: technical
+    locale: zh-CN
+```
 
 ## 规则
 
@@ -88,7 +112,7 @@ python3 scripts/corpus_lookup.py readme --source gogs-2019
 python3 scripts/verify_corpora.py
 ```
 
-`verify_corpora.py` 需要网络连接，用于核对来源路径、commit 日期与 Git blob。
+`verify_corpora.py` 需要网络连接，用于核对来源路径、commit 日期与 Git blob。GitHub 达到速率限制时，程序会要求设置 `GITHUB_TOKEN` 并以状态码 2 结束，不会误报为内容不一致。
 
 内置词典包括国家教育研究院两岸对照计算机名词、OpenCC、MediaWiki 地区词转换表、CC-CEDICT、Unihan、McBopomofo、jieba、THUOCL 与 Rime essay。萌娘百科及中文维基词库采用可选安装，不随项目发布。
 

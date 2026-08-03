@@ -48,6 +48,10 @@ Omit absent fields. Do not add an introduction or final recap.
 
 Read the completed paragraph aloud by clause. A grammatical sentence can still be illogical; verify that each conclusion follows from the preceding evidence.
 
+The linter reports a small set of high-confidence `的`, `得`, and `地` combinations as
+warnings. It also reports conflicting technical terms when no locale is selected. Treat
+both as review prompts: quotation, syntax, and domain context can still justify a form.
+
 ## Rewrite translations by meaning
 
 - Identify the source statement's fact, actor, action, condition, and effect before writing Chinese.
@@ -110,6 +114,9 @@ academic, technical, readme, and ui styles, do not add Emoji.
   `systemd`, and `nginx`.
 - Do not insert English adjectives where a concrete Chinese description is clearer.
 - Use Chinese punctuation in Chinese sentences and ASCII punctuation inside code.
+- Use ASCII letters and digits, one punctuation mark, `……` for prose ellipses, and
+  `——` for prose dashes. Put one space between Chinese and adjacent Latin letters or
+  digits. Exempt code, URLs, email addresses, and markup syntax.
 
 For readers across China, Taiwan, Hong Kong, Singapore, and Malaysia, prefer shared
 standard vocabulary. Avoid dialect syntax, local jokes, Internet slang, and

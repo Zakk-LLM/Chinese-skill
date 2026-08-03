@@ -551,4 +551,179 @@ with tempfile.TemporaryDirectory() as base:
         "locale" in item[1] for item in strict_lint_file(
             brand_locale, "prose", "general", None, 280, "zh-TW")))
 
+    typography = root / "typography.md"
+    typography.write_text(FIXTURES["typography_defects"] + "\n")
+    typography_findings = LINT.lint_file(
+        typography, "prose", "general", None, None, "zh-TW", style="readme")
+    typography_codes = {item.code for item in typography_findings}
+    check("deterministic Chinese typography", {
+        "typography.fullwidth-alphanumeric",
+        "typography.fullwidth-decimal",
+        "typography.repeated-punctuation",
+        "typography.ascii-ellipsis",
+        "typography.ascii-dash",
+        "typography.cjk-latin-spacing",
+    } <= typography_codes)
+    protected_typography = root / "protected-typography.md"
+    protected_typography.write_text(FIXTURES["typography_protected"] + "\n")
+    check("code and URLs are excluded from typography", not any(
+        item.code.startswith("typography.") for item in LINT.lint_file(
+            protected_typography, "prose", "general", None, None,
+            "zh-TW", style="readme")))
+
+    markdown_bad = root / "markdown-bad.md"
+    markdown_bad.write_text(FIXTURES["markdown_structure_bad"])
+    markdown_codes = {item.code for item in LINT.lint_file(
+        markdown_bad, "prose", "general", None, None, "zh-TW",
+        style="readme")}
+    check("Markdown structure", {
+        "markdown.heading-level",
+        "markdown.heading-punctuation",
+        "markdown.generic-link",
+        "markdown.list-punctuation",
+    } <= markdown_codes)
+    markdown_clean = root / "markdown-clean.md"
+    markdown_clean.write_text(FIXTURES["markdown_structure_clean"])
+    check("clean Markdown structure", not LINT.lint_file(
+        markdown_clean, "prose", "general", None, None, "zh-TW",
+        style="readme"))
+
+    quoted_sentence = root / "quoted-sentence.md"
+    quoted_sentence.write_text(FIXTURES["quoted_sentence"] + "\n")
+    check("ordinary quotation is not a quoted-term finding", not any(
+        item.code == "wording.quoted-term" for item in LINT.lint_file(
+            quoted_sentence, "prose", "general", None, None, "zh-TW",
+            style="strict")))
+    check("explicit quoted identifier remains detectable", any(
+        item.code == "wording.quoted-term" for item in strict_lint_file(
+            brackets, "prose", "general", None, 280)))
+
+    ui_json = root / "ui.json"
+    ui_json.write_text(FIXTURES["ui_json_bad"] + "\n")
+    ui_json_findings = LINT.lint_file(
+        ui_json, "prose", "general", None, None, "zh-TW", style="ui")
+    check("UI JSON control punctuation", len([
+        item for item in ui_json_findings
+        if item.code == "ui.control-punctuation"]) == 1)
+    ui_html = root / "ui.html"
+    ui_html.write_text(FIXTURES["ui_html_bad"] + "\n")
+    check("UI HTML surface punctuation", len([
+        item for item in LINT.lint_file(
+            ui_html, "prose", "general", None, None, "zh-TW", style="ui")
+        if item.code == "ui.control-punctuation"]) == 3)
+    ui_surface_clean = root / "ui-clean.json"
+    ui_surface_clean.write_text(FIXTURES["ui_surface_clean"] + "\n")
+    check("UI explanation punctuation remains valid", not any(
+        item.code == "ui.control-punctuation" for item in LINT.lint_file(
+            ui_surface_clean, "prose", "general", None, None,
+            "zh-TW", style="ui")))
+    ui_exclamation = root / "ui-exclamation.txt"
+    ui_exclamation.write_text(FIXTURES["ui_exclamation"] + "\n")
+    check("UI exclamation mark", any(
+        item.code == "ui.exclamation" for item in LINT.lint_file(
+            ui_exclamation, "prose", "general", None, None,
+            "zh-TW", style="ui")))
+
+    grammar_bad = root / "grammar-bad.md"
+    grammar_bad.write_text(FIXTURES["grammar_defects"] + "\n")
+    grammar_findings = LINT.lint_file(
+        grammar_bad, "prose", "general", None, None, style="technical")
+    check("conservative 的得地 rules", {
+        "grammar.verb-degree-de",
+        "grammar.adverbial-de",
+        "grammar.attributive-di",
+    } <= {item.code for item in grammar_findings})
+    check("grammar findings are advisory", all(
+        item.severity == "warning" for item in grammar_findings
+        if item.code.startswith("grammar.")))
+    grammar_clean = root / "grammar-clean.md"
+    grammar_clean.write_text(FIXTURES["grammar_clean"] + "\n")
+    check("clean 的得地 usage", not any(
+        item.code.startswith("grammar.") for item in LINT.lint_file(
+            grammar_clean, "prose", "general", None, None,
+            style="technical")))
+
+    mixed_terms = root / "mixed-terms.md"
+    mixed_terms.write_text(FIXTURES["mixed_terms"] + "\n")
+    consistency_codes = {item.code for item in LINT.lint_file(
+        mixed_terms, "prose", "general", None, None,
+        style="technical")}
+    check("within-document terminology consistency", {
+        "consistency.program-code", "consistency.inside",
+    } <= consistency_codes)
+    locale_comparison = root / "locale-comparison.md"
+    locale_comparison.write_text(FIXTURES["locale_comparison"] + "\n")
+    check("explicit locale comparisons are excluded", not any(
+        item.code.startswith("consistency.") for item in LINT.lint_file(
+            locale_comparison, "prose", "general", None, None,
+            style="technical")))
+    check("selected locale disables consistency advice", not any(
+        item.code.startswith("consistency.") for item in LINT.lint_file(
+            mixed_terms, "prose", "general", None, None,
+            "zh-TW", style="technical")))
+
+    json_result = subprocess.run(
+        [sys.executable, str(TARGET), "--kind", "prose", "--style", "readme",
+         "--locale", "zh-TW", "--format", "json", str(typography)],
+        check=False, capture_output=True, text=True)
+    json_payload = json.loads(json_result.stdout)
+    check("JSON diagnostic output", (
+        json_result.returncode == 1
+        and not json_result.stderr
+        and json_payload["version"] == 1
+        and json_payload["count"] == len(json_payload["findings"])
+        and all(set(item) == {"path", "line", "code", "severity", "message", "sample"}
+                for item in json_payload["findings"])))
+    clean_json_result = subprocess.run(
+        [sys.executable, str(TARGET), "--kind", "prose", "--style", "readme",
+         "--locale", "zh-TW", "--format", "json", str(markdown_clean)],
+        check=False, capture_output=True, text=True)
+    clean_json_payload = json.loads(clean_json_result.stdout)
+    check("empty JSON diagnostic output", (
+        clean_json_result.returncode == 0
+        and clean_json_payload == {"version": 1, "count": 0, "findings": []}))
+
+    fix_target = root / "fix-target.md"
+    fix_target.write_bytes((
+        "# 設定Redis。\r\n\r\n"
+        + FIXTURES["typography_defects"]
+        + " 中A文 `tool --flag` https://example.com/a...。\r\n").encode())
+    fix_command = [
+        sys.executable, str(TARGET), "--kind", "prose", "--style", "readme",
+        "--fix", str(fix_target),
+    ]
+    fix_result = subprocess.run(
+        fix_command, check=False, capture_output=True, text=True)
+    fixed_bytes = fix_target.read_bytes()
+    check("safe typography fix", (
+        fix_result.returncode == 0
+        and "fixed " in fix_result.stdout
+        and b"\r\n" in fixed_bytes
+        and "# 設定 Redis\r\n".encode() in fixed_bytes
+        and "12.3 全形英數！ …… —— 用了 Redis。".encode() in fixed_bytes
+        and "中 A 文".encode() in fixed_bytes
+        and b"`tool --flag`" in fixed_bytes
+        and b"https://example.com/a..." in fixed_bytes))
+    second_fix = subprocess.run(
+        fix_command, check=False, capture_output=True, text=True)
+    check("safe fix is idempotent", (
+        second_fix.returncode == 0
+        and "fixed " not in second_fix.stdout
+        and fix_target.read_bytes() == fixed_bytes))
+    grammar_fix = root / "grammar-fix.md"
+    grammar_fix.write_text(FIXTURES["grammar_defects"] + "\n")
+    before_grammar_fix = grammar_fix.read_text()
+    subprocess.run(
+        [sys.executable, str(TARGET), "--kind", "prose", "--style",
+         "technical", "--fix", str(grammar_fix)],
+        check=False, capture_output=True, text=True)
+    check("safe fix does not rewrite grammar", (
+        grammar_fix.read_text() == before_grammar_fix))
+    stdin_fix = subprocess.run(
+        [sys.executable, str(TARGET), "--kind", "prose", "--fix", "-"],
+        input="測試。\n", check=False, capture_output=True, text=True)
+    check("safe fix rejects standard input", (
+        stdin_fix.returncode == 2
+        and "does not accept standard input" in stdin_fix.stderr))
+
 raise SystemExit(1 if failures else 0)

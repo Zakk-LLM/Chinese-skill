@@ -85,6 +85,10 @@ Check candidate text with the UI style:
 python3 scripts/chinese_lint.py --kind prose --style ui path/to/catalog
 ```
 
-Static checks cannot verify component context, the available recovery action, placeholder
-parity, accessible naming, truncation, or the rendered longest locale. Review those
-properties separately.
+For HTML-like files and direct JSON or YAML string entries, the linter recognizes common
+button, label, title, tooltip, placeholder, `alt`, and `aria-label` surfaces. It rejects
+terminal punctuation on those surfaces and exclamation marks in Chinese UI text.
+
+Static checks cannot verify an unknown message key, the available recovery action,
+placeholder parity, semantic accessible naming, parallel grammar, truncation, or the
+rendered longest locale. Review those properties separately.

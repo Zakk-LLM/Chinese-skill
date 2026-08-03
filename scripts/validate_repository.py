@@ -81,10 +81,25 @@ def validate_terms(errors):
 
 def validate_wording(errors):
     data = load_json("references/wording.json")
+    rules = [*data["literal_groups"], *data["regex_rules"]]
+    identifiers = [rule.get("id") for rule in rules]
+    if (len(identifiers) != len(set(identifiers))
+            or not all(isinstance(identifier, str)
+                       and re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", identifier)
+                       for identifier in identifiers)):
+        errors.append("wording rule ids must be present, valid, and unique")
     literal = [term for group in data["literal_groups"] for term in group["terms"]]
     if len(literal) != len(set(literal)):
         errors.append("literal wording rules must be unique")
-    patterns = [rule["pattern"] for rule in data["regex_rules"]]
+    grammar_rules = data.get("grammar_rules", [])
+    grammar_ids = [rule.get("id") for rule in grammar_rules]
+    if (not grammar_ids or len(grammar_ids) != len(set(grammar_ids))
+            or not all(isinstance(identifier, str)
+                       and re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", identifier)
+                       for identifier in grammar_ids)):
+        errors.append("grammar rule ids must be present, valid, and unique")
+    patterns = [rule["pattern"]
+                for rule in [*data["regex_rules"], *grammar_rules]]
     for key in ("emoji_patterns", "attribution_patterns", "invalid_signoff_patterns",
                 "routine_passing_patterns", "workflow_narration_patterns",
                 "author_narration_patterns", "pr_inventory_patterns"):
@@ -122,10 +137,28 @@ def validate_wording(errors):
         if (not symbols or len(symbols) != len(set(symbols))
                 or not all(isinstance(symbol, str) and symbol for symbol in symbols)):
             errors.append(f"invalid Emoji exceptions: {style}")
-    for rule in [*data["literal_groups"], *data["regex_rules"]]:
+    for rule in rules:
         if set(rule.get("styles", ())) - expected_styles:
             errors.append("wording rule names an unknown style")
-    for key in ("locale_name_exceptions", "locale_word_exceptions"):
+    for rule in grammar_rules:
+        if set(rule.get("styles", ())) - expected_styles:
+            errors.append("grammar rule names an unknown style")
+        if not rule.get("message"):
+            errors.append("grammar rule has no message")
+    consistency_groups = data.get("consistency_groups", [])
+    consistency_ids = [group.get("id") for group in consistency_groups]
+    if (not consistency_ids or len(consistency_ids) != len(set(consistency_ids))
+            or not all(isinstance(identifier, str)
+                       and re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", identifier)
+                       for identifier in consistency_ids)):
+        errors.append("consistency group ids must be present, valid, and unique")
+    for group in consistency_groups:
+        forms = group.get("forms", [])
+        if (len(forms) < 2 or len(forms) != len(set(forms))
+                or not all(isinstance(form, str) and form for form in forms)):
+            errors.append(f"invalid consistency group: {group.get('id')}")
+    for key in ("locale_name_exceptions", "locale_word_exceptions",
+                "generic_link_labels", "comparison_markers"):
         values = data.get(key, [])
         if not values or len(values) != len(set(values)):
             errors.append(f"wording {key} must be present and unique")
@@ -370,11 +403,29 @@ def validate_repository(errors, release):
     for path in required_executables:
         if not os.access(path, os.X_OK):
             errors.append(f"script is not executable: {path.relative_to(ROOT)}")
+    hook = ROOT / ".pre-commit-hooks.yaml"
+    if not hook.is_file():
+        errors.append("pre-commit hook manifest is missing")
+    else:
+        hook_text = hook.read_text()
+        for value in ("id: chinese-lint", "entry: scripts/chinese_lint.py",
+                      "language: script", "types: [text]"):
+            if value not in hook_text:
+                errors.append(f"incomplete pre-commit hook: {value}")
+    action = ROOT / "action.yml"
+    if not action.is_file():
+        errors.append("reusable action manifest is missing")
+    else:
+        action_text = action.read_text()
+        for value in ("using: composite", "GITHUB_ACTION_PATH/scripts/chinese_lint.py",
+                      '"$CHINESE_LINT_PATH"'):
+            if value not in action_text:
+                errors.append(f"incomplete reusable action: {value}")
     workflow = (ROOT / ".github" / "workflows" / "tests.yml").read_text()
     for command in ("shellcheck install.sh", "scripts/test_chinese_lint.py",
                     "scripts/test_install.py", "scripts/test_lexicons.py",
                     "scripts/test_corpora.py", "scripts/validate_repository.py",
-                    "sync_lexicons.py --verify", "README.zh-CN.md"):
+                    "sync_lexicons.py --verify", "README.zh-CN.md", "uses: ./"):
         if command not in workflow:
             errors.append(f"CI does not run required check: {command}")
     if "--exclude 'test_*'" in workflow:
@@ -391,6 +442,7 @@ def validate_repository(errors, release):
         text = path.read_text()
         for required in ("Python 3.11", "scripts/corpus_lookup.py",
                          "scripts/verify_corpora.py", "scripts/test_corpora.py",
+                         "--fix", "pre-commit", "Zakk-LLM/Chinese-skill@main",
                          locale_target):
             if required not in text:
                 errors.append(f"incomplete localized README {filename}: {required}")

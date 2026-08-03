@@ -5,6 +5,7 @@ import hashlib
 import json
 import os
 import pathlib
+import urllib.error
 import urllib.parse
 import urllib.request
 
@@ -24,6 +25,15 @@ def fetch(url):
     request = urllib.request.Request(url, headers=headers)
     with urllib.request.urlopen(request, timeout=30) as response:
         return response.read()
+
+
+def is_rate_limit(code, headers, body):
+    if code == 429:
+        return True
+    if code != 403:
+        return False
+    remaining = (headers or {}).get("X-RateLimit-Remaining", "")
+    return remaining == "0" or b"rate limit" in body.lower()
 
 
 def git_blob(content):
@@ -56,6 +66,7 @@ def pinned_entries(data):
 
 def main():
     failed = False
+    limited = False
     dates = {}
     for config_path in CONFIGS:
         data = json.loads(config_path.read_text())
@@ -65,9 +76,22 @@ def main():
                 content = fetch(raw_url(repository, entry["commit"], entry["path"]))
                 actual_blob = git_blob(content)
                 actual_date = commit_date(repository, entry["commit"], dates)
-                passed = actual_blob == entry["blob"] and actual_date == entry["date"]
-                print(f"{'PASS' if passed else 'FAIL'} {label}")
-                failed |= not passed
+                if actual_blob != entry["blob"]:
+                    print(f"FAIL {label}: Git blob mismatch")
+                    failed = True
+                elif actual_date != entry["date"]:
+                    print(f"FAIL {label}: commit date mismatch")
+                    failed = True
+                else:
+                    print(f"PASS {label}")
+            except urllib.error.HTTPError as error:
+                body = error.read()
+                if is_rate_limit(error.code, error.headers, body):
+                    print(f"SKIP {label}: GitHub rate limit; set GITHUB_TOKEN")
+                    limited = True
+                else:
+                    print(f"FAIL {label}: HTTP {error.code}")
+                    failed = True
             except (OSError, KeyError, ValueError, json.JSONDecodeError) as error:
                 print(f"FAIL {label}: {error}")
                 failed = True
@@ -80,10 +104,20 @@ def main():
                 passed = bool(content)
                 print(f"{'PASS' if passed else 'FAIL'} {label}")
                 failed |= not passed
+            except urllib.error.HTTPError as error:
+                body = error.read()
+                if is_rate_limit(error.code, error.headers, body):
+                    print(f"SKIP {label}: GitHub rate limit; set GITHUB_TOKEN")
+                    limited = True
+                else:
+                    print(f"FAIL {label}: HTTP {error.code}")
+                    failed = True
             except OSError as error:
                 print(f"FAIL {label}: {error}")
                 failed = True
-    return 1 if failed else 0
+    if failed:
+        return 1
+    return 2 if limited else 0
 
 
 if __name__ == "__main__":

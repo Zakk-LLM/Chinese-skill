@@ -3,14 +3,18 @@
 
 import argparse
 import ast
+import dataclasses
 import fnmatch
 import gzip
 import io
 import json
+import os
 import pathlib
 import re
 import sys
+import tempfile
 import tokenize
+import unicodedata
 import zipfile
 
 
@@ -54,6 +58,30 @@ INTERNAL_RULE_FILES = {
 }
 
 
+@dataclasses.dataclass(frozen=True, order=True)
+class Finding:
+    """One stable diagnostic with tuple-compatible legacy access."""
+
+    line: int
+    message: str
+    sample: str = ""
+    code: str = "internal.unknown"
+    severity: str = "error"
+
+    def __iter__(self):
+        return iter((self.line, self.message, self.sample))
+
+    def __getitem__(self, index):
+        return (self.line, self.message, self.sample)[index]
+
+    def __len__(self):
+        return 3
+
+
+def issue(code, line, message, sample="", severity="error"):
+    return Finding(line, message, sample, code, severity)
+
+
 def line_number(text, offset):
     return text.count("\n", 0, offset) + 1
 
@@ -73,17 +101,19 @@ def phrase_findings(text, style="standard"):
                 at = text.find(term, start)
                 if at < 0:
                     break
-                matches.append((at, group["message"], term))
+                matches.append((at, group["id"], group["message"], term))
                 start = at + len(term)
-    words = longer_words({term for _, _, term in matches})
-    findings = [(line_number(text, at), message, term)
-                for at, message, term in matches
+    words = longer_words({term for _, _, _, term in matches})
+    findings = [issue(f"wording.{identifier}", line_number(text, at), message, term)
+                for at, identifier, message, term in matches
                 if not contained_in_longer_word(text, at, at + len(term), words)]
     for rule in RULES["regex_rules"]:
         if not applies_to_style(rule, style):
             continue
         for match in re.finditer(rule["pattern"], text):
-            findings.append((line_number(text, match.start()), rule["message"], match.group(0)))
+            findings.append(issue(
+                f"wording.{rule['id']}", line_number(text, match.start()),
+                rule["message"], match.group(0)))
     return findings
 
 
@@ -118,8 +148,8 @@ def locale_findings(text, locale):
         sample = "".join(sorted(found_traditional)[:4] + sorted(found_simplified)[:4])
         positions = [min(text.index(char) for char in found_traditional),
                      min(text.index(char) for char in found_simplified)]
-        return [(line_number(text, max(positions)),
-                 "do not mix Traditional and Simplified Chinese", sample)]
+        return [issue("locale.mixed-script", line_number(text, max(positions)),
+                      "do not mix Traditional and Simplified Chinese", sample)]
     script = LOCALE_SCRIPT.get(locale)
     opposite = simplified if script == "traditional" else traditional
     out = []
@@ -127,8 +157,10 @@ def locale_findings(text, locale):
         for number, line in enumerate(text.splitlines(), 1):
             found = opposite.intersection(line)
             if found:
-                out.append((number, f"text does not match requested locale {locale}",
-                            "".join(sorted(found)[:8])))
+                out.append(issue(
+                    "locale.wrong-script", number,
+                    f"text does not match requested locale {locale}",
+                    "".join(sorted(found)[:8])))
     return out
 
 
@@ -150,8 +182,9 @@ def terminology_findings(text, locale):
                 at = text.find(rejected, start)
                 if at < 0:
                     break
-                out.append((line_number(text, at),
-                            f"use {preferred} for {item['en']} in {locale}", rejected))
+                out.append(issue(
+                    "terminology.locale", line_number(text, at),
+                    f"use {preferred} for {item['en']} in {locale}", rejected))
                 start = at + len(rejected)
     return out
 
@@ -289,7 +322,7 @@ def regional_findings(text, locale):
     if not matches:
         return []
     words = longer_words({wrong for _, wrong, _ in matches})
-    return [(line_number(text, at),
+    return [issue("terminology.regional", line_number(text, at),
              f"regional vocabulary: use {preferred} in {locale}", wrong)
             for at, wrong, preferred in matches
             if not contained_in_longer_word(text, at, at + len(wrong), words)]
@@ -577,12 +610,14 @@ def paragraph_unit_findings(paragraph, line, limit, style="standard"):
     paragraph_limit = limit if limit is not None else style_policy["paragraph_characters"]
     sentence_count_limit = style_policy["paragraph_sentences"]
     if paragraph_limit and len(compact) > paragraph_limit:
-        out.append((line, f"paragraph exceeds {paragraph_limit} non-space characters",
-                    compact[:24]))
+        out.append(issue(
+            "length.paragraph", line,
+            f"paragraph exceeds {paragraph_limit} non-space characters", compact[:24]))
     if (sentence_count_limit
             and len(SENTENCE_END.findall(paragraph)) > sentence_count_limit):
-        out.append((line, f"paragraph exceeds {sentence_count_limit} sentences",
-                    compact[:24]))
+        out.append(issue(
+            "length.paragraph-sentences", line,
+            f"paragraph exceeds {sentence_count_limit} sentences", compact[:24]))
     sentence_limit = style_policy["sentence_characters"]
     clause_limit = style_policy["clause_markers"]
     for match in SENTENCE.finditer(paragraph):
@@ -592,15 +627,15 @@ def paragraph_unit_findings(paragraph, line, limit, style="standard"):
         sample = re.sub(r"\s", "", sentence)
         sentence_line = line + paragraph.count("\n", 0, match.start())
         if sentence_limit and len(sample) > sentence_limit:
-            out.append((sentence_line,
-                        f"sentence exceeds {sentence_limit} non-space characters",
-                        sample[:24]))
+            out.append(issue(
+                "length.sentence", sentence_line,
+                f"sentence exceeds {sentence_limit} non-space characters", sample[:24]))
         markers = len(re.findall(r"[，；：,;:]", sentence))
         markers += len(CLAUSE_CONNECTORS.findall(sentence))
         if clause_limit and markers >= clause_limit:
-            out.append((sentence_line,
-                        "split the sentence into direct claims and conditions",
-                        sample[:24]))
+            out.append(issue(
+                "structure.complex-sentence", sentence_line,
+                "split the sentence into direct claims and conditions", sample[:24]))
     return out
 
 
@@ -616,8 +651,9 @@ def repeated_sentence_findings(text):
         if len(normalized) < minimum or not CJK.search(normalized):
             continue
         if normalized in seen:
-            out.append((line_number(text, match.start()),
-                        "remove the repeated sentence", normalized[:24]))
+            out.append(issue(
+                "structure.repeated-sentence", line_number(text, match.start()),
+                "remove the repeated sentence", normalized[:24]))
         seen.add(normalized)
     return out
 
@@ -688,25 +724,34 @@ def subject_findings(subject, profile, label="commit subject"):
     limit = 69 if profile == "gentoo-overlay" else 72
     out = []
     if len(subject) > limit:
-        out.append((1, f"{label} exceeds {limit} characters", subject[:32]))
+        out.append(issue(
+            "vcs.subject-length", 1, f"{label} exceeds {limit} characters",
+            subject[:32]))
     if subject.rstrip().endswith(tuple("。；，！？、.;,!?：:")):
-        out.append((1, f"remove the trailing punctuation from the {label}",
-                    subject[-16:]))
+        out.append(issue(
+            "vcs.subject-punctuation", 1,
+            f"remove the trailing punctuation from the {label}", subject[-16:]))
     if profile == "gentoo-overlay":
         if CJK.search(subject):
-            out.append((1, f"gentoo-zh overlay {label} must be English", subject[:32]))
+            out.append(issue(
+                "overlay.english-subject", 1,
+                f"gentoo-zh overlay {label} must be English", subject[:32]))
         if not re.match(r"\S+: \S", subject):
-            out.append((1, f"use `scope: summary` for the overlay {label}", subject[:32]))
+            out.append(issue(
+                "overlay.subject-format", 1,
+                f"use `scope: summary` for the overlay {label}", subject[:32]))
     return out
 
 
 def commit_findings(text, profile):
     lines = text.splitlines()
     if not lines or not lines[0].strip():
-        return [(1, "commit subject line is empty", "")]
+        return [issue("vcs.empty-subject", 1, "commit subject line is empty")]
     out = subject_findings(lines[0].rstrip(), profile)
     if len(lines) > 1 and lines[1].strip():
-        out.append((2, "leave line 2 blank between subject and body", lines[1][:32]))
+        out.append(issue(
+            "vcs.subject-body-spacing", 2,
+            "leave line 2 blank between subject and body", lines[1][:32]))
     return out
 
 
@@ -715,9 +760,10 @@ def attribution_findings(text):
     out = []
     for pattern in RULES["attribution_patterns"]:
         for match in re.finditer(pattern, text, re.M | re.I):
-            out.append((line_number(text, match.start()),
-                        "remove the AI attribution; AI signatures are not allowed",
-                        match.group(0)[:48]))
+            out.append(issue(
+                "attribution.ai", line_number(text, match.start()),
+                "remove the AI attribution; AI signatures are not allowed",
+                match.group(0)[:48]))
     return out
 
 
@@ -726,8 +772,9 @@ def emoji_findings(text, style="standard"):
         return []
     for symbol in RULES.get("emoji_exceptions", {}).get(style, ()):
         text = text.replace(symbol, " " * len(symbol))
-    return pattern_findings(text, "emoji_patterns",
-                            "remove Emoji and state the meaning in text")
+    return pattern_findings(
+        text, "emoji_patterns", "style.emoji",
+        "remove Emoji and state the meaning in text")
 
 
 
@@ -735,13 +782,14 @@ def signoff_findings(text):
     out = []
     for pattern in RULES["invalid_signoff_patterns"]:
         for match in re.finditer(pattern, text, re.M | re.I):
-            out.append((line_number(text, match.start()),
-                        "use the contributor's real email in Signed-off-by",
-                        match.group(0)[:48]))
+            out.append(issue(
+                "attribution.invalid-signoff", line_number(text, match.start()),
+                "use the contributor's real email in Signed-off-by",
+                match.group(0)[:48]))
     return out
 
 
-def pattern_findings(text, key, message):
+def pattern_findings(text, key, code, message):
     out = {}
     for pattern in RULES[key]:
         for match in re.finditer(pattern, text, re.M | re.I):
@@ -750,7 +798,7 @@ def pattern_findings(text, key, message):
             current = out.get(line, "")
             if len(sample) > len(current):
                 out[line] = sample
-    return [(line, message, sample) for line, sample in out.items()]
+    return [issue(code, line, message, sample) for line, sample in out.items()]
 
 
 def authored_pr_text(text):
@@ -769,6 +817,394 @@ def mask_markup_code(text):
     return re.sub(r"`+[^`\n]*`+", blank, text)
 
 
+def mask_nonprose_markup(text):
+    """Mask links, addresses, and tags while preserving line offsets."""
+    def blank(match):
+        return "".join("\n" if char == "\n" else " " for char in match.group(0))
+
+    patterns = (
+        r"(?<=\])\((?:\\.|[^)\n])*\)",
+        r"(?:https?|ftp)://[^\s<>()]+",
+        r"(?<![\w.+-])[\w.+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}",
+        r"<[^>\n]+>",
+    )
+    for pattern in patterns:
+        text = re.sub(pattern, blank, text)
+    return text
+
+
+def match_sample(text, start, end, width=12):
+    left = max(text.rfind("\n", 0, start) + 1, start - width)
+    newline = text.find("\n", end)
+    right = len(text) if newline < 0 else newline
+    right = min(right, end + width)
+    return text[left:right].strip()[:48]
+
+
+def typography_findings(text, style="standard"):
+    checked = mask_nonprose_markup(text)
+    out = []
+    seen = set()
+
+    def add(code, message, match):
+        line = line_number(checked, match.start())
+        key = (code, line)
+        if key in seen:
+            return
+        seen.add(key)
+        out.append(issue(code, line, message,
+                         match_sample(checked, match.start(), match.end())))
+
+    for match in re.finditer(r"[０-９Ａ-Ｚａ-ｚ]+", checked):
+        add("typography.fullwidth-alphanumeric",
+            "use ASCII letters and digits instead of full-width forms", match)
+    for match in re.finditer(r"(?<=[0-9０-９])．(?=[0-9０-９])", checked):
+        add("typography.fullwidth-decimal",
+            "use an ASCII decimal point between digits", match)
+    for match in re.finditer(r"([，。；：！？、])\1+", checked):
+        add("typography.repeated-punctuation",
+            "use one punctuation mark", match)
+    for match in re.finditer(r"(?<!\.)\.{3,}(?!\.)", checked):
+        line_start = checked.rfind("\n", 0, match.start()) + 1
+        line_end = checked.find("\n", match.end())
+        line_end = len(checked) if line_end < 0 else line_end
+        if CJK.search(checked[line_start:line_end]):
+            message = ("use … for a UI state" if style == "ui"
+                       else "use …… for an ellipsis in Chinese prose")
+            add("typography.ascii-ellipsis", message, match)
+    for match in re.finditer(r"(?<![-\w])--(?![-\w])", checked):
+        line_start = checked.rfind("\n", 0, match.start()) + 1
+        line_end = checked.find("\n", match.end())
+        line_end = len(checked) if line_end < 0 else line_end
+        if CJK.search(checked[line_start:line_end]):
+            add("typography.ascii-dash",
+                "use —— for a dash in Chinese prose", match)
+
+    boundary = re.compile(
+        r"(?:[\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff][A-Za-z0-9]"
+        r"|[A-Za-z0-9][\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff])")
+    for match in boundary.finditer(checked):
+        add("typography.cjk-latin-spacing",
+            "add one space between Chinese and Latin letters or digits", match)
+    return out
+
+
+def apply_replacements(text, replacements):
+    """Apply non-overlapping replacements from right to left."""
+    for start, end, value in sorted(replacements, reverse=True):
+        text = text[:start] + value + text[end:]
+    return text
+
+
+def fix_matches(text, pattern, replacement, predicate=None):
+    """Replace prose matches while retaining protected markup and code."""
+    checked = mask_nonprose_markup(mask_markup_code(text))
+    replacements = []
+    for match in re.finditer(pattern, checked):
+        if predicate and not predicate(checked, match):
+            continue
+        value = replacement(match) if callable(replacement) else replacement
+        replacements.append((match.start(), match.end(), value))
+    return apply_replacements(text, replacements)
+
+
+def chinese_line(checked, match):
+    start = checked.rfind("\n", 0, match.start()) + 1
+    end = checked.find("\n", match.end())
+    end = len(checked) if end < 0 else end
+    return bool(CJK.search(checked[start:end]))
+
+
+def safe_fix_text(path, text, style="standard"):
+    """Apply deterministic typography fixes without changing wording."""
+    text = fix_matches(
+        text, r"[０-９Ａ-Ｚａ-ｚ]+",
+        lambda match: unicodedata.normalize("NFKC", match.group(0)))
+    text = fix_matches(text, r"(?<=[0-9])．(?=[0-9])", ".")
+    text = fix_matches(text, r"([，。；：！？、])\1+",
+                       lambda match: match.group(1))
+    text = fix_matches(
+        text, r"(?<!\.)\.{3,}(?!\.)",
+        lambda _match: "…" if style == "ui" else "……",
+        chinese_line)
+    text = fix_matches(text, r"(?<![-\w])--(?![-\w])", "——", chinese_line)
+    punctuation = {",": "，", ".": "。", ";": "；", ":": "：",
+                   "!": "！", "?": "？"}
+    text = fix_matches(
+        text,
+        r"(?<=[\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff])[,.;:!?]"
+        r"(?=\s|$|[\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff])",
+        lambda match: punctuation[match.group(0)])
+    cjk = r"[\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]"
+    text = fix_matches(
+        text, rf"{cjk}(?=[A-Za-z0-9])",
+        lambda match: match.group(0) + " ")
+    text = fix_matches(
+        text, rf"(?<=[A-Za-z0-9]){cjk}",
+        lambda match: " " + match.group(0))
+    if path.suffix in {".md", ".markdown"} and style == "readme":
+        checked = mask_markup_code(text)
+        replacements = []
+        for match in re.finditer(
+                r"(?m)^ {0,3}#{1,6}\s+.+?(?P<stop>[。．.])\s*#*\s*$", checked):
+            replacements.append((match.start("stop"), match.end("stop"), ""))
+        text = apply_replacements(text, replacements)
+    return text
+
+
+def fix_file(path, kind, profile, style):
+    """Safely replace one prose file and preserve its permission bits."""
+    if path.is_symlink():
+        raise OSError("refusing to replace a symbolic link")
+    data = path.read_bytes()
+    text = data.decode("utf-8")
+    prose = kind in {"prose", "pr-body", "commit-message"} or (
+        kind == "all" and prose_path(path, text))
+    if not prose:
+        return False
+    effective_style = "strict" if profile == "gentoo-overlay" else style
+    updated = safe_fix_text(path, text, effective_style)
+    if updated == text:
+        return False
+    mode = path.stat().st_mode
+    temporary = None
+    try:
+        with tempfile.NamedTemporaryFile(
+                mode="wb", dir=path.parent, prefix=f".{path.name}.",
+                delete=False) as handle:
+            temporary = pathlib.Path(handle.name)
+            handle.write(updated.encode("utf-8"))
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.chmod(temporary, mode)
+        os.replace(temporary, path)
+    finally:
+        if temporary and temporary.exists():
+            temporary.unlink()
+    return True
+
+
+def grammar_findings(text, style="standard"):
+    """Report only high-confidence 的/得/地 patterns as advisory findings."""
+    out = []
+    for rule in RULES["grammar_rules"]:
+        if not applies_to_style(rule, style):
+            continue
+        for match in re.finditer(rule["pattern"], text):
+            out.append(issue(
+                f"grammar.{rule['id']}", line_number(text, match.start()),
+                rule["message"], match.group(0), severity="warning"))
+    return out
+
+
+def comparison_line(line):
+    """Return whether a line explicitly compares locales or terminology."""
+    folded = line.casefold()
+    return any(marker.casefold() in folded
+               for marker in RULES["comparison_markers"])
+
+
+def form_occurrences(text, forms):
+    """Locate forms outside explicit comparison lines and longer dictionary words."""
+    occurrences = []
+    longer_forms = {
+        form
+        for item in TECHNICAL_TERMS
+        for form in (
+            item["zh-CN"], item["zh-TW"],
+            *item.get("reject", {}).get("zh-CN", []),
+            *item.get("reject", {}).get("zh-TW", []),
+        )
+    }
+    lines = text.splitlines(keepends=True)
+    offset = 0
+
+    def inside_longer_form(position, form):
+        for word in longer_forms:
+            if len(word) <= len(form):
+                continue
+            index = word.find(form)
+            while index >= 0:
+                start = position - index
+                if start >= 0 and text.startswith(word, start):
+                    return True
+                index = word.find(form, index + 1)
+        return False
+
+    for line in lines:
+        if not comparison_line(line):
+            for form in forms:
+                start = 0
+                while True:
+                    at = line.find(form, start)
+                    if at < 0:
+                        break
+                    absolute = offset + at
+                    if not inside_longer_form(absolute, form):
+                        occurrences.append((absolute, form))
+                    start = at + len(form)
+        offset += len(line)
+    return occurrences
+
+
+def consistency_findings(text, locale="auto"):
+    """Report inconsistent variants when no target locale has been selected."""
+    if locale != "auto":
+        return []
+    groups = []
+    for item in TECHNICAL_TERMS:
+        if not item.get("enforce"):
+            continue
+        forms = {item["zh-CN"], item["zh-TW"]}
+        for values in item.get("reject", {}).values():
+            forms.update(values)
+        forms.discard("")
+        if len(forms) > 1:
+            groups.append(("terminology", item["en"], forms))
+    for group in RULES["consistency_groups"]:
+        groups.append((group["id"], group["id"], set(group["forms"])))
+
+    out = []
+    for identifier, subject, forms in groups:
+        occurrences = form_occurrences(text, forms)
+        used = {}
+        for position, form in occurrences:
+            used.setdefault(form, position)
+        if len(used) < 2:
+            continue
+        ordered = sorted(used.items(), key=lambda item: item[1])
+        later_form, later_position = ordered[1]
+        sample = " / ".join(form for form, _ in ordered[:3])
+        message = (f"use one form consistently for {subject}"
+                   if identifier == "terminology"
+                   else "use one written form consistently in this document")
+        out.append(issue(
+            f"consistency.{identifier}", line_number(text, later_position),
+            message, sample, severity="warning"))
+    return out
+
+
+def markdown_findings(path, text, style="standard"):
+    if path.suffix not in {".md", ".markdown"}:
+        return []
+    out = []
+    previous_level = None
+    for match in re.finditer(r"(?m)^ {0,3}(#{1,6})\s+(.+?)\s*#*\s*$", text):
+        level = len(match.group(1))
+        title = match.group(2).strip()
+        line = line_number(text, match.start())
+        if previous_level is not None and level > previous_level + 1:
+            out.append(issue(
+                "markdown.heading-level", line,
+                "do not skip a Markdown heading level", match.group(0).strip()))
+        previous_level = level
+        if style == "readme" and title.endswith(("。", ".", "．")):
+            out.append(issue(
+                "markdown.heading-punctuation", line,
+                "remove the trailing full stop from the heading", title[:48]))
+
+    generic_links = set(RULES["generic_link_labels"])
+    for match in re.finditer(r"(?<!!)\[([^]\n]+)\]\([^)\n]+\)", text):
+        label = re.sub(r"[`*_]", "", match.group(1)).strip()
+        if label in generic_links:
+            out.append(issue(
+                "markdown.generic-link", line_number(text, match.start()),
+                "use the action or destination as the link text", label))
+
+    if style not in {"strict", "academic", "technical", "readme"}:
+        return out
+    groups = []
+    current = []
+    current_key = None
+    for number, line in enumerate(text.splitlines(), 1):
+        match = re.match(r"^(\s*)(?:[-*+]|\d+[.)])\s+(.+)$", line)
+        if not match:
+            if current:
+                groups.append(current)
+            current = []
+            current_key = None
+            continue
+        key = (len(match.group(1)), bool(re.match(r"\s*\d", line)))
+        if current and key != current_key:
+            groups.append(current)
+            current = []
+        current_key = key
+        value = match.group(2).strip()
+        if CJK.search(value):
+            current.append((number, value, bool(re.search(r"[。；！？]$", value))))
+    if current:
+        groups.append(current)
+    for group in groups:
+        states = {item[2] for item in group}
+        if len(group) > 1 and len(states) > 1:
+            first_state = group[0][2]
+            mismatch = next(item for item in group[1:] if item[2] != first_state)
+            out.append(issue(
+                "markdown.list-punctuation", mismatch[0],
+                "keep list-item ending punctuation consistent", mismatch[1][:48]))
+    return out
+
+
+def ui_surface_findings(path, text, checked_text):
+    out = []
+    seen = set()
+
+    def add_surface(start, value, surface):
+        value = value.strip()
+        if not CJK.search(value) or not re.search(r"[。；，！？.!?;,:：]$", value):
+            return
+        line = line_number(text, start)
+        key = (line, value)
+        if key in seen:
+            return
+        seen.add(key)
+        out.append(issue(
+            "ui.control-punctuation", line,
+            f"remove terminal punctuation from the {surface}", value[:48]))
+
+    if path.suffix in {".htm", ".html", ".jsx", ".svelte", ".tsx", ".vue"}:
+        attribute = re.compile(
+            r"(?P<name>alt|title|placeholder|aria-label)\s*=\s*"
+            r"(?P<quote>['\"])(?P<value>.*?)(?P=quote)", re.I)
+        for match in attribute.finditer(text):
+            add_surface(match.start("value"), match.group("value"),
+                        match.group("name").lower())
+        button = re.compile(
+            r"<(?P<tag>button)\b[^>]*>(?P<value>[^<>{}\n]+)</(?P=tag)\s*>", re.I)
+        for match in button.finditer(text):
+            add_surface(match.start("value"), match.group("value"), "button label")
+
+    if path.suffix == ".json":
+        pair = re.compile(
+            r'"(?P<key>[^"\\]+)"\s*:\s*"(?P<value>(?:\\.|[^"\\])*)"')
+        surface_key = re.compile(
+            r"(?:alt|aria[-_.]?label|button|command|field[-_.]?label|label|menu|"
+            r"placeholder|tab|title|tooltip)$", re.I)
+        for match in pair.finditer(text):
+            if surface_key.search(match.group("key")):
+                add_surface(match.start("value"), match.group("value"),
+                            "UI label")
+
+    if path.suffix in {".yaml", ".yml"}:
+        pair = re.compile(
+            r"(?m)^\s*(?P<key>[A-Za-z0-9_.-]+):\s*"
+            r"(?P<value>[^#\n]+?)\s*$")
+        surface_key = re.compile(
+            r"(?:alt|aria[-_.]?label|button|command|field[-_.]?label|label|menu|"
+            r"placeholder|tab|title|tooltip)$", re.I)
+        for match in pair.finditer(text):
+            if surface_key.search(match.group("key")):
+                value = match.group("value").strip().strip("'\"")
+                add_surface(match.start("value"), value, "UI label")
+
+    for match in re.finditer(
+            r"[\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff][！!]", checked_text):
+        out.append(issue(
+            "ui.exclamation", line_number(checked_text, match.start()),
+            "remove the exclamation mark from UI text", match.group(0)))
+    return out
+
+
 def pr_body_findings(text, profile, title, style="standard"):
     policy = "gentoo-overlay" if profile == "gentoo-overlay" else style
     if policy not in RULES["pr_body_limits"]:
@@ -777,8 +1213,10 @@ def pr_body_findings(text, profile, title, style="standard"):
     compact = re.sub(r"\s", "", text)
     out = []
     if limits["characters"] and len(compact) > limits["characters"]:
-        out.append((1, f"PR description exceeds {limits['characters']} non-space characters",
-                    compact[:32]))
+        out.append(issue(
+            "vcs.pr-length", 1,
+            f"PR description exceeds {limits['characters']} non-space characters",
+            compact[:32]))
 
     blocks = []
     for match in re.finditer(r"(?:^|\n\s*\n)([^\n][\s\S]*?)(?=\n\s*\n|$)", text):
@@ -786,30 +1224,34 @@ def pr_body_findings(text, profile, title, style="standard"):
         if value and not re.fullmatch(r"Closes\s+#\d+\.?", value, re.I):
             blocks.append((line_number(text, match.start(1)), value))
     if limits["blocks"] and len(blocks) > limits["blocks"]:
-        out.append((blocks[limits["blocks"]][0],
-                    f"PR description exceeds {limits['blocks']} semantic blocks",
-                    blocks[limits["blocks"]][1][:32]))
+        out.append(issue(
+            "vcs.pr-blocks", blocks[limits["blocks"]][0],
+            f"PR description exceeds {limits['blocks']} semantic blocks",
+            blocks[limits["blocks"]][1][:32]))
 
     list_items = list(re.finditer(r"(?m)^\s*(?:[-*+]|\d+[.)])\s+\S", text))
     if limits["list_items"] and len(list_items) > limits["list_items"]:
         match = list_items[limits["list_items"]]
-        out.append((line_number(text, match.start()),
-                    f"PR description exceeds {limits['list_items']} list items",
-                    match.group(0).strip()))
+        out.append(issue(
+            "vcs.pr-list-items", line_number(text, match.start()),
+            f"PR description exceeds {limits['list_items']} list items",
+            match.group(0).strip()))
 
     heading = re.search(r"(?m)^\s*#{1,6}\s+\S", text)
     if heading and not limits["headings"]:
-        out.append((line_number(text, heading.start()),
-                    "omit headings from the PR description; state the rationale directly",
-                    heading.group(0).strip()[:48]))
+        out.append(issue(
+            "vcs.pr-heading", line_number(text, heading.start()),
+            "omit headings from the PR description; state the rationale directly",
+            heading.group(0).strip()[:48]))
     if policy != "standard":
         out.extend(pattern_findings(
-            text, "pr_inventory_patterns",
+            text, "pr_inventory_patterns", "vcs.pr-inventory",
             "replace the change inventory with the non-inferable rationale"))
         if title and title.strip() and title.strip().casefold() in text.casefold():
             at = text.casefold().find(title.strip().casefold())
-            out.append((line_number(text, at), "do not repeat the PR title in the body",
-                        title.strip()[:48]))
+            out.append(issue(
+                "vcs.repeated-title", line_number(text, at),
+                "do not repeat the PR title in the body", title.strip()[:48]))
     return out
 
 
@@ -818,15 +1260,23 @@ def lint_file(path, kind, profile, title, paragraph_limit, locale="auto",
     try:
         text = sys.stdin.read() if str(path) == "-" else path.read_text()
     except (OSError, UnicodeDecodeError) as error:
-        return [(0, f"cannot read text: {error}", "")]
+        return [issue("io.read", 0, f"cannot read text: {error}")]
     effective_style = "strict" if profile == "gentoo-overlay" else style
     checked_text = authored_pr_text(text) if kind == "pr-body" else text
-    if kind in {"prose", "pr-body", "commit-message"} or (
-            kind == "all" and prose_path(path, text)):
+    prose = kind in {"prose", "pr-body", "commit-message"} or (
+        kind == "all" and prose_path(path, text))
+    if prose:
         checked_text = mask_markup_code(checked_text)
     findings = attribution_findings(text)
     findings.extend(emoji_findings(checked_text, effective_style))
     findings.extend(phrase_findings(checked_text, effective_style))
+    if prose:
+        findings.extend(typography_findings(checked_text, effective_style))
+        findings.extend(grammar_findings(checked_text, effective_style))
+        findings.extend(consistency_findings(checked_text, locale))
+        findings.extend(markdown_findings(path, checked_text, effective_style))
+        if effective_style == "ui":
+            findings.extend(ui_surface_findings(path, text, checked_text))
     findings.extend(locale_findings(checked_text, locale))
     findings.extend(terminology_findings(checked_text, locale))
     if regional:
@@ -837,9 +1287,9 @@ def lint_file(path, kind, profile, title, paragraph_limit, locale="auto",
             for line, comment in comments_for(path, text):
                 if CJK.search(comment):
                     findings.append(
-                        (line, "code comments must be concise English", comment[:32]))
-    if kind in {"prose", "pr-body", "commit-message"} or (
-            kind == "all" and prose_path(path, text)):
+                        issue("comments.language", line,
+                              "code comments must be concise English", comment[:32]))
+    if prose:
         paragraph_checker = (data_paragraph_findings if path.suffix in DATA_SUFFIXES
                              else paragraph_findings)
         findings.extend(paragraph_checker(
@@ -850,13 +1300,13 @@ def lint_file(path, kind, profile, title, paragraph_limit, locale="auto",
     if (kind in {"pr-body", "commit-message"}
             and effective_style == "strict"):
         findings.extend(pattern_findings(
-            checked_text, "routine_passing_patterns",
+            checked_text, "routine_passing_patterns", "vcs.routine-tests",
             "omit routine passing test reports from commit and PR text"))
         findings.extend(pattern_findings(
-            checked_text, "workflow_narration_patterns",
+            checked_text, "workflow_narration_patterns", "vcs.work-diary",
             "replace the work diary or completion claim with the verified rationale"))
         findings.extend(pattern_findings(
-            checked_text, "author_narration_patterns",
+            checked_text, "author_narration_patterns", "vcs.author-narration",
             "remove the author's work narration and state the repository fact"))
     if kind == "pr-body":
         findings.extend(pr_body_findings(
@@ -866,11 +1316,12 @@ def lint_file(path, kind, profile, title, paragraph_limit, locale="auto",
         if kind == "pr-body":
             if title is None:
                 findings.append(
-                    (0, "--title is required for the gentoo-overlay profile", ""))
+                    issue("overlay.missing-title", 0,
+                          "--title is required for the gentoo-overlay profile"))
             else:
-                findings.extend(
-                    (0, message, sample) for _, message, sample
-                    in subject_findings(title, profile, "PR title"))
+                findings.extend(dataclasses.replace(item, line=0)
+                                for item in subject_findings(
+                                    title, profile, "PR title"))
     return sorted(set(findings))
 
 
@@ -897,25 +1348,66 @@ def main():
     parser.add_argument("--regional", action="store_true",
                         help="also report regional vocabulary from the bundled "
                              "conversion tables; requires --locale")
+    parser.add_argument("--format", choices=("text", "json"), default="text",
+                        dest="output_format",
+                        help="diagnostic output format")
+    parser.add_argument("--fix", action="store_true",
+                        help="apply deterministic typography fixes to prose files")
     args = parser.parse_args()
     if args.regional and args.locale not in {"zh-CN", "zh-TW"}:
         parser.error("--regional requires --locale zh-CN or --locale zh-TW")
 
     patterns = args.exclude
-    total = 0
-    for path in files_from(args.paths, patterns):
-        for line, message, sample in lint_file(
+    paths = list(files_from(args.paths, patterns))
+    if args.fix and any(str(path) == "-" for path in paths):
+        parser.error("--fix does not accept standard input")
+    results = []
+    fixed = []
+    for path in paths:
+        label = "stdin" if str(path) == "-" else str(path)
+        if args.fix:
+            try:
+                if fix_file(path, args.kind, args.profile, args.style):
+                    fixed.append(label)
+            except (OSError, UnicodeDecodeError) as error:
+                results.append((label, issue(
+                    "io.write", 0, f"cannot update text: {error}")))
+        for finding in lint_file(
                 path, args.kind, args.profile, args.title, args.paragraph_limit,
                 args.locale, args.regional, args.style):
-            label = "stdin" if str(path) == "-" else str(path)
-            where = f"{label}:{line}" if line else label
-            detail = f" [{sample}]" if sample else ""
-            print(f"{where}: {message}{detail}")
-            total += 1
-    if total:
-        print(f"{total} finding(s)", file=sys.stderr)
+            results.append((label, finding))
+    if args.output_format == "json":
+        payload = {
+            "version": 1,
+            "count": len(results),
+            "findings": [
+                {
+                    "path": label,
+                    "line": finding.line,
+                    "code": finding.code,
+                    "severity": finding.severity,
+                    "message": finding.message,
+                    "sample": finding.sample,
+                }
+                for label, finding in results
+            ],
+        }
+        if args.fix:
+            payload["fixed"] = fixed
+        print(json.dumps(payload, ensure_ascii=False, indent=2))
+    else:
+        for label in fixed:
+            print(f"fixed {label}")
+        for label, finding in results:
+            where = f"{label}:{finding.line}" if finding.line else label
+            detail = f" [{finding.sample}]" if finding.sample else ""
+            print(f"{where}: {finding.message}{detail}")
+    if results:
+        if args.output_format == "text":
+            print(f"{len(results)} finding(s)", file=sys.stderr)
         return 1
-    print("Chinese wording check passed")
+    if args.output_format == "text":
+        print("Chinese wording check passed")
     return 0
 
 
