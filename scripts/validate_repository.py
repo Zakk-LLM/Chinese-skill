@@ -150,18 +150,24 @@ def validate_wording(errors):
 
 def validate_readme_corpus(errors):
     data = load_json("references/readme-corpus.json")
-    if data.get("schema") != 1:
+    if data.get("schema") != 2:
         errors.append("unsupported README corpus schema")
     cutoff = data.get("cutoff", "")
     if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", cutoff):
         errors.append("README corpus has no valid cutoff")
+    if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", data.get("verified", "")):
+        errors.append("README corpus has no valid verification date")
+    if not data.get("selection") or not all(
+            isinstance(item, str) and item for item in data["selection"]):
+        errors.append("README corpus has no valid selection criteria")
 
     contracts = data.get("live_contracts", [])
     contract_ids = [item.get("id") for item in contracts]
     if not contracts or len(contract_ids) != len(set(contract_ids)):
         errors.append("README live contract ids must be present and unique")
     for contract in contracts:
-        required = {"id", "repository", "path", "url", "use_for", "avoid"}
+        required = {"id", "repository", "path", "url", "checked",
+                    "use_for", "avoid"}
         if set(contract) != required:
             errors.append(f"incomplete README live contract: {contract.get('id')}")
             continue
@@ -169,6 +175,8 @@ def validate_readme_corpus(errors):
                         f"{contract['path']}")
         if contract["url"] != expected_url:
             errors.append(f"invalid README live contract URL: {contract['id']}")
+        if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", contract["checked"]):
+            errors.append(f"invalid README live contract check date: {contract['id']}")
         if not contract["use_for"] or not contract["avoid"]:
             errors.append(f"README live contract has empty observations: {contract['id']}")
 
@@ -177,13 +185,15 @@ def validate_readme_corpus(errors):
     if not sources or len(identifiers) != len(set(identifiers)):
         errors.append("README corpus source ids must be present and unique")
     for source in sources:
-        required = {"id", "repository", "path", "commit", "date", "url",
-                    "use_for", "avoid"}
+        required = {"id", "repository", "path", "commit", "blob", "date",
+                    "url", "use_for", "avoid"}
         if set(source) != required:
             errors.append(f"incomplete README corpus source: {source.get('id')}")
             continue
         if not re.fullmatch(r"[0-9a-f]{40}", source["commit"]):
             errors.append(f"README corpus source is not pinned: {source['id']}")
+        if not re.fullmatch(r"[0-9a-f]{40}", source["blob"]):
+            errors.append(f"README corpus source has no valid blob: {source['id']}")
         if (not re.fullmatch(r"\d{4}-\d{2}-\d{2}", source["date"])
                 or source["date"] > cutoff):
             errors.append(f"README corpus source exceeds cutoff: {source['id']}")
@@ -202,19 +212,35 @@ def validate_readme_corpus(errors):
         if not patterns or len(pattern_ids) != len(set(pattern_ids)):
             errors.append(f"README corpus {group} ids must be present and unique")
         for pattern in patterns:
-            if set(pattern) != {"id", "shape", "required"}:
+            required_fields = {"id", "origin", "evidence", "shape", "required"}
+            if set(pattern) != required_fields:
                 errors.append(f"incomplete README corpus pattern: {pattern.get('id')}")
-            elif not pattern["shape"] or not pattern["required"]:
+                continue
+            if not pattern["shape"] or not pattern["required"]:
                 errors.append(f"empty README corpus pattern: {pattern['id']}")
+            if pattern["origin"] not in {"corpus", "policy"}:
+                errors.append(f"invalid README corpus pattern origin: {pattern['id']}")
+            evidence = pattern["evidence"]
+            if len(evidence) != len(set(evidence)) or set(evidence) - set(identifiers):
+                errors.append(f"invalid README corpus evidence: {pattern['id']}")
+            if pattern["origin"] == "corpus" and len(evidence) < 2:
+                errors.append(f"insufficient README corpus evidence: {pattern['id']}")
+            if pattern["origin"] == "policy" and evidence:
+                errors.append(f"policy README pattern claims source evidence: {pattern['id']}")
 
 
 def validate_ui_corpus(errors):
     data = load_json("references/ui-corpus.json")
-    if data.get("schema") != 1:
+    if data.get("schema") != 2:
         errors.append("unsupported UI corpus schema")
     cutoff = data.get("cutoff", "")
     if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", cutoff):
         errors.append("UI corpus has no valid cutoff")
+    if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", data.get("verified", "")):
+        errors.append("UI corpus has no valid verification date")
+    if not data.get("selection") or not all(
+            isinstance(item, str) and item for item in data["selection"]):
+        errors.append("UI corpus has no valid selection criteria")
 
     sources = data.get("sources", [])
     identifiers = [item.get("id") for item in sources]
@@ -229,7 +255,7 @@ def validate_ui_corpus(errors):
         if not source["files"] or not source["use_for"] or not source["avoid"]:
             errors.append(f"UI corpus source has empty observations: {source['id']}")
         for entry in source["files"]:
-            required_file = {"locale", "path", "commit", "date", "url"}
+            required_file = {"locale", "path", "commit", "blob", "date", "url"}
             if set(entry) != required_file:
                 errors.append(f"incomplete UI corpus file: {source['id']}")
                 continue
@@ -237,6 +263,8 @@ def validate_ui_corpus(errors):
                 errors.append(f"unknown UI corpus locale: {entry['locale']}")
             if not re.fullmatch(r"[0-9a-f]{40}", entry["commit"]):
                 errors.append(f"UI corpus file is not pinned: {source['id']}")
+            if not re.fullmatch(r"[0-9a-f]{40}", entry["blob"]):
+                errors.append(f"UI corpus file has no valid blob: {source['id']}")
             if (not re.fullmatch(r"\d{4}-\d{2}-\d{2}", entry["date"])
                     or entry["date"] > cutoff):
                 errors.append(f"UI corpus file exceeds cutoff: {source['id']}")
@@ -253,10 +281,21 @@ def validate_ui_corpus(errors):
     if not patterns or len(pattern_ids) != len(set(pattern_ids)):
         errors.append("UI corpus pattern ids must be present and unique")
     for pattern in patterns:
-        if set(pattern) != {"id", "surface", "shape", "required"}:
+        required_fields = {"id", "origin", "evidence", "surface", "shape",
+                           "required"}
+        if set(pattern) != required_fields:
             errors.append(f"incomplete UI corpus pattern: {pattern.get('id')}")
-        elif not pattern["surface"] or not pattern["shape"] or not pattern["required"]:
+            continue
+        if not pattern["surface"] or not pattern["shape"] or not pattern["required"]:
             errors.append(f"empty UI corpus pattern: {pattern['id']}")
+        if pattern["origin"] != "corpus":
+            errors.append(f"invalid UI corpus pattern origin: {pattern['id']}")
+        evidence = pattern["evidence"]
+        if (len(evidence) != len(set(evidence))
+                or set(evidence) - set(identifiers)):
+            errors.append(f"invalid UI corpus evidence: {pattern['id']}")
+        if len(evidence) < 2:
+            errors.append(f"insufficient UI corpus evidence: {pattern['id']}")
 
 
 def validate_sources(errors):
@@ -334,13 +373,27 @@ def validate_repository(errors, release):
     workflow = (ROOT / ".github" / "workflows" / "tests.yml").read_text()
     for command in ("shellcheck install.sh", "scripts/test_chinese_lint.py",
                     "scripts/test_install.py", "scripts/test_lexicons.py",
-                    "scripts/validate_repository.py", "sync_lexicons.py --verify"):
+                    "scripts/test_corpora.py", "scripts/validate_repository.py",
+                    "sync_lexicons.py --verify", "README.zh-CN.md"):
         if command not in workflow:
             errors.append(f"CI does not run required check: {command}")
     if "--exclude 'test_*'" in workflow:
         errors.append("CI excludes test files from the Chinese wording check")
-    if "Python 3.11" not in (ROOT / "README.md").read_text():
-        errors.append("README.md does not state the minimum Python version")
+    readmes = {
+        "README.md": "README.zh-CN.md",
+        "README.zh-CN.md": "README.md",
+    }
+    for filename, locale_target in readmes.items():
+        path = ROOT / filename
+        if not path.is_file():
+            errors.append(f"localized README is missing: {filename}")
+            continue
+        text = path.read_text()
+        for required in ("Python 3.11", "scripts/corpus_lookup.py",
+                         "scripts/verify_corpora.py", "scripts/test_corpora.py",
+                         locale_target):
+            if required not in text:
+                errors.append(f"incomplete localized README {filename}: {required}")
     if release and (ROOT / "lexicons" / "optional").exists():
         errors.append("optional lexicons must not be included in a release")
     for path in ROOT.rglob("*"):

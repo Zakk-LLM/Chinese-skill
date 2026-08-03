@@ -1,13 +1,20 @@
 {
-  "schema": 1,
+  "schema": 2,
   "cutoff": "2019-12-31",
-  "method": "Records structural observations from pinned project README revisions; it does not copy source prose.",
+  "verified": "2026-08-03",
+  "method": "Records structural observations from pinned project README revisions. Corpus patterns require at least two named sources; policy patterns are labeled separately. No source prose is copied.",
+  "selection": [
+    "The file is a Chinese project README pinned before the cutoff.",
+    "The source represents a distinct project type or documentation task.",
+    "Useful structure and defects are both recorded; source wording is not treated as authoritative."
+  ],
   "live_contracts": [
     {
       "id": "gentoo-zh-overlay",
       "repository": "gentoo-zh/overlay",
       "path": "README.md",
       "url": "https://github.com/gentoo-zh/overlay/blob/master/README.md",
+      "checked": "2026-08-03",
       "use_for": ["current Simplified Chinese repository purpose", "installation entry point", "contribution and commit conventions"],
       "avoid": ["copying repository-specific policy into unrelated projects", "treating current prose as historical corpus"]
     },
@@ -16,6 +23,7 @@
       "repository": "gentoo-zh/overlay",
       "path": "README.zh-TW.md",
       "url": "https://github.com/gentoo-zh/overlay/blob/master/README.zh-TW.md",
+      "checked": "2026-08-03",
       "use_for": ["current Traditional Chinese repository terminology", "locale-specific links", "parallel section structure"],
       "avoid": ["using Taiwan-only terms in another locale without context", "treating current prose as historical corpus"]
     },
@@ -24,6 +32,7 @@
       "repository": "gentoo-zh/overlay",
       "path": "README.zh-HK.md",
       "url": "https://github.com/gentoo-zh/overlay/blob/master/README.zh-HK.md",
+      "checked": "2026-08-03",
       "use_for": ["current Cantonese locale contract", "locale-specific links", "parallel section structure"],
       "avoid": ["using Cantonese as cross-regional standard Chinese", "copying repository-specific policy into unrelated projects"]
     }
@@ -34,6 +43,7 @@
       "repository": "gogs/gogs",
       "path": "README_ZH.md",
       "commit": "db4bf20df33f008fa16fb1c813cc7ee14673d038",
+      "blob": "46265100c97bd2768a6f6510bb2849dab3139c89",
       "date": "2019-11-25",
       "url": "https://github.com/gogs/gogs/blob/db4bf20df33f008fa16fb1c813cc7ee14673d038/README_ZH.md",
       "use_for": ["direct project definition", "task-based section order", "requirements before installation"],
@@ -44,6 +54,7 @@
       "repository": "alibaba/arthas",
       "path": "README_CN.md",
       "commit": "380e96ee12e3fefec440a258b19e096c248ffb26",
+      "blob": "4fe12c69e4cd5d87561692d1616e2ddfcf8f20b5",
       "date": "2019-12-19",
       "url": "https://github.com/alibaba/arthas/blob/380e96ee12e3fefec440a258b19e096c248ffb26/README_CN.md",
       "use_for": ["problem-led entry point", "quick start before detailed reference", "command followed by observable result"],
@@ -54,6 +65,7 @@
       "repository": "ant-design/ant-design",
       "path": "README-zh_CN.md",
       "commit": "29b4b7004e3cd17e77134eae63126dd7a10729ca",
+      "blob": "854e693e14b6919e5d0578f1691ce9a2aa7be3dc",
       "date": "2019-12-26",
       "url": "https://github.com/ant-design/ant-design/blob/29b4b7004e3cd17e77134eae63126dd7a10729ca/README-zh_CN.md",
       "use_for": ["one-sentence identity", "environment before installation", "links grouped by user task"],
@@ -64,6 +76,7 @@
       "repository": "CyC2018/CS-Notes",
       "path": "README.md",
       "commit": "2f984f3bda3945371cfc0ab291e1992941695dd4",
+      "blob": "86d247ae7db5413a46f7a02c5c6a2b74ab541d7d",
       "date": "2019-12-08",
       "url": "https://github.com/CyC2018/CS-Notes/blob/2f984f3bda3945371cfc0ab291e1992941695dd4/README.md",
       "use_for": ["large reference navigation", "parallel category names", "license and attribution placement"],
@@ -74,6 +87,7 @@
       "repository": "DIYgod/RSSHub",
       "path": "README.md",
       "commit": "1d29996a779fe18e69d2dd85dec616e9a8264047",
+      "blob": "15771377ba699803d0c6e2976683642aa4e89bef",
       "date": "2019-11-28",
       "url": "https://github.com/DIYgod/RSSHub/blob/1d29996a779fe18e69d2dd85dec616e9a8264047/README.md",
       "use_for": ["short project entry", "documentation and deployment routing", "contribution entry point"],
@@ -84,6 +98,7 @@
       "repository": "sparanoid/chinese-copywriting-guidelines",
       "path": "README.zh-CN.md",
       "commit": "8fda8984ab63c5f6b3c37cdb2fda15144d32ca92",
+      "blob": "179991a2658a611e6f1099f2539968106edc7ab0",
       "date": "2019-12-03",
       "url": "https://github.com/sparanoid/chinese-copywriting-guidelines/blob/8fda8984ab63c5f6b3c37cdb2fda15144d32ca92/README.zh-CN.md",
       "use_for": ["rule-example-exception order", "punctuation guidance", "explicit scope for disputed rules"],
@@ -93,26 +108,53 @@
   "patterns": [
     {
       "id": "identity",
+      "origin": "corpus",
+      "evidence": [
+        "gogs-2019",
+        "ant-design-2019",
+        "rsshub-2019"
+      ],
       "shape": "Name the project, its type, and its primary purpose in one sentence.",
       "required": ["project", "type", "purpose"]
     },
     {
       "id": "task-section",
+      "origin": "corpus",
+      "evidence": [
+        "gogs-2019",
+        "arthas-2019"
+      ],
       "shape": "Use a user task as the heading, then give prerequisites, the command, and its observable result.",
       "required": ["task", "prerequisite", "action", "result"]
     },
     {
       "id": "constraint",
+      "origin": "corpus",
+      "evidence": [
+        "gogs-2019",
+        "ant-design-2019"
+      ],
       "shape": "State the supported version or environment before the instruction that depends on it.",
       "required": ["constraint", "dependent action"]
     },
     {
       "id": "reference-route",
+      "origin": "corpus",
+      "evidence": [
+        "arthas-2019",
+        "cs-notes-2019",
+        "rsshub-2019"
+      ],
       "shape": "Keep the common path in the README and link detailed or uncommon cases to maintained documentation.",
       "required": ["common path", "reference target"]
     },
     {
       "id": "contribution",
+      "origin": "corpus",
+      "evidence": [
+        "cs-notes-2019",
+        "rsshub-2019"
+      ],
       "shape": "Name the accepted contribution path and link its rules without restating the complete guide.",
       "required": ["contribution path", "rules link"]
     }
@@ -120,41 +162,67 @@
   "professional_patterns": [
     {
       "id": "sentence-grammar",
+      "origin": "policy",
+      "evidence": [],
       "shape": "Keep the subject and predicate explicit, place modifiers beside their target, and replace ambiguous pronouns with the exact noun.",
       "required": ["subject", "predicate", "modifier target"]
     },
     {
       "id": "definition",
+      "origin": "policy",
+      "evidence": [],
       "shape": "Define a term by naming its category and the property that distinguishes it in this context.",
       "required": ["term", "category", "distinguishing property"]
     },
     {
       "id": "claim-evidence",
+      "origin": "policy",
+      "evidence": [],
       "shape": "State one claim, give the evidence or verified reason, then state only the consequence supported by it.",
       "required": ["claim", "evidence or reason", "supported consequence"]
     },
     {
       "id": "qualified-claim",
+      "origin": "corpus",
+      "evidence": [
+        "gogs-2019",
+        "copywriting-guidelines-2019"
+      ],
       "shape": "Place the applicable version, environment, assumption, or exception before the claim it limits.",
       "required": ["scope or condition", "claim"]
     },
     {
       "id": "comparison",
+      "origin": "policy",
+      "evidence": [],
       "shape": "Compare alternatives on the same named dimensions and support each conclusion with observable evidence.",
       "required": ["alternatives", "shared dimensions", "evidence"]
     },
     {
       "id": "parallel-structure",
+      "origin": "corpus",
+      "evidence": [
+        "cs-notes-2019",
+        "copywriting-guidelines-2019"
+      ],
       "shape": "Give headings and items in one list the same grammatical role and comparable level of detail.",
       "required": ["shared grammatical role", "comparable scope"]
     },
     {
       "id": "procedure",
+      "origin": "corpus",
+      "evidence": [
+        "gogs-2019",
+        "arthas-2019",
+        "copywriting-guidelines-2019"
+      ],
       "shape": "Give prerequisites, ordered actions, expected results, and recovery only for failures the reader can encounter.",
       "required": ["prerequisites", "actions", "expected results"]
     },
     {
       "id": "fact-boundary",
+      "origin": "policy",
+      "evidence": [],
       "shape": "Label sourced facts, observations, inferences, decisions, and recommendations as different statement types.",
       "required": ["statement type", "basis"]
     }

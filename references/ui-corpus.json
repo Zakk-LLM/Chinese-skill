@@ -1,7 +1,13 @@
 {
-  "schema": 1,
+  "schema": 2,
   "cutoff": "2022-11-29",
-  "method": "Records convergent UI-copy patterns from pinned community translation catalogs; it stores no catalog excerpts and does not treat age as proof of authorship.",
+  "verified": "2026-08-03",
+  "method": "Records convergent UI-copy patterns from pinned community translation catalogs. Every pattern names at least two sources, stores no catalog excerpts, and does not treat age as proof of authorship or wording quality.",
+  "selection": [
+    "The file is a pinned Chinese UI catalog from a maintained open-source product.",
+    "The sources cover different products, localization workflows, and interface surfaces.",
+    "A source supports only structural evidence; its wording and terminology remain review candidates."
+  ],
   "sources": [
     {
       "id": "grafana-2022",
@@ -12,6 +18,7 @@
           "locale": "zh-Hans",
           "path": "public/locales/zh-Hans/grafana.json",
           "commit": "343f65fffb01d6e1786b181592c627e7364fbc58",
+          "blob": "14bdf2ef7fffccea3632caa0dc03277545484b28",
           "date": "2022-11-23",
           "url": "https://github.com/grafana/grafana/blob/343f65fffb01d6e1786b181592c627e7364fbc58/public/locales/zh-Hans/grafana.json"
         }
@@ -28,6 +35,7 @@
           "locale": "zh-CN",
           "path": "core/l10n/zh_CN.js",
           "commit": "b175211366f9d7a6553f10d1bbdf04ce7bb37645",
+          "blob": "77a913157abb7afbd68d5cc228e8854aaf976b97",
           "date": "2019-12-19",
           "url": "https://github.com/nextcloud/server/blob/b175211366f9d7a6553f10d1bbdf04ce7bb37645/core/l10n/zh_CN.js"
         },
@@ -35,6 +43,7 @@
           "locale": "zh-TW",
           "path": "core/l10n/zh_TW.js",
           "commit": "9fd94b7e052e94b7170a67046c424e99ca6107f4",
+          "blob": "43c4d26aa7ae057d83d73462b9173348c9d55adc",
           "date": "2019-12-18",
           "url": "https://github.com/nextcloud/server/blob/9fd94b7e052e94b7170a67046c424e99ca6107f4/core/l10n/zh_TW.js"
         }
@@ -51,6 +60,7 @@
           "locale": "zh-CN",
           "path": "config/locales/zh-CN.yml",
           "commit": "fb9137752a734caa6891637728cc243d79c1af97",
+          "blob": "49dd31bac81ebb26d31c9e18284804662b7552b8",
           "date": "2019-12-18",
           "url": "https://github.com/mastodon/mastodon/blob/fb9137752a734caa6891637728cc243d79c1af97/config/locales/zh-CN.yml"
         },
@@ -58,6 +68,7 @@
           "locale": "zh-TW",
           "path": "config/locales/zh-TW.yml",
           "commit": "fb9137752a734caa6891637728cc243d79c1af97",
+          "blob": "7a5627c30529c1aa9c9d4c458a7ea7e3e6386a67",
           "date": "2019-12-18",
           "url": "https://github.com/mastodon/mastodon/blob/fb9137752a734caa6891637728cc243d79c1af97/config/locales/zh-TW.yml"
         }
@@ -74,6 +85,7 @@
           "locale": "zh-CN",
           "path": "config/locales/client.zh_CN.yml",
           "commit": "91b290c7842f5c76b29adfeabe413b2a0fa55c20",
+          "blob": "4f4cdf31be2eb984f339b569a47931c9d9515cc6",
           "date": "2019-12-19",
           "url": "https://github.com/discourse/discourse/blob/91b290c7842f5c76b29adfeabe413b2a0fa55c20/config/locales/client.zh_CN.yml"
         },
@@ -81,6 +93,7 @@
           "locale": "zh-TW",
           "path": "config/locales/client.zh_TW.yml",
           "commit": "91b290c7842f5c76b29adfeabe413b2a0fa55c20",
+          "blob": "0055d986ccb6c8ae8709ee868172028344078a97",
           "date": "2019-12-19",
           "url": "https://github.com/discourse/discourse/blob/91b290c7842f5c76b29adfeabe413b2a0fa55c20/config/locales/client.zh_TW.yml"
         }
@@ -97,6 +110,7 @@
           "locale": "zh-CN",
           "path": "po/zh_CN.po",
           "commit": "bc143344abec6253bbc3abc1654661baab2d3b7a",
+          "blob": "312add99a7505e7ba1ff711fcd7f6779a92c7d88",
           "date": "2019-12-27",
           "url": "https://github.com/GNOME/gnome-control-center/blob/bc143344abec6253bbc3abc1654661baab2d3b7a/po/zh_CN.po"
         },
@@ -104,6 +118,7 @@
           "locale": "zh-TW",
           "path": "po/zh_TW.po",
           "commit": "5a0b1ab058539f767d373dced94c19111e00c979",
+          "blob": "893d3d296e2c55d03e1a4c2e7be915cbd951adc8",
           "date": "2019-11-27",
           "url": "https://github.com/GNOME/gnome-control-center/blob/5a0b1ab058539f767d373dced94c19111e00c979/po/zh_TW.po"
         }
@@ -120,6 +135,7 @@
           "locale": "zh-Hans",
           "path": "i18n/vscode-language-pack-zh-hans/translations/main.i18n.json",
           "commit": "7cd14c86b9b826695bdfa7aa6eccbe5f829db7cc",
+          "blob": "2e4c6c50d43b22295caec2766f4707f45f200ee6",
           "date": "2019-12-16",
           "url": "https://github.com/microsoft/vscode-loc/blob/7cd14c86b9b826695bdfa7aa6eccbe5f829db7cc/i18n/vscode-language-pack-zh-hans/translations/main.i18n.json"
         }
@@ -131,60 +147,126 @@
   "patterns": [
     {
       "id": "action-label",
+      "origin": "corpus",
+      "evidence": [
+        "grafana-2022",
+        "nextcloud-2019",
+        "mastodon-2019",
+        "gnome-control-center-2019",
+        "vscode-2019"
+      ],
       "surface": "button or menu item",
       "shape": "Use a direct verb, adding the object only when nearby context does not identify it.",
       "required": ["action", "unambiguous object"]
     },
     {
       "id": "field-label",
+      "origin": "corpus",
+      "evidence": [
+        "grafana-2022",
+        "gnome-control-center-2019",
+        "vscode-2019"
+      ],
       "surface": "field, tab, column, or section label",
       "shape": "Use a noun phrase without a sentence ending or explanatory clause.",
       "required": ["field or subject name"]
     },
     {
       "id": "placeholder",
+      "origin": "corpus",
+      "evidence": [
+        "grafana-2022",
+        "discourse-2019",
+        "vscode-2019"
+      ],
       "surface": "input placeholder",
       "shape": "Name the expected value or format; put persistent constraints in help text.",
       "required": ["expected input"]
     },
     {
       "id": "progress",
+      "origin": "corpus",
+      "evidence": [
+        "grafana-2022",
+        "nextcloud-2019",
+        "discourse-2019",
+        "vscode-2019"
+      ],
       "surface": "pending or loading state",
       "shape": "Use either `正在<操作>…` or `<操作>中`, with the locale term for the operation, but do not combine both aspect markers.",
       "required": ["ongoing operation"]
     },
     {
       "id": "success",
+      "origin": "corpus",
+      "evidence": [
+        "grafana-2022",
+        "nextcloud-2019",
+        "mastodon-2019",
+        "discourse-2019"
+      ],
       "surface": "success message or toast",
       "shape": "State the completed operation and object; do not reuse the control label as the result message.",
       "required": ["completed operation", "object"]
     },
     {
       "id": "failure",
+      "origin": "corpus",
+      "evidence": [
+        "grafana-2022",
+        "nextcloud-2019",
+        "gnome-control-center-2019",
+        "vscode-2019"
+      ],
       "surface": "error message",
       "shape": "State what could not be completed, then add a verified cause and available recovery action.",
       "required": ["failed operation", "affected object"]
     },
     {
       "id": "validation",
+      "origin": "corpus",
+      "evidence": [
+        "nextcloud-2019",
+        "discourse-2019",
+        "gnome-control-center-2019"
+      ],
       "surface": "field validation",
       "shape": "State the exact missing value, accepted form, range, or conflict beside the field.",
       "required": ["invalid condition", "acceptance condition"]
     },
     {
       "id": "empty-state",
+      "origin": "corpus",
+      "evidence": [
+        "grafana-2022",
+        "discourse-2019",
+        "gnome-control-center-2019"
+      ],
       "surface": "empty or zero-result state",
       "shape": "Distinguish no data from no matching result and offer only an action that is actually available.",
       "required": ["empty-state cause", "available next action"]
     },
     {
       "id": "confirmation",
+      "origin": "corpus",
+      "evidence": [
+        "nextcloud-2019",
+        "mastodon-2019",
+        "discourse-2019",
+        "vscode-2019"
+      ],
       "surface": "confirmation dialog",
       "shape": "Name the action, object, irreversible effect, and safer alternative when one exists.",
       "required": ["action", "object", "effect"]
     },
     {
       "id": "accessible-name",
+      "origin": "corpus",
+      "evidence": [
+        "grafana-2022",
+        "gnome-control-center-2019",
+        "vscode-2019"
+      ],
       "surface": "accessible label or tooltip",
       "shape": "Name the control action or current state without visual position, icon shape, or redundant control type.",
       "required": ["action or state"]

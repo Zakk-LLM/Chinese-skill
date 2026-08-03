@@ -65,17 +65,31 @@ Use the standard style unless the user or repository requests `strict`, `academi
 formulaic framing, short quoted terms, and fixed prose limits. The other styles retain
 only the constraints appropriate to their document type.
 
+Keep context use proportional to the task:
+
+1. Use this file for the core workflow.
+2. Read only the one task policy named below. Read a second policy only when the task
+   crosses both domains.
+3. Do not open a corpus JSON file or lexicon manifest by default. Retrieve one pattern or
+   one source with the lookup scripts. Read a complete data file only when maintaining or
+   validating that file.
+
+When maintaining corpus metadata, run `scripts/verify_corpora.py` and
+`scripts/test_corpora.py`. Do not run the network verifier for ordinary writing tasks.
+
 - For articles, rewrites, translations, long passages, or comment audits, read
   [references/writing-policy.md](references/writing-policy.md).
 - For README writing or revision, read
-  [references/readme-style.md](references/readme-style.md), then consult its compact
-  corpus only for the pattern needed by the task.
+  [references/readme-style.md](references/readme-style.md). If a concrete structure or
+  sentence pattern is still needed, run `scripts/corpus_lookup.py readme --list`, then
+  retrieve one entry with `--pattern`.
 - For UI copy, message catalogs, notifications, forms, errors, confirmations, tooltips,
-  or accessible names, read [references/ui-style.md](references/ui-style.md), then
-  consult its corpus only for the relevant surface.
+  or accessible names, read [references/ui-style.md](references/ui-style.md). If the
+  interface contract does not settle the wording, retrieve only the relevant UI pattern
+  with `scripts/corpus_lookup.py ui --pattern <id>`.
 - For terminology, localization, Gentoo, Linux, or disputed wording, read
   [references/lexicon-policy.md](references/lexicon-policy.md), then use
-  `scripts/lexicon_lookup.py`.
+  `scripts/lexicon_lookup.py` for the disputed term. Do not load a complete dictionary.
 - For commits, PRs, reviews, issue replies, or release notes, read
   [references/pr-policy.md](references/pr-policy.md).
 - For gentoo-zh overlay work, read the live repository `AGENTS.md`, then

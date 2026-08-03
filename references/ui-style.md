@@ -61,12 +61,23 @@ placeholder exactly and verify it against the source message.
 
 `ui-corpus.json` records patterns from pinned Grafana, Nextcloud, Mastodon, Discourse,
 GNOME Control Center, and Visual Studio Code localization files. Every selected revision
-predates 2022-11-30. The cutoff and translator metadata reduce uncertainty but do not
-prove how every string was authored.
+predates 2022-11-30 and records its Git blob identifier. Each pattern names at least two
+supporting projects. The cutoff and translator metadata reduce uncertainty but do not
+prove how every string was authored or that every source string is suitable.
 
 Every source contains wording that should not be copied. Use a pattern only when it fits
 the current surface and repository. Prefer product terminology and native review over a
 majority vote across old catalogs.
+
+Do not open the full corpus during ordinary UI work. List the available surfaces, then
+retrieve only the required pattern. Use `--locale` when evidence from one locale is
+required:
+
+```bash
+python3 scripts/corpus_lookup.py ui --list
+python3 scripts/corpus_lookup.py ui --pattern failure --locale zh-TW
+python3 scripts/corpus_lookup.py ui --source grafana-2022
+```
 
 Check candidate text with the UI style:
 

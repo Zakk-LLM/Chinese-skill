@@ -1,8 +1,10 @@
 # Chinese Skill
 
+[簡體中文](README.zh-CN.md) | 繁體中文
+
 Chinese Skill 是供 Claude、Codex 與 OpenCode 使用的中文寫作與審查技能，適用於文章、文件、介面文字、程式註釋、commit 與 PR。
 
-它檢查語法、邏輯、機器翻譯痕跡、口語、自造詞、冗長內容、簡繁混用及不必要的註釋。規則優先採用倉庫既有格式與術語；面向多個中文地區時，使用同一字形及各地讀者都能理解的標準中文。
+它檢查語法、邏輯、機器翻譯痕跡、口語、自造詞、冗長內容、簡繁混用及不必要的註釋。規則優先採用專案既有格式與術語；面向多個中文地區時，使用同一字形及各地讀者都能理解的標準中文。
 
 ## 要求
 
@@ -70,11 +72,23 @@ python3 scripts/chinese_lint.py --kind pr-body --title 'scope: summary' body.txt
 - [Gentoo overlay 規則](references/overlay-policy.md)：gentoo-zh overlay 的附加要求
 - [詞典規則](references/lexicon-policy.md)：來源優先順序、地區詞彙及專業術語
 
-倉庫規範與近期範例決定格式、語言及術語。格式選擇會改變結果而現有資料不足時，應先向使用者確認。
+專案規範與近期範例決定格式、語言及術語。格式選擇會改變結果而現有資料不足時，應先向使用者確認。
 
 ## 語料與詞典
 
-[README 語料](references/readme-corpus.json)記錄六個中文開源專案在 2019 年底前的 README 結構，並收錄專業文字模式。[UI 語料](references/ui-corpus.json)記錄六個大型開源專案的固定版本中文詞庫。兩份語料只保存結構與用法觀察，不複製來源文字，也不將口語、宣傳語或直譯句式列為規範。
+[README 語料](references/readme-corpus.json)記錄六個中文開源專案在 2019 年底前的 README 結構。[UI 語料](references/ui-corpus.json)記錄六個大型開源專案的固定版本中文詞庫。固定檔案均記錄 commit 與 Git blob。由語料歸納的規則至少由兩個來源支持；內部規則另行標示，不宣稱由語料直接得出。兩份語料不複製來源文字，也不將來源中的口語、宣傳語或直譯句式列為規範。
+
+代理不應直接載入完整語料。先列出規則識別碼，再按需取得一條規則；只有核對來源時才取得單一來源記錄。
+
+```bash
+python3 scripts/corpus_lookup.py readme --list
+python3 scripts/corpus_lookup.py readme --pattern identity
+python3 scripts/corpus_lookup.py ui --pattern failure --locale zh-TW
+python3 scripts/corpus_lookup.py readme --source gogs-2019
+python3 scripts/verify_corpora.py
+```
+
+`verify_corpora.py` 需要網路連線，用於核對來源路徑、commit 日期與 Git blob。
 
 內建詞典包括國家教育研究院兩岸對照計算機名詞、OpenCC、MediaWiki 地區詞轉換表、CC-CEDICT、Unihan、McBopomofo、jieba、THUOCL 與 Rime essay。萌娘百科及中文維基詞庫採可選安裝，不隨專案發布。
 
@@ -103,6 +117,7 @@ shellcheck install.sh
 python3 scripts/test_chinese_lint.py
 python3 scripts/test_install.py
 python3 scripts/test_lexicons.py
+python3 scripts/test_corpora.py
 python3 scripts/sync_lexicons.py --verify
 python3 scripts/validate_repository.py --release
 ```

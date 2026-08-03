@@ -47,7 +47,7 @@ and appeals for support unless the repository explicitly requires them.
 
 README text may follow the logic of a serious technical article when it defines a
 concept, compares designs, explains a constraint, or records a compatibility decision.
-Use the `professional_patterns` in `readme-corpus.json` for these passages.
+Use the relevant professional pattern only when the passage needs that function.
 
 - Define a term by category and distinguishing property, not by analogy or slogan.
 - Put scope, version, environment, and assumptions before the claim they limit.
@@ -71,12 +71,23 @@ evaluate, or contribute to the project.
 
 `readme-corpus.json` records structural observations from Chinese open-source README
 revisions dated no later than 2019. The cutoff reduces the likelihood of generated prose;
-it does not prove that every line was written without automated assistance.
+it does not prove that every line was written without automated assistance. Each pinned
+file records its Git blob identifier, and each corpus-derived pattern names at least two
+supporting sources. Patterns marked `policy` are editorial rules, not source findings.
 
 The corpus stores no source excerpts. Use its patterns for information order and sentence
 function, not as text to copy. Each source also lists defects that must not be learned.
 Old commands, terminology, badges, links, and compatibility claims are evidence about the
 old revision only.
+
+Do not open the full corpus during ordinary README work. List the available identifiers,
+then retrieve only the required pattern or source:
+
+```bash
+python3 scripts/corpus_lookup.py readme --list
+python3 scripts/corpus_lookup.py readme --pattern identity
+python3 scripts/corpus_lookup.py readme --source gogs-2019
+```
 
 Use the `readme` lint style for a draft:
 

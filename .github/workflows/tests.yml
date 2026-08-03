@@ -30,7 +30,11 @@ jobs:
           python3 scripts/test_chinese_lint.py
           python3 scripts/test_install.py
           python3 scripts/test_lexicons.py
+          python3 scripts/test_corpora.py
           python3 scripts/sync_lexicons.py --verify
           python3 scripts/validate_repository.py --release
           python3 scripts/chinese_lint.py --locale zh-TW \
+            --exclude 'README.zh-CN.md' \
             --exclude 'lexicons/*' --exclude '*/lexicons/*' .
+          python3 scripts/chinese_lint.py --kind prose --style readme \
+            --locale zh-CN README.zh-CN.md
