@@ -1161,5 +1161,39 @@ with tempfile.TemporaryDirectory() as base:
         item.code == "comments.obvious" for item in LINT.lint_file(
             rationale_comment, "source", "general", None, None,
             comment_audit=True)))
+    translated_upstream = root / "translated-upstream.md"
+    translated_upstream.write_text(FIXTURES["translated_upstream_name"] + "\n")
+    upstream_findings = LINT.lint_file(
+        translated_upstream, "prose", "general", None, None, "zh-TW")
+    check("translated upstream name is flagged", len([
+        item for item in upstream_findings
+        if item.code == "terminology.preserved"]) == 1)
+    check("guarded name finding stays advisory", all(
+        item.severity == "warning" for item in upstream_findings
+        if item.code == "terminology.preserved"))
+    untraced = root / "untraced-rendering.md"
+    untraced.write_text(FIXTURES["untraced_rendering"] + "\n")
+    check("guarded name needs its English form present", not any(
+        item.code == "terminology.preserved" for item in LINT.lint_file(
+            untraced, "prose", "general", None, None, "zh-TW")))
+    project_terms = root / "terms.json"
+    project_terms.write_text(json.dumps({"preserve_translations": [{
+        "en": "binhost", "domain": "gentoo", "reject": ["二進位主機"],
+        "note": "binhost is the service name used in this repository"}]},
+        ensure_ascii=False))
+    project_guarded = root / "project-guarded.md"
+    project_guarded.write_text(FIXTURES["project_guarded_name"] + "\n")
+    check("project terms extend the guarded names", any(
+        item.code == "terminology.preserved" for item in LINT.lint_file(
+            project_guarded, "prose", "general", None, None, "zh-TW",
+            extra_terms=LINT.load_terms(project_terms))))
+    check("bundled seeds stay out of unrelated projects", not any(
+        item.code == "terminology.preserved" for item in LINT.lint_file(
+            project_guarded, "prose", "general", None, None, "zh-TW")))
+    huge_page = root / "huge-page.md"
+    huge_page.write_text(FIXTURES["huge_page_article"] + "\n")
+    check("huge page article keeps its own term", not any(
+        item.code == "terminology.preserved" for item in LINT.lint_file(
+            huge_page, "prose", "general", None, None, "zh-TW")))
 
 raise SystemExit(1 if failures else 0)

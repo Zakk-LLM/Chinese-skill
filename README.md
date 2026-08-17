@@ -63,6 +63,8 @@ python3 scripts/chinese_lint.py --kind pr-body --title 'scope: summary' body.txt
 
 `--format json` 輸出穩定的規則識別碼、嚴重程度、路徑、行號、訊息與樣本，供編輯器及 CI 使用。`--fail-level warning` 讓警告也產生失敗狀態。以標準輸入檢查資料檔時，使用 `--stdin-filename` 指定檔名。`--fix` 只修正全形英數、標點、空格及 README 標題句號，不改寫語法或用詞。
 
+`--terms` 讀取專案自訂的上游命名清單，欄位與 `references/technical-terms.json` 的 `preserve_translations` 相同，同名項目以專案設定為準。文中同時出現該英文名稱與其中文寫法時才提示。
+
 `--locale` 支援 `zh-CN`、`zh-TW`、`zh-HK`、`zh-SG` 與 `zh-MY`。香港使用繁體，新加坡與馬來西亞使用簡體；所在地區的正式技術用語可以保留。所有模式都會拒絕 AI 署名，但允許使用真實電子郵件地址的人類作者署名。
 
 檢查器會提示高可信度的「的／得／地」錯誤與篇內術語混用。`--comment-audit` 另行提示只重述相鄰程式碼的註釋。這類提示不會自動修正；因果關係、術語選擇及註釋價值仍需人工審查。
@@ -74,13 +76,13 @@ pre-commit 使用者可引用本儲存庫的 `chinese-lint` hook。GitHub Action
 ```yaml
 repos:
   - repo: https://github.com/Zakk-LLM/Chinese-skill
-    rev: v1.3.0
+    rev: v1.4.0
     hooks:
       - id: chinese-lint
 ```
 
 ```yaml
-- uses: Zakk-LLM/Chinese-skill@v1.3.0
+- uses: Zakk-LLM/Chinese-skill@v1.4.0
   with:
     path: docs
     style: technical
@@ -89,7 +91,8 @@ repos:
 
 ## 規則
 
-- [寫作規則](references/writing-policy.md)：文章、改寫、翻譯、篇幅及註釋
+- [寫作規則](references/writing-policy.md)：文章、改寫、篇幅及註釋
+- [技術翻譯規則](references/translation-policy.md)：術語分類、上游命名、範圍限定詞及交付檢查
 - [長篇文件工作流程](references/document-workflow.md)：文件用途、證據邊界、程序及讀者驗證
 - [README 規則](references/readme-style.md)：入口文件的結構、句法及資訊順序
 - [UI 規則](references/ui-style.md)：控制項、狀態、錯誤、確認及輔助功能文字

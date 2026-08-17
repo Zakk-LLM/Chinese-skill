@@ -103,6 +103,15 @@ def validate_terms(errors):
     overlap = set(names).intersection(preserve)
     if overlap:
         errors.append(f"translated and preserved terms overlap: {sorted(overlap)!r}")
+    guarded = data["preserve_translations"]
+    guarded_names = [item["en"] for item in guarded]
+    if len(guarded_names) != len(set(guarded_names)):
+        errors.append("guarded upstream names must be unique")
+    for item in guarded:
+        if item["en"] not in preserve:
+            errors.append(f"guarded name is not preserved: {item['en']}")
+        if not item.get("reject") or not item.get("note") or not item.get("domain"):
+            errors.append(f"guarded name is incomplete: {item['en']}")
     preferred = {
         locale: {item[locale] for item in terms}
         for locale in ("zh-CN", "zh-TW")

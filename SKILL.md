@@ -85,8 +85,12 @@ Keep context use proportional to the task:
 When maintaining corpus metadata, run `scripts/verify_corpora.py` and
 `scripts/test_corpora.py`. Do not run the network verifier for ordinary writing tasks.
 
-- For articles, rewrites, translations, long passages, or comment audits, read
+- For articles, rewrites, long passages, or comment audits, read
   [references/writing-policy.md](references/writing-policy.md).
+- For translating technical text such as kernel news, upstream documentation, API
+  descriptions, or release notes, read
+  [references/translation-policy.md](references/translation-policy.md). Classify every
+  English fragment before translating it, and keep an unverified upstream name in English.
 - For a new or substantially restructured tutorial, how-to guide, reference,
   explanation, proposal, specification, or decision document, read
   [references/document-workflow.md](references/document-workflow.md). Do not load this

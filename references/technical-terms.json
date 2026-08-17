@@ -7,7 +7,17 @@
     "Manifest", "Portage", "USE flag", "distfile", "live ebuild", "package atom",
     "pkgcheck", "pkgdev", "profile", "revbump", "slot operator", "subslot",
     "binhost", "emerge", "eselect", "equery", "ekeyword", "initramfs", "overlay",
-    "OpenRC", "systemd", "stage3", "GLEP", "virtual", "package.mask", "package.use"
+    "OpenRC", "systemd", "stage3", "GLEP", "virtual", "package.mask", "package.use",
+    "folio", "large folio", "huge folio", "swap table", "sub-scheduler",
+    "device-mapper target", "dm-inlinecrypt", "thunderbolt_net",
+    "cache-aware load balancing"
+  ],
+  "preserve_translations": [
+    {"en": "folio", "domain": "linux", "reject": ["大頁", "大页", "巨頁", "巨页"], "note": "folio is a distinct memory-management object; 大頁 is the accepted rendering of huge page"},
+    {"en": "swap table", "domain": "linux", "reject": ["交換表", "交换表"], "note": "upstream structure with no settled Chinese term"},
+    {"en": "sub-scheduler", "domain": "linux", "reject": ["子調度器", "子调度器", "子排程器"], "note": "upstream component name; a translation implies a separate scheduler"},
+    {"en": "device-mapper target", "domain": "linux", "reject": ["存儲目標", "存储目标", "加密機制", "加密机制"], "note": "a device-mapper target is a named implementation, not a category"},
+    {"en": "cache-aware load balancing", "domain": "linux", "reject": ["快取感知調度器", "缓存感知调度器", "快取感知任務調度", "缓存感知任务调度"], "note": "the head of the phrase is load balancing; a scheduler rendering widens the change"}
   ],
   "terms": [
     {"en": "source code", "zh-CN": "源代码", "zh-TW": "原始碼", "domain": "development", "enforce": true, "reject": {"zh-TW": ["源代碼", "源碼"]}},

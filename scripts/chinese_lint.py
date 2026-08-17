@@ -27,6 +27,7 @@ TECHNICAL_DATA = json.loads(
     (ROOT / "references" / "technical-terms.json").read_text(encoding="utf-8"))
 TECHNICAL_TERMS = TECHNICAL_DATA["terms"]
 PRESERVED_TERMS = TECHNICAL_DATA["preserve"]
+PRESERVED_TRANSLATIONS = TECHNICAL_DATA["preserve_translations"]
 HASH_COMMENT_SUFFIXES = {
     ".bash", ".cmake", ".conf", ".eclass", ".ebuild", ".env", ".ex", ".exs",
     ".fish", ".ini", ".ksh", ".mk", ".nix", ".pl", ".pm", ".properties",
@@ -197,6 +198,39 @@ def terminology_findings(text, locale):
                 out.append(issue(
                     "terminology.locale", line_number(text, at),
                     f"use {preferred} for {item['en']} in {locale}", rejected))
+                start = at + len(rejected)
+    return out
+
+
+def guarded_names(extra_terms=None):
+    """Bundled seeds plus the project's own list; a project entry wins by name."""
+    names = {item["en"]: item for item in PRESERVED_TRANSLATIONS}
+    for item in extra_terms or ():
+        names[item["en"]] = item
+    return list(names.values())
+
+
+def load_terms(path):
+    data = json.loads(pathlib.Path(path).read_text(encoding="utf-8"))
+    return data.get("preserve_translations", [])
+
+
+def preserved_translation_findings(text, extra_terms=None):
+    """A guarded name rendered in Chinese in the same document usually renames it."""
+    out = []
+    for item in guarded_names(extra_terms):
+        if item["en"] not in text:
+            continue
+        for rejected in item["reject"]:
+            start = 0
+            while True:
+                at = text.find(rejected, start)
+                if at < 0:
+                    break
+                out.append(issue(
+                    "terminology.preserved", line_number(text, at),
+                    f"confirm {item['en']} before translating it: {item['note']}",
+                    rejected, severity="warning"))
                 start = at + len(rejected)
     return out
 
@@ -1539,7 +1573,7 @@ def pr_body_findings(text, profile, title, style="standard"):
 
 def lint_file(path, kind, profile, title, paragraph_limit, locale="auto",
               regional=False, style="standard", stdin_filename=None,
-              comment_audit=False):
+              comment_audit=False, extra_terms=None):
     try:
         text = (sys.stdin.read() if str(path) == "-"
                 else path.read_text(encoding="utf-8"))
@@ -1572,6 +1606,7 @@ def lint_file(path, kind, profile, title, paragraph_limit, locale="auto",
             context_path, text, checked_text, locale))
     findings.extend(locale_findings(rule_text, locale))
     findings.extend(terminology_findings(rule_text, locale))
+    findings.extend(preserved_translation_findings(rule_text, extra_terms))
     if regional:
         findings.extend(regional_findings(rule_text, locale))
     if kind in {"all", "source"}:
@@ -1665,6 +1700,9 @@ def main():
                         help="apply deterministic typography fixes to prose files")
     parser.add_argument("--stdin-filename",
                         help="filename used to select rules for standard input")
+    parser.add_argument("--terms",
+                        help="project JSON file whose preserve_translations entries "
+                             "extend or override the bundled guarded names")
     parser.add_argument("--comment-audit", action="store_true",
                         help="report high-confidence comments that narrate adjacent code")
     args = parser.parse_args()
@@ -1676,6 +1714,12 @@ def main():
         parser.error("--stdin-filename requires standard input")
     if args.paths.count("-") > 1:
         parser.error("standard input may be specified only once")
+    extra_terms = None
+    if args.terms:
+        try:
+            extra_terms = load_terms(args.terms)
+        except (OSError, UnicodeDecodeError, ValueError) as error:
+            parser.error(f"cannot read --terms file: {error}")
 
     patterns = args.exclude
     missing = [raw for raw in args.paths
@@ -1699,7 +1743,7 @@ def main():
         for finding in lint_file(
                 path, args.kind, args.profile, args.title, args.paragraph_limit,
                 args.locale, args.regional, args.style, args.stdin_filename,
-                args.comment_audit):
+                args.comment_audit, extra_terms):
             results.append((label, finding))
     if args.output_format == "json":
         payload = {

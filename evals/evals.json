@@ -60,6 +60,26 @@
         "The condition appears before the dependent actions.",
         "The output gives active as the completion state and contains no systemd tutorial."
       ]
+    },
+    {
+      "id": 7,
+      "prompt": "把這段翻成繁體中文：The scheduler now supports cache-aware load balancing, and large folios are handled by a new swap table.",
+      "expected_output": "A translation that keeps load balancing as the head, keeps folio and swap table in English, and does not rename them.",
+      "expectations": [
+        "The response does not render cache-aware load balancing as a scheduler.",
+        "The response keeps folio and swap table in English or cites an upstream Chinese term.",
+        "The response does not translate large folios as 大頁."
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "用简体中文改写这段发布说明：In our tests the new path was about 30% faster on one write-heavy workload, and we found no regression against FIFO so far.",
+      "expected_output": "A Simplified Chinese rewrite that keeps the workload, the comparison baseline, and the tentative scope of the regression statement.",
+      "expectations": [
+        "The response keeps the write-heavy workload condition attached to the 30% figure.",
+        "The response keeps the FIFO baseline and the 'so far' scope instead of a general promise.",
+        "The response stays in Simplified Chinese regardless of the script used earlier in the chat."
+      ]
     }
   ]
 }
