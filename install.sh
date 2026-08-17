@@ -13,11 +13,11 @@ transport_option=
 
 usage() {
   printf '%s\n' \
-    "Usage: ./install.sh [claude|codex|opencode ...] [--copy|--link]" \
+    "Usage: ./install.sh [claude|codex|opencode|omp ...] [--copy|--link]" \
     "       ./install.sh [targets ...] --status" \
     "       ./install.sh [targets ...] --uninstall" \
     "" \
-    "Default: install a symlink for all three agents and add a managed reminder."
+    "Default: install a symlink for all four agents; add reminders where required."
 }
 
 for argument in "$@"; do
@@ -43,13 +43,13 @@ for argument in "$@"; do
       operation=$value
       ;;
     -h|--help) usage; exit 0 ;;
-    claude|codex|opencode) targets+=("$argument") ;;
+    claude|codex|opencode|omp) targets+=("$argument") ;;
     *) printf 'Unknown argument: %s\n' "$argument" >&2; exit 2 ;;
   esac
 done
 
 if [ "${#targets[@]}" -eq 0 ]; then
-  targets=(claude codex opencode)
+  targets=(claude codex opencode omp)
 fi
 
 case "$operation" in
@@ -82,6 +82,7 @@ skill_base() {
     claude) printf '%s\n' "${CLAUDE_HOME:-$HOME/.claude}/skills" ;;
     codex) printf '%s\n' "${CODEX_HOME:-$HOME/.codex}/skills" ;;
     opencode) printf '%s\n' "${XDG_CONFIG_HOME:-$HOME/.config}/opencode/skills" ;;
+    omp) printf '%s\n' "${OMP_CONFIG_DIR:-$HOME/.omp/agent}/skills" ;;
   esac
 }
 
@@ -91,6 +92,10 @@ instruction_file() {
     codex) printf '%s\n' "${CODEX_HOME:-$HOME/.codex}/AGENTS.md" ;;
     opencode) printf '%s\n' "${XDG_CONFIG_HOME:-$HOME/.config}/opencode/AGENTS.md" ;;
   esac
+}
+
+uses_managed_reminder() {
+  [ "$1" != omp ]
 }
 
 owned() {
@@ -273,7 +278,9 @@ for agent in "${targets[@]}"; do
       state="not installed"
       status=1
     fi
-    if reminder_current "$instructions" "$destination/SKILL.md"; then
+    if ! uses_managed_reminder "$agent"; then
+      reminder="native skill discovery"
+    elif reminder_current "$instructions" "$destination/SKILL.md"; then
       reminder="reminder present"
     else
       reminder="reminder absent"
@@ -295,7 +302,9 @@ for agent in "${targets[@]}"; do
     else
       printf '%-9s not installed\n' "$agent"
     fi
-    manage_reminder remove "$instructions" "$destination/SKILL.md"
+    if uses_managed_reminder "$agent"; then
+      manage_reminder remove "$instructions" "$destination/SKILL.md"
+    fi
     continue
   fi
 
@@ -332,7 +341,8 @@ PY
     printf 'installer=%s\nformat=copy-v2\n' "$NAME" >"$stage/$MARKER"
     replace_destination "$stage" "$destination"
   fi
-  if ! manage_reminder add "$instructions" "$destination/SKILL.md"; then
+  if uses_managed_reminder "$agent" \
+      && ! manage_reminder add "$instructions" "$destination/SKILL.md"; then
     rollback_destination "$destination"
     printf '%-9s failed to update %s; installation rolled back\n' "$agent" "$instructions" >&2
     status=1

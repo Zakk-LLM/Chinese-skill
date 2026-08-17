@@ -103,14 +103,30 @@ def validate_terms(errors):
     overlap = set(names).intersection(preserve)
     if overlap:
         errors.append(f"translated and preserved terms overlap: {sorted(overlap)!r}")
-    guarded = data["preserve_translations"]
-    guarded_names = [item["en"] for item in guarded]
+    guarded = data.get("preserve_translations")
+    if not isinstance(guarded, list):
+        errors.append("preserve_translations must be a list")
+        guarded = []
+    guarded_names = [
+        item.get("en") for item in guarded
+        if isinstance(item, dict) and isinstance(item.get("en"), str)
+    ]
     if len(guarded_names) != len(set(guarded_names)):
         errors.append("guarded upstream names must be unique")
     for item in guarded:
+        required_strings = ("en", "domain", "note")
+        if (not isinstance(item, dict)
+                or any(not isinstance(item.get(field), str)
+                       or not item[field].strip() for field in required_strings)):
+            errors.append(f"guarded name is incomplete: {item!r}")
+            continue
         if item["en"] not in preserve:
             errors.append(f"guarded name is not preserved: {item['en']}")
-        if not item.get("reject") or not item.get("note") or not item.get("domain"):
+        rejected = item.get("reject")
+        if (not isinstance(rejected, list) or not rejected
+                or any(not isinstance(value, str) or not value
+                       for value in rejected)
+                or len(rejected) != len(set(rejected))):
             errors.append(f"guarded name is incomplete: {item['en']}")
     preferred = {
         locale: {item[locale] for item in terms}
@@ -703,8 +719,10 @@ def validate_repository(errors, release):
         errors.append("reusable action manifest is missing")
     else:
         action_text = action.read_text(encoding="utf-8")
-        for value in ("using: composite", "GITHUB_ACTION_PATH/scripts/chinese_lint.py",
-                      '"$CHINESE_LINT_PATH"', '"$CHINESE_LINT_FAIL_LEVEL"'):
+        for value in ("using: composite", "terms:", "CHINESE_LINT_TERMS",
+                      "GITHUB_ACTION_PATH/scripts/chinese_lint.py",
+                      '"$CHINESE_LINT_PATH"', '"$CHINESE_LINT_FAIL_LEVEL"',
+                      'arguments+=(--terms "$CHINESE_LINT_TERMS")'):
             if value not in action_text:
                 errors.append(f"incomplete reusable action: {value}")
     workflow = (ROOT / ".github" / "workflows" / "tests.yml").read_text(

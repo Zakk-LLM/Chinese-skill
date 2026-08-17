@@ -2,7 +2,7 @@
 
 [簡體中文](README.zh-CN.md) | 繁體中文
 
-Chinese Skill 是供 Claude、Codex 與 OpenCode 使用的中文寫作與審查技能，適用於文章、文件、介面文字、程式註釋、commit 與 PR。
+Chinese Skill 是供 Claude、Codex、OpenCode 與 OMP 使用的中文寫作與審查技能，適用於文章、文件、介面文字、程式註釋、commit 與 PR。
 
 它檢查語法、邏輯、機器翻譯痕跡、口語、自造詞、冗長內容、簡繁混用及不必要的註釋。規則優先採用專案既有格式與術語；面向多個中文地區時，使用同一字形及各地讀者都能理解的標準中文。
 
@@ -19,10 +19,11 @@ cd Chinese-skill
 ./install.sh
 ```
 
-預設以符號連結安裝至三個代理，並加入要求代理定期重新讀取技能的提醒。安裝程式不會覆寫不屬於本專案的檔案。
+預設以符號連結安裝至四個代理。Claude、Codex 與 OpenCode 會加入定期重新讀取技能的提醒；OMP 使用自身的 skill discovery，不修改 Codex 的技能目錄或 `AGENTS.md`。安裝程式不會覆寫不屬於本專案的檔案。
 
 ```bash
 ./install.sh claude codex
+./install.sh omp
 ./install.sh --copy
 ./install.sh --status
 ./install.sh --uninstall
@@ -33,6 +34,7 @@ cd Chinese-skill
 | Claude | `~/.claude/skills/chinese-skill` |
 | Codex | `${CODEX_HOME:-~/.codex}/skills/chinese-skill` |
 | OpenCode | `~/.config/opencode/skills/chinese-skill` |
+| OMP | `${OMP_CONFIG_DIR:-~/.omp/agent}/skills/chinese-skill` |
 
 符號連結安裝要求來源目錄保持不變。需要移動或刪除來源目錄時，請先解除安裝，或改用 `--copy`。
 
@@ -71,7 +73,7 @@ python3 scripts/chinese_lint.py --kind pr-body --title 'scope: summary' body.txt
 
 ## 專案整合
 
-pre-commit 使用者可引用本儲存庫的 `chinese-lint` hook。GitHub Actions 可直接使用 `Zakk-LLM/Chinese-skill@版本`，並以 `path`、`kind`、`style` 與 `locale` 指定檢查範圍。
+pre-commit 使用者可引用本儲存庫的 `chinese-lint` hook。GitHub Actions 可直接使用 `Zakk-LLM/Chinese-skill@版本`，並以 `path`、`kind`、`style` 與 `locale` 指定檢查範圍；專案自訂上游名稱時，以 `terms` 傳入 JSON 路徑。
 
 ```yaml
 repos:
@@ -87,6 +89,7 @@ repos:
     path: docs
     style: technical
     locale: zh-TW
+    terms: .github/chinese-terms.json
 ```
 
 ## 規則

@@ -9,6 +9,10 @@ import tempfile
 
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
+action = (ROOT / "action.yml").read_text(encoding="utf-8")
+assert "  terms:\n" in action
+assert "CHINESE_LINT_TERMS: ${{ inputs.terms }}" in action
+assert 'arguments+=(--terms "$CHINESE_LINT_TERMS")' in action
 hooks = json.loads((ROOT / ".pre-commit-hooks.yaml").read_text(encoding="utf-8"))
 assert len(hooks) == 1
 hook = hooks[0]

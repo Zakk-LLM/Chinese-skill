@@ -1171,6 +1171,26 @@ with tempfile.TemporaryDirectory() as base:
     check("guarded name finding stays advisory", all(
         item.severity == "warning" for item in upstream_findings
         if item.code == "terminology.preserved"))
+    translated_inline = root / "translated-inline.md"
+    translated_inline.write_text(FIXTURES["translated_upstream_inline"] + "\n")
+    check("guarded name is found in inline code", any(
+        item.code == "terminology.preserved" for item in LINT.lint_file(
+            translated_inline, "prose", "general", None, None, "zh-TW")))
+    translated_case = root / "translated-case.md"
+    translated_case.write_text(FIXTURES["translated_upstream_case"] + "\n")
+    check("guarded name allows case and plural variation", any(
+        item.code == "terminology.preserved" for item in LINT.lint_file(
+            translated_case, "prose", "general", None, None, "zh-TW")))
+    unrelated_substring = root / "unrelated-substring.md"
+    unrelated_substring.write_text(FIXTURES["unrelated_name_substring"] + "\n")
+    check("guarded name requires an English word boundary", not any(
+        item.code == "terminology.preserved" for item in LINT.lint_file(
+            unrelated_substring, "prose", "general", None, None, "zh-TW")))
+    fenced_name = root / "fenced-name.md"
+    fenced_name.write_text(FIXTURES["translated_upstream_fence"] + "\n")
+    check("guarded name in a fence is excluded", not any(
+        item.code == "terminology.preserved" for item in LINT.lint_file(
+            fenced_name, "prose", "general", None, None, "zh-TW")))
     untraced = root / "untraced-rendering.md"
     untraced.write_text(FIXTURES["untraced_rendering"] + "\n")
     check("guarded name needs its English form present", not any(
@@ -1187,6 +1207,16 @@ with tempfile.TemporaryDirectory() as base:
         item.code == "terminology.preserved" for item in LINT.lint_file(
             project_guarded, "prose", "general", None, None, "zh-TW",
             extra_terms=LINT.load_terms(project_terms))))
+    invalid_terms = root / "invalid-terms.json"
+    invalid_terms.write_text(json.dumps({"preserve_translations": [{
+        "en": "binhost", "domain": "gentoo", "note": "missing reject"}]}))
+    invalid_result = subprocess.run(
+        [sys.executable, str(TARGET), "--terms", str(invalid_terms),
+         str(project_guarded)], capture_output=True, text=True)
+    check("invalid project terms are a CLI error",
+          invalid_result.returncode == 2
+          and "reject must be" in invalid_result.stderr
+          and "Traceback" not in invalid_result.stderr)
     check("bundled seeds stay out of unrelated projects", not any(
         item.code == "terminology.preserved" for item in LINT.lint_file(
             project_guarded, "prose", "general", None, None, "zh-TW")))

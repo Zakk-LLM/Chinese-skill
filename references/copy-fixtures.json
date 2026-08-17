@@ -73,6 +73,10 @@
   "mixed_terms": "這段程式碼仍含舊代碼。請檢查裡面與裏面的內容。",
   "locale_comparison": "zh-CN 使用代码；zh-TW 使用程式碼。術語對照：裡面／裏面。",
   "translated_upstream_name": "核心把 large folios 改成大頁管理。",
+  "translated_upstream_inline": "核心把 `large folios` 改成大頁管理。",
+  "translated_upstream_case": "核心把 Large Folios 改成大頁管理。",
+  "unrelated_name_substring": "portfolio 功能與大頁管理無關。",
+  "translated_upstream_fence": "```text\nlarge folios\n```\n\n核心仍以大頁管理記憶體。",
   "huge_page_article": "這個版本改進了大頁的配置流程。",
   "untraced_rendering": "核心新增交換表以加速回收。",
   "project_guarded_name": "這次把 binhost 改叫二進位主機。"

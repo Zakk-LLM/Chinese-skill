@@ -28,6 +28,7 @@ with tempfile.TemporaryDirectory(prefix="chinese-skill-install-") as raw_root:
     environment.update({
         "CLAUDE_HOME": str(root / "claude"),
         "CODEX_HOME": str(root / "codex"),
+        "OMP_CONFIG_DIR": str(root / "omp"),
         "XDG_CONFIG_HOME": str(root / "xdg"),
     })
 
@@ -50,6 +51,7 @@ with tempfile.TemporaryDirectory(prefix="chinese-skill-install-") as raw_root:
     first_instruction_text = [path.read_text() for path in instruction_files]
     status = invoke(["--status"], environment)
     assert "link, current" in status.stdout
+    assert "native skill discovery" in status.stdout
     complete_reminder = instruction_files[1].read_text()
     instruction_files[1].write_text(
         complete_reminder.replace("<!-- chinese-skill:end -->", ""))
@@ -66,6 +68,7 @@ with tempfile.TemporaryDirectory(prefix="chinese-skill-install-") as raw_root:
         root / "claude/skills/chinese-skill",
         root / "codex/skills/chinese-skill",
         root / "xdg/opencode/skills/chinese-skill",
+        root / "omp/skills/chinese-skill",
     ]
     assert not any(list(path.rglob("*.pyc")) for path in copied_skills)
     assert not any(list(path.rglob("__pycache__")) for path in copied_skills)
@@ -105,6 +108,22 @@ with tempfile.TemporaryDirectory(prefix="chinese-skill-empty-") as raw_root:
     environment["CODEX_HOME"] = str(root / "codex")
     invoke(["codex", "--uninstall"], environment)
     assert not (root / "codex").exists()
+
+with tempfile.TemporaryDirectory(prefix="chinese-skill-omp-") as raw_root:
+    root = pathlib.Path(raw_root)
+    environment = os.environ.copy()
+    environment.update({
+        "CODEX_HOME": str(root / "codex"),
+        "OMP_CONFIG_DIR": str(root / "omp"),
+    })
+    invoke(["omp"], environment)
+    omp_skill = root / "omp/skills/chinese-skill"
+    assert omp_skill.is_symlink()
+    assert not (root / "codex").exists()
+    status = invoke(["omp", "--status"], environment)
+    assert "native skill discovery" in status.stdout
+    invoke(["omp", "--uninstall"], environment)
+    assert not omp_skill.exists()
 
 with tempfile.TemporaryDirectory(prefix="chinese-skill-ascii-") as raw_root:
     root = pathlib.Path(raw_root)

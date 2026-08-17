@@ -210,25 +210,58 @@ def guarded_names(extra_terms=None):
     return list(names.values())
 
 
+def validate_guarded_names(data, source):
+    if not isinstance(data, dict):
+        raise ValueError(f"{source}: top level must be an object")
+    entries = data.get("preserve_translations")
+    if not isinstance(entries, list):
+        raise ValueError(f"{source}: preserve_translations must be a list")
+    names = set()
+    for index, item in enumerate(entries):
+        label = f"{source}: preserve_translations[{index}]"
+        if not isinstance(item, dict):
+            raise ValueError(f"{label} must be an object")
+        for field in ("en", "domain", "note"):
+            if not isinstance(item.get(field), str) or not item[field].strip():
+                raise ValueError(f"{label}.{field} must be a non-empty string")
+        rejected = item.get("reject")
+        if (not isinstance(rejected, list) or not rejected
+                or any(not isinstance(value, str) or not value
+                       for value in rejected)):
+            raise ValueError(
+                f"{label}.reject must be a non-empty list of non-empty strings")
+        if len(rejected) != len(set(rejected)):
+            raise ValueError(f"{label}.reject contains duplicates")
+        if item["en"] in names:
+            raise ValueError(f"{source}: duplicate guarded name {item['en']!r}")
+        names.add(item["en"])
+    return entries
+
+
 def load_terms(path):
     data = json.loads(pathlib.Path(path).read_text(encoding="utf-8"))
-    return data.get("preserve_translations", [])
+    return validate_guarded_names(data, str(path))
 
 
-def preserved_translation_findings(text, extra_terms=None):
+def guarded_name_present(text, name):
+    pattern = rf"(?<![A-Za-z0-9_]){re.escape(name)}(?:s|es)?(?![A-Za-z0-9_])"
+    return re.search(pattern, text, re.I) is not None
+
+
+def preserved_translation_findings(name_text, prose_text, extra_terms=None):
     """A guarded name rendered in Chinese in the same document usually renames it."""
     out = []
     for item in guarded_names(extra_terms):
-        if item["en"] not in text:
+        if not guarded_name_present(name_text, item["en"]):
             continue
         for rejected in item["reject"]:
             start = 0
             while True:
-                at = text.find(rejected, start)
+                at = prose_text.find(rejected, start)
                 if at < 0:
                     break
                 out.append(issue(
-                    "terminology.preserved", line_number(text, at),
+                    "terminology.preserved", line_number(prose_text, at),
                     f"confirm {item['en']} before translating it: {item['note']}",
                     rejected, severity="warning"))
                 start = at + len(rejected)
@@ -1007,7 +1040,7 @@ def authored_pr_text(text):
     return text[:min(positions)] if positions else text
 
 
-def mask_markup_code(text, markdown=False):
+def mask_markup_code(text, markdown=False, mask_inline=True):
     """Preserve offsets while excluding fenced and inline code from prose rules."""
     def blank(match):
         return "".join("\n" if char == "\n" else " " for char in match.group(0))
@@ -1057,6 +1090,8 @@ def mask_markup_code(text, markdown=False):
                 indented = False
         previous_blank = not content.strip()
     text = "".join(masked)
+    if not mask_inline:
+        return text
     chars = list(text)
     index = 0
     while index < len(text):
@@ -1583,10 +1618,12 @@ def lint_file(path, kind, profile, title, paragraph_limit, locale="auto",
                     if str(path) == "-" and stdin_filename else path)
     effective_style = "strict" if profile == "gentoo-overlay" else style
     checked_text = authored_pr_text(text) if kind == "pr-body" else text
+    name_text = checked_text
     prose = kind in {"prose", "pr-body", "commit-message"} or (
         kind == "all" and prose_path(context_path, text))
     if prose:
         markdown = context_path.suffix.lower() in {".md", ".markdown", ".mdx"}
+        name_text = mask_markup_code(name_text, markdown, mask_inline=False)
         checked_text = mask_markup_code(checked_text, markdown)
     suffix = context_path.suffix.lower()
     rule_text = mask_nonprose_markup(checked_text)
@@ -1606,7 +1643,8 @@ def lint_file(path, kind, profile, title, paragraph_limit, locale="auto",
             context_path, text, checked_text, locale))
     findings.extend(locale_findings(rule_text, locale))
     findings.extend(terminology_findings(rule_text, locale))
-    findings.extend(preserved_translation_findings(rule_text, extra_terms))
+    findings.extend(preserved_translation_findings(
+        mask_nonprose_markup(name_text), rule_text, extra_terms))
     if regional:
         findings.extend(regional_findings(rule_text, locale))
     if kind in {"all", "source"}:
