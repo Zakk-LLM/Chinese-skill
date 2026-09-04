@@ -30,11 +30,11 @@
       "avoid": ["using Taiwan-only terms in another locale without context", "treating current prose as historical corpus"]
     },
     {
-      "id": "gentoo-zh-overlay-zh-hk",
+      "id": "gentoo-zh-overlay-yue",
       "repository": "gentoo-zh/overlay",
-      "path": "README.zh-HK.md",
-      "url": "https://github.com/gentoo-zh/overlay/blob/master/README.zh-HK.md",
-      "checked": "2026-08-03",
+      "path": "README.yue.md",
+      "url": "https://github.com/gentoo-zh/overlay/blob/master/README.yue.md",
+      "checked": "2026-09-05",
       "required_strings": ["# gentoo-zh", "廣東話", "eselect repository enable gentoo-zh", "## 貢獻"],
       "use_for": ["current Cantonese locale contract", "locale-specific links", "parallel section structure"],
       "avoid": ["using Cantonese as cross-regional standard Chinese", "copying repository-specific policy into unrelated projects"]
