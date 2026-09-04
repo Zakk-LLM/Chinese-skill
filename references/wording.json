@@ -3,39 +3,285 @@
     {
       "id": "discourse-filler",
       "message": "remove discourse filler and state the fact directly",
-      "terms": ["簡單來說", "简单来说", "換句話說", "换句话说", "坦白說", "坦白说", "坦白講", "坦白讲", "其實", "其实", "說白了", "说白了", "值得注意的是", "總的來說", "总的来说", "綜上所述", "综上所述", "需要強調的是", "需要强调的是", "毫無疑問", "毫无疑问", "眾所周知", "众所周知", "顯而易見", "显而易见", "不難看出", "不难看出", "由此可見", "由此可见", "總而言之", "总而言之", "如前所述", "一般來說", "一般来说", "在此之前值得一提", "可以說是", "可以说是", "在我看來", "在我看来", "老實說", "老实说", "說實話", "说实话", "在這種情況下", "在这种情况下", "如上所述", "不用多說", "不用多说"]
+      "terms": [
+        "簡單來說",
+        "简单来说",
+        "換句話說",
+        "换句话说",
+        "坦白說",
+        "坦白说",
+        "坦白講",
+        "坦白讲",
+        "其實",
+        "其实",
+        "說白了",
+        "说白了",
+        "值得注意的是",
+        "總的來說",
+        "总的来说",
+        "綜上所述",
+        "综上所述",
+        "需要強調的是",
+        "需要强调的是",
+        "毫無疑問",
+        "毫无疑问",
+        "眾所周知",
+        "众所周知",
+        "顯而易見",
+        "显而易见",
+        "不難看出",
+        "不难看出",
+        "由此可見",
+        "由此可见",
+        "總而言之",
+        "总而言之",
+        "如前所述",
+        "一般來說",
+        "一般来说",
+        "在此之前值得一提",
+        "可以說是",
+        "可以说是",
+        "在我看來",
+        "在我看来",
+        "老實說",
+        "老实说",
+        "說實話",
+        "说实话",
+        "在這種情況下",
+        "在这种情况下",
+        "如上所述",
+        "不用多說",
+        "不用多说"
+      ]
     },
     {
       "id": "ai-vocabulary",
       "message": "use established technical terms instead of AI-style wording",
-      "terms": ["賦能", "赋能", "抓手", "閉環", "闭环", "底層邏輯", "底层逻辑", "認知升級", "认知升级", "長期主義", "长期主义", "顆粒度", "颗粒度", "組合拳", "组合拳", "打法", "破圈", "沉澱", "沉淀", "生態位", "生态位", "至關重要", "至关重要", "邁上新台階", "迈上新台阶", "一站式", "全方位", "無縫", "无缝", "極大地", "极大地", "顯著地", "显著地", "強有力", "强有力", "打造", "助力", "深耕", "痛點", "痛点", "護城河", "护城河", "更上一層樓", "更上一层楼", "顛覆性", "颠覆性", "革命性", "前所未有", "業界領先", "业界领先", "行業標杆", "行业标杆", "全新升級", "全新升级", "強勢", "强势"]
+      "terms": [
+        "賦能",
+        "赋能",
+        "抓手",
+        "閉環",
+        "闭环",
+        "底層邏輯",
+        "底层逻辑",
+        "認知升級",
+        "认知升级",
+        "長期主義",
+        "长期主义",
+        "顆粒度",
+        "颗粒度",
+        "組合拳",
+        "组合拳",
+        "打法",
+        "破圈",
+        "沉澱",
+        "沉淀",
+        "生態位",
+        "生态位",
+        "至關重要",
+        "至关重要",
+        "邁上新台階",
+        "迈上新台阶",
+        "一站式",
+        "全方位",
+        "無縫",
+        "无缝",
+        "極大地",
+        "极大地",
+        "顯著地",
+        "显著地",
+        "強有力",
+        "强有力",
+        "打造",
+        "助力",
+        "深耕",
+        "痛點",
+        "痛点",
+        "護城河",
+        "护城河",
+        "更上一層樓",
+        "更上一层楼",
+        "顛覆性",
+        "颠覆性",
+        "革命性",
+        "前所未有",
+        "業界領先",
+        "业界领先",
+        "行業標杆",
+        "行业标杆",
+        "全新升級",
+        "全新升级",
+        "強勢",
+        "强势"
+      ]
     },
     {
       "id": "colloquial",
       "message": "replace colloquial wording with a concrete state or action",
-      "terms": ["就行", "搞定", "拉下來", "拉下来", "白跑", "一堆", "一大堆", "啥", "咋", "玩意", "省事", "靠譜", "靠谱", "壓根", "压根", "老是", "看一眼", "東西", "东西", "沒啥", "没啥", "亂七八糟", "乱七八糟", "讀不到", "读不到", "取不到", "對不上", "对不上", "發不出", "发不出", "擋住", "挡住", "沒成", "没成", "清掉", "一個都沒刪", "一个都没删", "沒有第二條路進來", "没有第二条路进来", "照樣", "照样", "折騰", "折腾", "搞不定", "湊合", "凑合", "隨手", "随手", "順手", "顺手", "沒轍", "没辙", "卡住了", "沒搞下來", "没搞下来", "麻煩大家", "麻烦大家", "再整一下"]
+      "terms": [
+        "就行",
+        "搞定",
+        "拉下來",
+        "拉下来",
+        "白跑",
+        "一堆",
+        "一大堆",
+        "啥",
+        "咋",
+        "玩意",
+        "省事",
+        "靠譜",
+        "靠谱",
+        "壓根",
+        "压根",
+        "老是",
+        "看一眼",
+        "東西",
+        "东西",
+        "沒啥",
+        "没啥",
+        "亂七八糟",
+        "乱七八糟",
+        "讀不到",
+        "读不到",
+        "取不到",
+        "對不上",
+        "对不上",
+        "發不出",
+        "发不出",
+        "擋住",
+        "挡住",
+        "沒成",
+        "没成",
+        "清掉",
+        "一個都沒刪",
+        "一个都没删",
+        "沒有第二條路進來",
+        "没有第二条路进来",
+        "照樣",
+        "照样",
+        "折騰",
+        "折腾",
+        "搞不定",
+        "湊合",
+        "凑合",
+        "隨手",
+        "随手",
+        "順手",
+        "顺手",
+        "沒轍",
+        "没辙",
+        "卡住了",
+        "沒搞下來",
+        "没搞下来",
+        "麻煩大家",
+        "麻烦大家",
+        "再整一下"
+      ]
     },
     {
       "id": "anthropomorphic-software",
       "message": "state the exact operation without anthropomorphizing software",
-      "terms": ["自己讀", "自己读", "自己掃", "自己扫", "認得", "认得", "跟著換", "跟着换", "圈出來", "圈出来", "留著", "留着", "拿到", "幫你", "帮你", "會自動幫", "会自动帮"]
+      "terms": [
+        "自己讀",
+        "自己读",
+        "自己掃",
+        "自己扫",
+        "認得",
+        "认得",
+        "跟著換",
+        "跟着换",
+        "圈出來",
+        "圈出来",
+        "留著",
+        "留着",
+        "拿到",
+        "幫你",
+        "帮你",
+        "會自動幫",
+        "会自动帮"
+      ]
     },
     {
       "id": "formulaic-ai",
       "message": "remove formulaic AI wording and state the concrete claim",
-      "styles": ["strict", "academic", "technical", "readme", "ui"],
-      "terms": ["開啟全新篇章", "开启全新篇章", "帶來全新體驗", "带来全新体验", "帶您深入了解", "带您深入了解", "讓我們一起", "让我们一起", "不僅僅是", "不仅仅是", "值得一提", "相信通過", "相信通过"]
+      "styles": [
+        "strict",
+        "academic",
+        "technical",
+        "readme",
+        "ui"
+      ],
+      "terms": [
+        "開啟全新篇章",
+        "开启全新篇章",
+        "帶來全新體驗",
+        "带来全新体验",
+        "帶您深入了解",
+        "带您深入了解",
+        "讓我們一起",
+        "让我们一起",
+        "不僅僅是",
+        "不仅仅是",
+        "值得一提",
+        "相信通過",
+        "相信通过"
+      ]
     },
     {
       "id": "ui-casual",
       "message": "state the failed operation and available recovery instead of apologetic or casual UI wording",
-      "styles": ["ui"],
-      "terms": ["抱歉", "對不起", "对不起", "哎呀", "糟糕", "出了點問題", "出了点问题"]
+      "styles": [
+        "ui"
+      ],
+      "terms": [
+        "抱歉",
+        "對不起",
+        "对不起",
+        "哎呀",
+        "糟糕",
+        "出了點問題",
+        "出了点问题"
+      ]
     },
     {
       "id": "regional-slang",
       "message": "replace region-bound slang with standard Chinese",
-      "terms": ["踩坑", "避坑", "填坑", "整活", "拉胯", "小白", "乾貨", "干货", "懶人包", "懒人包", "小撇步", "卡關", "卡关", "雷包", "超雷", "洗版"]
+      "terms": [
+        "踩坑",
+        "避坑",
+        "填坑",
+        "整活",
+        "拉胯",
+        "小白",
+        "乾貨",
+        "干货",
+        "懶人包",
+        "懒人包",
+        "小撇步",
+        "卡關",
+        "卡关",
+        "雷包",
+        "超雷",
+        "洗版"
+      ]
+    },
+    {
+      "id": "vague-attribution",
+      "message": "name a checkable source or remove the attribution",
+      "terms": [
+        "有專家認為",
+        "有专家认为",
+        "業內人士認為",
+        "业内人士认为",
+        "有評論認為",
+        "有评论认为",
+        "業界報告顯示",
+        "业界报告显示",
+        "據報導",
+        "据报道"
+      ]
     }
   ],
   "regex_rules": [
@@ -98,7 +344,9 @@
       "id": "quoted-term",
       "pattern": "(?:確認|确认|檢查|检查|設定|设置|選擇|选择|使用)[^。！？\\n]{0,6}[「『][\\u4e00-\\u9fff]{1,8}[」』](?=(?:目錄|目录|檔案|文件|選項|选项|功能|按鈕|按钮|欄位|字段|參數|参数|變數|变量|值|鍵|键|路徑|路径))",
       "message": "do not wrap ordinary Chinese terms in full-width brackets; use backticks for identifiers",
-      "styles": ["strict"]
+      "styles": [
+        "strict"
+      ]
     },
     {
       "id": "ascii-punctuation",
@@ -109,43 +357,66 @@
       "id": "era-intro",
       "pattern": "(?:在|於|于)(?:當今|当今)[^，。\\n]{0,24}(?:時代|时代|背景下)",
       "message": "remove the generic era-setting introduction",
-      "styles": ["strict", "academic", "technical", "readme"]
+      "styles": [
+        "strict",
+        "academic",
+        "technical",
+        "readme"
+      ]
     },
     {
       "id": "article-narration",
       "pattern": "(?:本文|本篇|這篇文章|这篇文章)(?:將|将|會|会)?(?:深入)?(?:探討|探讨|介紹|介绍|分析|解析|說明|说明|旨在)",
       "message": "start with the subject and claim instead of narrating the article",
-      "styles": ["strict", "technical", "readme"]
+      "styles": [
+        "strict",
+        "technical",
+        "readme"
+      ]
     },
     {
       "id": "promotional-adjective",
       "pattern": "(?:更加|更為|更为)(?:便捷|高效|智慧|智能|強大|强大|靈活|灵活|卓越)",
       "message": "replace promotional adjectives with a concrete property or measured result",
-      "styles": ["strict", "academic", "technical", "readme", "ui"]
+      "styles": [
+        "strict",
+        "academic",
+        "technical",
+        "readme",
+        "ui"
+      ]
     },
     {
       "id": "ui-positional-action",
       "pattern": "(?:請|请)?(?:點擊|点击)(?:此處|此处|這裡|这里)",
       "message": "name the action or destination instead of a positional click instruction",
-      "styles": ["ui"]
+      "styles": [
+        "ui"
+      ]
     },
     {
       "id": "ui-redundant-progress",
       "pattern": "正在[^，。！？\\n]{1,12}中(?:…|\\.\\.\\.)?",
       "message": "use one ongoing-state marker, not both 正在 and 中",
-      "styles": ["ui"]
+      "styles": [
+        "ui"
+      ]
     },
     {
       "id": "ui-generic-error",
       "pattern": "發生(?:了)?(?:一個)?錯誤|发生(?:了)?(?:一个)?错误",
       "message": "state the operation that failed and the affected object",
-      "styles": ["ui"]
+      "styles": [
+        "ui"
+      ]
     },
     {
       "id": "ui-generic-confirmation",
       "pattern": "(?:確定|确定)(?:要)?(?:這麼做|这么做|這樣做|这样做|嗎|吗)[？?]?",
       "message": "name the confirmed action, object, and effect",
-      "styles": ["ui"]
+      "styles": [
+        "ui"
+      ]
     }
   ],
   "grammar_rules": [
@@ -168,11 +439,18 @@
   "consistency_groups": [
     {
       "id": "program-code",
-      "forms": ["程式碼", "代码", "代碼"]
+      "forms": [
+        "程式碼",
+        "代码",
+        "代碼"
+      ]
     },
     {
       "id": "inside",
-      "forms": ["裡面", "裏面"]
+      "forms": [
+        "裡面",
+        "裏面"
+      ]
     }
   ],
   "emoji_patterns": [
@@ -180,7 +458,9 @@
     "[\\u2600-\\u27BF]\\uFE0F?|[\\u2B00-\\u2BFF]\\uFE0F?|[0-9#*]\\uFE0F?\\u20E3|[\\u231A\\u231B\\u23E9-\\u23EC\\u23F0\\u23F3]|\\uFE0F|\\u200D"
   ],
   "emoji_exceptions": {
-    "ui": ["✓"]
+    "ui": [
+      "✓"
+    ]
   },
   "style_profiles": {
     "standard": {
@@ -233,17 +513,80 @@
     }
   },
   "repeated_sentence_characters": 8,
-  "locale_name_exceptions": ["正體中文", "繁體中文", "簡體中文", "正體", "繁體", "簡體"],
-  "locale_word_exceptions": ["阿里雲", "阿里巴巴", "阿里山", "小米", "公里", "英里", "里程", "里程碑", "鄰里", "里民", "里長", "千里", "萬里", "故里", "鄉里", "皇后", "太后", "后冠", "后妃", "后土", "后羿", "后稷", "后里"],
-  "generic_link_labels": ["這裡", "这里", "此處", "此处", "點此", "点此"],
-  "comparison_markers": ["zh-CN", "zh-TW", "簡體", "简体", "繁體", "繁体", "正體", "正体", "對照", "对照"],
+  "locale_name_exceptions": [
+    "正體中文",
+    "繁體中文",
+    "簡體中文",
+    "正體",
+    "繁體",
+    "簡體"
+  ],
+  "locale_word_exceptions": [
+    "阿里雲",
+    "阿里巴巴",
+    "阿里山",
+    "小米",
+    "公里",
+    "英里",
+    "里程",
+    "里程碑",
+    "鄰里",
+    "里民",
+    "里長",
+    "千里",
+    "萬里",
+    "故里",
+    "鄉里",
+    "皇后",
+    "太后",
+    "后冠",
+    "后妃",
+    "后土",
+    "后羿",
+    "后稷",
+    "后里"
+  ],
+  "generic_link_labels": [
+    "這裡",
+    "这里",
+    "此處",
+    "此处",
+    "點此",
+    "点此"
+  ],
+  "comparison_markers": [
+    "zh-CN",
+    "zh-TW",
+    "簡體",
+    "简体",
+    "繁體",
+    "繁体",
+    "正體",
+    "正体",
+    "對照",
+    "对照"
+  ],
   "locale_markers": {
     "zh-TW": "為與後裡於這檔軟網碼執運檢過體應說讀寫來開發現錯誤務萬個門頁書號據線數陣列儲從將還讓戶錄國",
     "zh-CN": "为与后里于这档软网码执运检过体应说读写来开发现错误务万个门页书号据线数阵列储从将还让户录国"
   },
   "regional_exceptions": {
-    "zh-TW": ["權限", "文件", "程序", "指針", "介質", "字節", "項目", "腳本"],
-    "zh-CN": ["软件", "程序", "文件", "权限"]
+    "zh-TW": [
+      "權限",
+      "文件",
+      "程序",
+      "指針",
+      "介質",
+      "字節",
+      "項目",
+      "腳本"
+    ],
+    "zh-CN": [
+      "软件",
+      "程序",
+      "文件",
+      "权限"
+    ]
   },
   "attribution_patterns": [
     "^[ \\t]*(?:[#/*;%-]+[ \\t]*)?Co-authored-by:[ \\t]*(?:(?:(?:Anthropic[ \\t]+)?Claude(?:[ \\t]+Code)?|(?:OpenAI[ \\t]+)?Codex|ChatGPT|GPT-[^<]*|Copilot|Cursor|Devin|Gemini|OpenCode)[ \\t]*(?:<|$)|[^\\n]*<[^>]*@(?:anthropic|openai)\\.com>)",
@@ -277,8 +620,23 @@
     "<!-- Please put the pull request description above -->"
   ],
   "pr_body_limits": {
-    "standard": {"characters": null, "blocks": null, "list_items": null, "headings": true},
-    "strict": {"characters": 600, "blocks": 4, "list_items": 5, "headings": false},
-    "gentoo-overlay": {"characters": 360, "blocks": 3, "list_items": 4, "headings": false}
+    "standard": {
+      "characters": null,
+      "blocks": null,
+      "list_items": null,
+      "headings": true
+    },
+    "strict": {
+      "characters": 600,
+      "blocks": 4,
+      "list_items": 5,
+      "headings": false
+    },
+    "gentoo-overlay": {
+      "characters": 360,
+      "blocks": 3,
+      "list_items": 4,
+      "headings": false
+    }
   }
 }

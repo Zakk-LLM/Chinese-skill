@@ -567,6 +567,11 @@ with tempfile.TemporaryDirectory() as base:
     check("Markdown list continuation remains prose", any(
         item.code == "wording.discourse-filler" for item in strict_lint_file(
             list_continuation, "prose", "general", None, 280)))
+    vague = root / "vague-attribution.md"
+    vague.write_text(FIXTURES["vague_attribution"] + "\n")
+    check("vague attribution is reported", any(
+        item.code == "wording.vague-attribution" for item in strict_lint_file(
+            vague, "prose", "general", None, 280)))
     pretty_json = root / "pretty.json"
     pretty_json.write_text(
         '{\n    "message": "' + FIXTURES["masked_colloquial"] + '"\n}\n')

@@ -79,5 +79,6 @@
   "translated_upstream_fence": "```text\nlarge folios\n```\n\n核心仍以大頁管理記憶體。",
   "huge_page_article": "這個版本改進了大頁的配置流程。",
   "untraced_rendering": "核心新增交換表以加速回收。",
-  "project_guarded_name": "這次把 binhost 改叫二進位主機。"
+  "project_guarded_name": "這次把 binhost 改叫二進位主機。",
+  "vague_attribution": "有專家認為此選項可用。"
 }
