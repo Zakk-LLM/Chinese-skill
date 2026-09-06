@@ -54,6 +54,9 @@ PROSE_SUFFIXES = {".adoc", ".markdown", ".md", ".mdx", ".rst", ".text", ".txt"}
 SKIP_DIRS = {".git", ".hg", ".svn", "node_modules", "vendor", "__pycache__"}
 CJK_CLASS = r"\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\U00020000-\U000323af"
 CJK = re.compile(f"[{CJK_CLASS}]")
+# Whether a character belongs to a run of Latin text. Used to tell an English fragment's own
+# punctuation from Chinese prose punctuation on the same line.
+LATIN_RUN = re.compile(r"[A-Za-z0-9]")
 SENTENCE_END = re.compile(r"[。！？!?]")
 SENTENCE = re.compile(r"[^。！？!?\n]+[。！？!?]?")
 CLAUSE_CONNECTORS = re.compile(
@@ -1178,10 +1181,20 @@ def typography_findings(text, style="standard"):
         line_start = checked.rfind("\n", 0, match.start()) + 1
         line_end = checked.find("\n", match.end())
         line_end = len(checked) if line_end < 0 else line_end
-        if CJK.search(checked[line_start:line_end]):
-            message = ("use … for a UI state" if style == "ui"
-                       else "use …… for an ellipsis in Chinese prose")
-            add("typography.ascii-ellipsis", message, match)
+        if not CJK.search(checked[line_start:line_end]):
+            continue
+        # An ellipsis sitting inside a run of Latin text belongs to that text, not to the
+        # Chinese prose around it — an English title keeps ASCII typography wherever it is
+        # quoted. This rule fires on any line holding CJK, so a correctly written citation
+        # such as 《Thinking Fast and Slow... in AI》 was reported as a defect whose fix
+        # would have been wrong.
+        before = checked[match.start() - 1] if match.start() > line_start else ""
+        after = checked[match.end():line_end].lstrip(" \t")[:1]
+        if LATIN_RUN.match(before) and LATIN_RUN.match(after):
+            continue
+        message = ("use … for a UI state" if style == "ui"
+                   else "use …… for an ellipsis in Chinese prose")
+        add("typography.ascii-ellipsis", message, match)
     for match in re.finditer(r"(?<![-\w])--(?![-\w])", checked):
         line_start = checked.rfind("\n", 0, match.start()) + 1
         line_end = checked.find("\n", match.end())

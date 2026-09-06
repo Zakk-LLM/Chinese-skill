@@ -61,6 +61,7 @@
   "ui_clean_error": "無法儲存設定。請檢查網路連線後重試。",
   "typography_defects": "１２．３ 全形英數！！ ... -- 用了Redis。",
   "typography_protected": "請執行 `tool --flag`，並開啟 https://example.com/a...。",
+  "typography_english_ellipsis": "論文《Thinking Fast and Slow... in AI》談過這件事。",
   "quoted_sentence": "某人說「這是重點」。",
   "markdown_structure_bad": "# 文件\n\n### 設定快取的方式。\n\n- 第一項。\n- 第二項\n\n請參閱[這裡](https://example.com)。\n",
   "markdown_structure_clean": "# 文件\n\n## 設定快取\n\n- 第一項\n- 第二項\n\n請參閱[設定說明](https://example.com)。\n",

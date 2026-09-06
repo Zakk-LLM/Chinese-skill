@@ -702,6 +702,22 @@ with tempfile.TemporaryDirectory() as base:
             protected_typography, "prose", "general", None, None,
             "zh-TW", style="readme")))
 
+    # An English title keeps ASCII typography wherever it is quoted. The rule fires on any
+    # line holding CJK, so without this it reported a correct citation and the fix it asked
+    # for would have been wrong.
+    english_ellipsis = root / "english-ellipsis.md"
+    english_ellipsis.write_text(FIXTURES["typography_english_ellipsis"] + "\n")
+    check("an ellipsis inside an English fragment is left alone", not any(
+        item.code == "typography.ascii-ellipsis" for item in LINT.lint_file(
+            english_ellipsis, "prose", "general", None, None,
+            "zh-TW", style="readme")))
+    chinese_ellipsis = root / "chinese-ellipsis.md"
+    chinese_ellipsis.write_text("他說...然後就走了。\n")
+    check("an ellipsis in Chinese prose is still reported", any(
+        item.code == "typography.ascii-ellipsis" for item in LINT.lint_file(
+            chinese_ellipsis, "prose", "general", None, None,
+            "zh-TW", style="readme")))
+
     markdown_bad = root / "markdown-bad.md"
     markdown_bad.write_text(FIXTURES["markdown_structure_bad"])
     markdown_codes = {item.code for item in LINT.lint_file(
